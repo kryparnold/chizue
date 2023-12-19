@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "bun run ./src/index.ts"
+    "dev": "bun run ./src/index.ts",
+    "commands": "bun run ./src/scripts/deployCommands.ts"
   },
   "keywords": [],
   "author": "",
