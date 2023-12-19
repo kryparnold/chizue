@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "bun run ./src/index.ts",
-    "commands": "bun run ./src/scripts/deployCommands.ts"
+    "commands": "bun run ./src/scripts/deployCommands.ts",
+    "migration:generate": "drizzle-kit generate:pg --schema=./src/database/schema.ts",
+    "migration:migrate": "bun run ./src/database/migrate.ts"
   },
   "keywords": [],
   "author": "",

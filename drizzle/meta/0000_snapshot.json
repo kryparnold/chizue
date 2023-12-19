@@ -1,0 +1,365 @@
+{
+  "id": "0512fd26-5a81-457f-887c-0b5c993270ed",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "englishWords": {
+      "name": "englishWords",
+      "schema": "",
+      "columns": {
+        "a": {
+          "name": "a",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "b": {
+          "name": "b",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c": {
+          "name": "c",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "d": {
+          "name": "d",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "e": {
+          "name": "e",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "f": {
+          "name": "f",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "g": {
+          "name": "g",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h": {
+          "name": "h",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "i": {
+          "name": "i",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "j": {
+          "name": "j",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "k": {
+          "name": "k",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "l": {
+          "name": "l",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "m": {
+          "name": "m",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "n": {
+          "name": "n",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "o": {
+          "name": "o",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "p": {
+          "name": "p",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "q": {
+          "name": "q",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "r": {
+          "name": "r",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s": {
+          "name": "s",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "t": {
+          "name": "t",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "u": {
+          "name": "u",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v": {
+          "name": "v",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "w": {
+          "name": "w",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "x": {
+          "name": "x",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y": {
+          "name": "y",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "z": {
+          "name": "z",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "turkishWords": {
+      "name": "turkishWords",
+      "schema": "",
+      "columns": {
+        "a": {
+          "name": "a",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "b": {
+          "name": "b",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "c": {
+          "name": "c",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ç": {
+          "name": "ç",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "d": {
+          "name": "d",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "e": {
+          "name": "e",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "f": {
+          "name": "f",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "g": {
+          "name": "g",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ğ": {
+          "name": "ğ",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "h": {
+          "name": "h",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ı": {
+          "name": "ı",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "i": {
+          "name": "i",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "j": {
+          "name": "j",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "k": {
+          "name": "k",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "l": {
+          "name": "l",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "m": {
+          "name": "m",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "n": {
+          "name": "n",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "o": {
+          "name": "o",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ö": {
+          "name": "ö",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "p": {
+          "name": "p",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "r": {
+          "name": "r",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "s": {
+          "name": "s",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ş": {
+          "name": "ş",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "t": {
+          "name": "t",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "u": {
+          "name": "u",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ü": {
+          "name": "ü",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "v": {
+          "name": "v",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y": {
+          "name": "y",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "z": {
+          "name": "z",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}
