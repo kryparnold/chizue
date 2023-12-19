@@ -1,16 +1,29 @@
-import { ChannelType, Client, GatewayIntentBits } from "discord.js";
+import {
+    ChannelType,
+    ChatInputCommandInteraction,
+    Client,
+    Collection,
+    GatewayIntentBits,
+    SlashCommandBuilder,
+} from "discord.js";
 import { Logger } from "../managers/Logger";
-import * as config from "./config.json";
+import * as config from "@/config.json";
+import { readdirSync } from "fs";
+import path from "node:path";
 
-enum BotStatuses{
+enum BotStatuses {
     INITIALIZING,
     STABLE,
-    CLOSING
+    CLOSING,
 }
 
 class BotClient extends Client {
     logger: Logger;
     status = BotStatuses.INITIALIZING;
+    commands = new Collection<
+        string,
+        { data: SlashCommandBuilder; execute: (interaction: ChatInputCommandInteraction) => Promise<void> }
+    >();
 
     constructor() {
         super({
@@ -34,6 +47,17 @@ class BotClient extends Client {
         this.logger.logChannel = logChannel;
 
         this.logger.log("Chizue is initializing...");
+        this.logger.log("Loading Slash Commands...");
+
+        const commandsPath = path.join(import.meta.dir, "../commands");
+        const commandFiles = readdirSync(commandsPath);
+        for (const file of commandFiles) {
+            const filePath = path.join(commandsPath, file);
+            const command: any = await import(filePath);
+            client.commands.set(command.default.data.name, command.default);
+        }
+
+        this.logger.log(`Loaded ${commandFiles.length} Slash Commands.`);
     }
 }
 
