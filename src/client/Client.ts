@@ -11,7 +11,7 @@ import * as config from "@/config.json";
 import { readdirSync } from "fs";
 import path from "node:path";
 
-enum BotStatuses {
+export enum BotStatuses {
     INITIALIZING,
     STABLE,
     CLOSING,
@@ -38,6 +38,11 @@ class BotClient extends Client {
     }
 
     async init() {
+        await this.initLogger();
+        await this.initCommands();
+    }
+
+    async initLogger(){
         const logChannel = await this.channels.fetch(config.logChannelId);
 
         if (logChannel?.type !== ChannelType.GuildText) {
@@ -47,6 +52,9 @@ class BotClient extends Client {
         this.logger.logChannel = logChannel;
 
         this.logger.log("Chizue is initializing...");
+    }
+
+    async initCommands(){
         this.logger.log("Loading Slash Commands...");
 
         const commandsPath = path.join(import.meta.dir, "../commands");

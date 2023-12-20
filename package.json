@@ -5,16 +5,13 @@
   "main": "index.js",
   "scripts": {
     "dev": "bun run ./src/index.ts",
-    "commands": "bun run ./src/scripts/deployCommands.ts",
-    "migration:generate": "drizzle-kit generate:pg --schema=./src/database/schema.ts",
-    "migration:migrate": "bun run ./src/database/migrate.ts"
+    "commands": "bun run ./src/scripts/deployCommands.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "bun-types": "latest",
-    "drizzle-kit": "^0.20.7"
+    "bun-types": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -22,7 +19,6 @@
   "dependencies": {
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.29.1",
     "postgres": "^3.4.3"
   }
 }
