@@ -3,10 +3,12 @@ import { BotStatuses, client } from "./globals";
 import { config as envConfig } from "dotenv";
 envConfig();
 
-client.once(Events.ClientReady, async (_client) => {
-    console.log(_client.user.username + " is online.");
+client.once(Events.ClientReady, async (readyClient) => {
+    console.log(readyClient.user.username + " is online.");
 
+    const startTime = new Date().getTime();
     await client.init();
+    client.logger.log(`Client initialization completed in **${new Date().getTime() - startTime}ms**.`);
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
