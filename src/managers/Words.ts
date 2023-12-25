@@ -8,9 +8,9 @@ export class Words {
     constructor() {}
 
     async init(): Promise<{tr: number, en: number}> {
-        const turkishWords = (await import("@/data/raw/tr_words.json")).default;
-        const englishWords = (await import("@/data/raw/en_words.json")).default;
-        const wordleWords = (await import("@/data/raw/wordle_words.json")).default;
+        const turkishWords = (await import("@/database/raw/tr_words.json")).default;
+        const englishWords = (await import("@/database/raw/en_words.json")).default;
+        const wordleWords = (await import("@/database/raw/wordle_words.json")).default;
 
         let trSum = 0;
         let enSum = 0;

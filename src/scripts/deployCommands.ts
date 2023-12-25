@@ -1,7 +1,7 @@
 import { REST, Routes, SlashCommandBuilder } from "discord.js";
 import { config as envConfig } from "dotenv";
 envConfig();
-import * as config from "@/config.json";
+import * as config from "../client/config.json";
 import { readdirSync } from "fs";
 import path from "node:path";
 
