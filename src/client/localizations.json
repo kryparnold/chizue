@@ -1,0 +1,12 @@
+{
+    "tr":{
+        "buttons":{
+            "setup":"Kur"
+        }
+    },
+    "en":{
+        "buttons":{
+            "setup":"Setup"
+        }
+    }
+}
