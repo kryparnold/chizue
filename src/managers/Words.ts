@@ -5,8 +5,6 @@ export class Words {
     englishWords!: IEnglishWords;
     wordleWords!: IWordleWords;
 
-    constructor() {}
-
     async init(): Promise<{tr: number, en: number}> {
         const turkishWords = (await import("@/database/raw/tr_words.json")).default;
         const englishWords = (await import("@/database/raw/en_words.json")).default;
