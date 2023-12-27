@@ -5,10 +5,10 @@ import {
     Client,
     Collection,
     GatewayIntentBits,
+    Locale,
     SlashCommandBuilder,
 } from "discord.js";
-import { Logger } from "@/managers/Logger";
-import { Words } from "@/managers/Words";
+import { Logger, Words, localizations } from "@/globals";
 import * as config from "./config.json";
 import { readdirSync } from "fs";
 import path from "node:path";
@@ -89,6 +89,8 @@ class BotClient extends Client {
     }
 
     async handleButton(interaction: ButtonInteraction) {
+        if (interaction.customId.startsWith("_")) return;
+
         const button = client.buttons.get(interaction.customId);
 
         if (!button) {
@@ -160,6 +162,28 @@ class BotClient extends Client {
         this.logger.log(`**${wordSums.tr}** Turkish Word initialized.`);
         this.logger.log(`**${wordSums.en}** English Word initialized.`);
         this.logger.log("Word initialization completed.");
+    }
+
+    getLocalization<T extends boolean = false>(
+        initialLocale: Locale,
+        key: keyof typeof localizations["en"]
+    ): T extends false ? string : ((arg: string) => string){
+        let locale: keyof typeof localizations = "tr";
+
+        if (
+            initialLocale !== Locale.Turkish &&
+            [Locale.EnglishGB, Locale.EnglishUS].includes(initialLocale)
+        ) {
+            locale = "en";
+        }
+
+        if (localizations[locale]?.[key]) {
+            return localizations[locale][key] as T extends false ? string : ((arg: string) => string);
+        } else {
+            throw new Error(
+                `Localization not found for ${key} in ${locale}`
+            );
+        }
     }
 }
 
