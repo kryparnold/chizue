@@ -1,4 +1,4 @@
-import { Channel, TextChannel } from "discord.js";
+import { TextChannel } from "discord.js";
 
 class Logger{
     public logChannel: TextChannel | undefined;
@@ -16,7 +16,7 @@ class Logger{
     }
 
     log(logMessage: string){
-        console.log(`${this.defaultPrefix} ${logMessage}`);
+        console.log(`${this.defaultPrefix} ${logMessage.replaceAll("**","")}`);
         this.logPool.push(`${this.defaultPrefix} ${logMessage}`);
     }
     

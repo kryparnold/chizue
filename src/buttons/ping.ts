@@ -1,4 +1,3 @@
-import { prisma } from "@/globals";
 import { ButtonInteraction } from "discord.js";
 
 export default {

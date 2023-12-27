@@ -1,4 +1,4 @@
-import { REST, Routes, SlashCommandBuilder } from "discord.js";
+import { REST, Routes } from "discord.js";
 import { config as envConfig } from "dotenv";
 envConfig();
 import * as config from "../client/config.json";
