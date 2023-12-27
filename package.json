@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "bun run ./src/index.ts",
+    "check": "tsc",
     "commands": "bun run ./src/scripts/deployCommands.ts"
   },
   "keywords": [],
