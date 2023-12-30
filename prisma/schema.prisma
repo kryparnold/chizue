@@ -10,13 +10,13 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Channels {
+model Games {
     id          String      @id
     player      String      @default("")
     letter      String
     limit       Int         @default(40)
     randomWords String[]    @default([])
-    mode        ChannelMode
+    mode        GameMode
     locale      Locales
     type        GameType
     words       String[]
@@ -32,7 +32,7 @@ enum Locales {
     English
 }
 
-enum ChannelMode {
+enum GameMode {
     Normal
     Endless
 }
