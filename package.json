@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "bun run ./src/index.ts",
+    "dev": "clear && bun run --watch ./src/index.ts",
     "check": "tsc",
     "commands": "bun run ./src/scripts/deployCommands.ts"
   },
