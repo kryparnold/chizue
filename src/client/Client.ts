@@ -148,7 +148,10 @@ class BotClient extends Client {
 		this.logger.log("Word initialization completed.");
 	}
 
-	getLocalization<T extends boolean = false>(initialLocale: Locale, key: keyof (typeof localizations)["en"]): T extends false ? string : (arg: string) => string {
+	getLocalization<T extends boolean = false>(
+		initialLocale: Locale,
+		key: keyof (typeof localizations)["en"]
+	): T extends false ? string : (arg: string) => string {
 		let locale: keyof typeof localizations = "tr";
 
 		if (initialLocale !== Locale.Turkish && [Locale.EnglishGB, Locale.EnglishUS].includes(initialLocale)) {
