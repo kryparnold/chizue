@@ -10,7 +10,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Games {
+model Game {
     id          String      @id
     player      String      @default("")
     letter      String

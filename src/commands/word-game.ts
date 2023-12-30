@@ -40,7 +40,7 @@ export default {
 			ephemeral: true,
 		});
 		const channelOption = interaction.options.getChannel("channel", true);
-		let channel = await prisma.games.findUnique({
+		let channel = await prisma.game.findUnique({
 			where: {
 				id: channelOption.id,
 			},
@@ -163,7 +163,7 @@ export default {
 						}
 
 						if (channel) {
-							const newChannel = await prisma.games.update({
+							const newChannel = await prisma.game.update({
 								where: {
 									id: channel.id,
 								},
@@ -210,7 +210,7 @@ export default {
 						if (customId.endsWith("setup")) {
 							const randomLetter = Utils.random(Array.from(Utils.Letters["en"]));
 
-							const newChannel = await prisma.games.create({
+							const newChannel = await prisma.game.create({
 								data: {
 									id: channelOption.id,
 									letter: randomLetter,
@@ -293,7 +293,7 @@ export default {
 										.then(async (buttonInteraction) => {
 											await buttonInteraction.deferReply({ephemeral: true});
 
-											const oldChannel = await prisma.games.delete({
+											const oldChannel = await prisma.game.delete({
 											    where: {
 											        id: channelOption.id
 											    }
