@@ -134,9 +134,9 @@ class BotClient extends Client {
 		)
 			return;
 
-        if(game.type === GameType.WordGame && !Utils.invalidCharacters.test(message.content)){ // Check if game.type is WordGame(prisma) and the message content is a valid word. 
+        if(game.type === GameType.WordGame && !Utils.invalidCharacters.test(message.content)){ // Check if game type is WordGame(prisma) and the message content is a valid word. 
             (game as WordGame).handleWord(message);
-        }else if(game.type === GameType.CountingGame && !isNaN(+message.content)){ // Check if game.type is CountingGame(prisma) and the message content is a valid number.
+        }else if(game.type === GameType.CountingGame && !isNaN(+message.content)){ // Check if game type is CountingGame(prisma) and the message content is a valid number.
             (game as CountingGame).handleNumber(message);
         }
 	}
@@ -156,8 +156,6 @@ class BotClient extends Client {
 
 	// Initialize slash commands
 	async initCommands() {
-		this.logger.log("Loading Slash Commands...");
-
 		const commandsPath = path.join(import.meta.dir, config.commandsPath);
 		const commandFiles = readdirSync(commandsPath);
 
@@ -172,8 +170,6 @@ class BotClient extends Client {
 
 	// Initialize buttons
 	async initButtons() {
-		this.logger.log("Loading Buttons...");
-
 		const buttonsPath = path.join(import.meta.dir, config.buttonsPath);
 		const buttonFiles = readdirSync(buttonsPath);
 
@@ -188,16 +184,12 @@ class BotClient extends Client {
 
     //Initialize games
 	async initGames() {
-		this.logger.log("Loading Games...");
+		const wordGames = await prisma.wordGame.findMany() ?? [];
+        const countingGames = await prisma.countingGame.findMany() ?? [];
 
-		const wordGames = await prisma.wordGame.findMany();
-        const countingGames = await prisma.countingGame.findMany();
-
-        const allGames = [...wordGames,...countingGames];
-
-		this.games.init(allGames);
+		this.games.init(wordGames,countingGames);
         
-		this.logger.log(`Loaded ${allGames.length} Games.`);
+		this.logger.log(`Loaded ${wordGames.length + countingGames.length} Games.`);
 	}
 
 
