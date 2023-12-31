@@ -10,4 +10,5 @@ export class Utils{
     static getAvatarURL(userId: string,avatarHash: string | null){
         return `${this.avatarBaseURL}avatars/${userId}/${avatarHash}.png?size=64`
     }
+    static invalidCharacters = /[^a-zA-ZğüşıöçĞÜŞİÖÇ]/;
 }
