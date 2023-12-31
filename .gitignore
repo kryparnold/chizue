@@ -12,10 +12,11 @@ tsconfig.tsbuildinfo
 prisma/migrations/*
 !prisma/migrations/migration_lock.toml
 
-# Security
+# Environment
 
 .env
 
 # Misc
 
+src/commands/test.ts
 elebele.ts
