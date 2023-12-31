@@ -10,16 +10,25 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Game {
-    id          String      @id
-    player      String      @default("")
+model WordGame {
+    id          String   @id
+    player      String   @default("")
     letter      String
-    limit       Int         @default(40)
-    randomWords String[]    @default([])
+    limit       Int      @default(40)
+    randomWords String[] @default([])
     mode        GameMode
     locale      Locales
-    type        GameType
+    type        GameType @default(WordGame)
     words       String[]
+}
+
+model CountingGame {
+    id           String   @id
+    player       String   @default("")
+    multiplier   Int      @default(1)
+    recentNumber Int      @default(1)
+    locale       Locales
+    type         GameType @default(CountingGame)
 }
 
 enum GameType {
