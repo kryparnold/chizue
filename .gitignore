@@ -1,6 +1,21 @@
+# Node
+
 node_modules
-prisma/migrations
+
+# Bun
+
 bun.lockb
-.env
 tsconfig.tsbuildinfo
+
+# Prisma
+
+prisma/migrations/*
+!prisma/migrations/migration_lock.toml
+
+# Security
+
+.env
+
+# Misc
+
 elebele.ts
