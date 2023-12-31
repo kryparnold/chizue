@@ -16,6 +16,7 @@ model WordGame {
     letter      String
     limit       Int      @default(40)
     randomWords String[] @default([])
+    createdAt   DateTime @default(now())
     mode        GameMode
     locale      Locales
     type        GameType @default(WordGame)
@@ -26,8 +27,8 @@ model CountingGame {
     id           String   @id
     player       String   @default("")
     multiplier   Int      @default(1)
+    createdAt    DateTime @default(now())
     recentNumber Int      @default(1)
-    locale       Locales
     type         GameType @default(CountingGame)
 }
 
