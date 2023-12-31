@@ -1,6 +1,6 @@
 // Importing necessary modules and components from external files
 import { Events } from "discord.js";
-import { BotStatuses, Utils, client } from "./globals";
+import { BotStatuses, client } from "./globals";
 
 // Importing and configuring environment variables using dotenv
 import { config as envConfig } from "dotenv";
