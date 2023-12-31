@@ -10,7 +10,7 @@ export class WordGame {
 	private randomWords: string[];
 	private mode: GameMode;
 	private locale: Locales;
-    public type: GameType;
+    public type = GameType.WordGame;
 	private words: string[];
 
 	constructor(game: WordGameModel) {
@@ -21,7 +21,6 @@ export class WordGame {
 		this.randomWords = game.randomWords;
 		this.mode = game.mode;
 		this.locale = game.locale;
-        this.type = game.type;
 		this.words = game.words;
 	}
 
