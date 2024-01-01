@@ -1,3 +1,7 @@
+import { Players } from "./globals";
+import { WordGame as RawWordGame } from "@prisma/client";
+
+
 export interface ITurkishWords {
     a: string[];
     b: string[];
@@ -70,3 +74,5 @@ export interface IWordleWords {
         6: string[];
     };
 }
+
+export type RawWordGameWithPlayers = RawWordGame & {players: Players};
