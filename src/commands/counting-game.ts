@@ -59,7 +59,7 @@ export default {
 		let selectedMultiplier = channel?.multiplier ?? 1;
 
 		// Get the user's locale and prepare user-specific footer for embeds
-		const userLocale = interaction.locale;
+		const userLocale = Utils.formatLocale(interaction.locale);
 		const userFooter: EmbedFooterOptions = {
 			text: interaction.user.username,
 			iconURL: Utils.getAvatarURL(interaction.user.id, interaction.user.avatar),
@@ -287,7 +287,7 @@ export default {
 			});
 	},
 	// Helper function to generate fields for the embed
-	async getFields(locale: Locale, props: { numberCount: number; multiplier: number }) {
+	async getFields(locale: any, props: { numberCount: number; multiplier: number }) {
 		const { multiplier, numberCount } = props;
 
 		return [

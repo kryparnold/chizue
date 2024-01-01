@@ -62,7 +62,7 @@ export default {
 		};
 
 		// Get the user's locale and prepare user-specific footer for embeds
-		const userLocale = interaction.locale;
+		const userLocale = Utils.formatLocale(interaction.locale);
 		const userFooter: EmbedFooterOptions = {
 			text: interaction.user.username,
 			iconURL: Utils.getAvatarURL(interaction.user.id, interaction.user.avatar),
@@ -381,7 +381,7 @@ export default {
 			});
 	},
 	// Helper function to generate fields for the embed
-	async getFields(locale: Locale, props: { wordCount: number; channelLocale: Locales; mode: GameMode }) {
+	async getFields(locale: any, props: { wordCount: number; channelLocale: Locales; mode: GameMode }) {
 		const { channelLocale, mode, wordCount } = props;
 
 		return [
