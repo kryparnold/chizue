@@ -9,13 +9,14 @@ import {
 	Message,
 	SlashCommandBuilder,
 } from "discord.js";
-import { Logger, Words, localizations, prisma, Games, Utils, WordGame, CountingGame } from "@/globals";
+import { Logger, Words, localizations, prisma, Games, Utils } from "@/globals";
 
 // Importing configuration and file system modules
 import * as config from "./config.json";
-import { readdirSync } from "fs";
+import * as stats from "./stats.json";
+import { readdirSync, writeFileSync } from "fs";
 import path from "node:path";
-import { GameType } from "@prisma/client";
+import { GameType, Locales } from "@prisma/client";
 
 // Enum representing different states of the bot
 export enum BotStatuses {
@@ -29,6 +30,8 @@ class BotClient extends Client {
 	logger: Logger;
 	words: Words;
 	games: Games;
+    //@ts-ignore
+    stats = stats.default;
 	status = BotStatuses.Stable;
 	commands = new Collection<
 		string,
@@ -44,6 +47,9 @@ class BotClient extends Client {
 			execute: (interaction: ButtonInteraction) => Promise<void>;
 		}
 	>();
+	emotes = {
+		accept: config.acceptEmote,
+	};
 
 	constructor() {
 		super({
@@ -53,6 +59,10 @@ class BotClient extends Client {
 		this.logger = new Logger();
 		this.words = new Words();
 		this.games = new Games();
+
+		setInterval(() => {
+			writeFileSync(config.statsPath, JSON.stringify(this.stats), "utf-8");
+		}, 10000);
 	}
 
 	// Initialize various components of the bot
@@ -60,7 +70,7 @@ class BotClient extends Client {
 		await this.initLogger();
 		await this.initCommands();
 		await this.initButtons();
-        await this.initGames();
+		await this.initGames();
 		await this.initWords();
 	}
 
@@ -124,7 +134,7 @@ class BotClient extends Client {
 
 	// Placeholder function for handling messages
 	async handleMessage(message: Message) {
-        const game = this.games.get(message.channelId);
+		const game = this.games.get(message.channelId);
 
 		if (
 			!game || // Check if there is a game in message's channel
@@ -134,11 +144,13 @@ class BotClient extends Client {
 		)
 			return;
 
-        if(game.type === GameType.WordGame && !Utils.invalidCharacters.test(message.content)){ // Check if game type is WordGame(prisma) and the message content is a valid word. 
-            (game as WordGame).handleWord(message);
-        }else if(game.type === GameType.CountingGame && !isNaN(+message.content)){ // Check if game type is CountingGame(prisma) and the message content is a valid number.
-            (game as CountingGame).handleNumber(message);
-        }
+		if (game.type === GameType.WordGame && !Utils.invalidCharacters.test(message.content)) {
+			// Check if game type is WordGame(prisma) and the message content is a valid word.
+			game.handleWord(message);
+		} else if (game.type === GameType.CountingGame && !isNaN(+message.content)) {
+			// Check if game type is CountingGame(prisma) and the message content is a valid number.
+			game.handleNumber(message);
+		}
 	}
 
 	// Initialize the logger with the specified client username
@@ -182,16 +194,16 @@ class BotClient extends Client {
 		this.logger.log(`Loaded ${buttonFiles.length} Buttons.`);
 	}
 
-    //Initialize games
+	//Initialize games
 	async initGames() {
-		const wordGames = await prisma.wordGame.findMany() ?? [];
-        const countingGames = await prisma.countingGame.findMany() ?? [];
+		const wordGames = (await prisma.wordGame.findMany()) ?? [];
+		const countingGames = (await prisma.countingGame.findMany()) ?? [];
+        const players = (await prisma.player.findMany()) ?? [];
 
-		this.games.init(wordGames,countingGames);
-        
+		this.games.init(wordGames, players, countingGames);
+
 		this.logger.log(`Loaded ${wordGames.length + countingGames.length} Games.`);
 	}
-
 
 	// Initialize word data
 	async initWords() {
@@ -202,15 +214,14 @@ class BotClient extends Client {
 		this.logger.log("Word initialization completed.");
 	}
 
-	
 	// Retrieve a localized string based on the provided locale and key
 	getLocalization<T extends boolean = false>(
-		initialLocale: Locale,
+		initialLocale: Locale | Locales,
 		key: keyof (typeof localizations)["en"]
 	): T extends false ? string : (arg: string) => string {
 		let locale: keyof typeof localizations = "tr";
 
-		if (initialLocale !== Locale.Turkish && [Locale.EnglishGB, Locale.EnglishUS].includes(initialLocale)) {
+		if (![Locale.Turkish, "Turkish"].includes(initialLocale) && [Locale.EnglishGB, Locale.EnglishUS, "English"].includes(initialLocale)) {
 			locale = "en";
 		}
 
