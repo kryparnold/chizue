@@ -1,8 +1,8 @@
 import { IEnglishWords, ITurkishWords, IWordleWords } from "@/globals";
 
 export class Words {
-    turkishWords!: ITurkishWords;
-    englishWords!: IEnglishWords;
+    tr!: ITurkishWords;
+    en!: IEnglishWords;
     wordleWords!: IWordleWords;
 
     async init(): Promise<{tr: number, en: number}> {
@@ -19,8 +19,8 @@ export class Words {
             (wordList) => (enSum += wordList.length)
         );
 
-        this.turkishWords = turkishWords;
-        this.englishWords = englishWords;
+        this.tr = turkishWords;
+        this.en = englishWords;
         this.wordleWords = wordleWords;
 
         return {tr: trSum, en: enSum};
