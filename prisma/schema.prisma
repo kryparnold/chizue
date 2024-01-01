@@ -17,6 +17,7 @@ model WordGame {
     limit       Int      @default(40)
     randomWords String[] @default([])
     createdAt   DateTime @default(now())
+    players     Player[]
     mode        GameMode
     locale      Locales
     type        GameType @default(WordGame)
@@ -30,6 +31,13 @@ model CountingGame {
     createdAt    DateTime @default(now())
     recentNumber Int      @default(1)
     type         GameType @default(CountingGame)
+}
+
+model Player {
+    id         String    @id
+    score      Int       @default(0)
+    WordGame   WordGame? @relation(fields: [wordGameId], references: [id])
+    wordGameId String?
 }
 
 enum GameType {
