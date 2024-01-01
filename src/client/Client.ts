@@ -216,15 +216,9 @@ class BotClient extends Client {
 
 	// Retrieve a localized string based on the provided locale and key
 	getLocalization<T extends boolean = false>(
-		initialLocale: Locale | Locales,
+		locale: keyof typeof localizations,
 		key: keyof (typeof localizations)["en"]
 	): T extends false ? string : (arg: string) => string {
-		let locale: keyof typeof localizations = "tr";
-
-		if (![Locale.Turkish, "Turkish"].includes(initialLocale) && [Locale.EnglishGB, Locale.EnglishUS, "English"].includes(initialLocale)) {
-			locale = "en";
-		}
-
 		if (localizations[locale]?.[key]) {
 			return localizations[locale][key] as T extends false ? string : (arg: string) => string;
 		} else {
