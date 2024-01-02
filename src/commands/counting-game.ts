@@ -1,3 +1,4 @@
+// Import necessary modules and components from discord.js
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -13,7 +14,9 @@ import {
 	SlashCommandBuilder,
 	StringSelectMenuBuilder,
 } from "discord.js";
-import { Utils, prisma, client } from "@/globals";
+
+// Import global variables and classes from project files
+import { Utils, prisma, client, CountingGame } from "@/globals";
 import { GameType } from "@prisma/client";
 import { NumberSelectMenuBuilder } from "@/classes/NumberSelectMenuBuilder";
 
@@ -24,7 +27,7 @@ export default {
 		.setName("counting-game")
 		// Localization support for name and description
 		.setNameLocalization("tr", "sayı-sayma")
-		.setDescription("You can setup, delete or modify Counting Games with this command.")
+		.setDescription("You can set up, delete, or modify Counting Games with this command.")
 		.setDescriptionLocalization("tr", "Bu komutla Sayı Sayma Oyunu kurabilir, kaldırabilir ya da düzenleyebilirsin.")
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 		.setDMPermission(false)
@@ -49,11 +52,7 @@ export default {
 		const selectedChannel = interaction.options.getChannel("channel", true);
 
 		// Fetch the Counting Game data from the database based on the channel ID
-		let channel = await prisma.countingGame.findUnique({
-			where: {
-				id: selectedChannel.id,
-			},
-		});
+		let channel = client.games.get(selectedChannel.id) as CountingGame | undefined;
 
 		// Set default channel preferences or use existing values if available
 		let selectedMultiplier = channel?.multiplier ?? 1;
@@ -64,6 +63,12 @@ export default {
 			text: interaction.user.username,
 			iconURL: Utils.getAvatarURL(interaction.user.id, interaction.user.avatar),
 		};
+
+		// Check the game type and reply if not Counting Game
+		if (channel && channel.type !== GameType.CountingGame) {
+			await interaction.editReply(client.getLocalization<true>(userLocale, "gameAnother")(client.getLocalization(userLocale, channel.type)));
+			return;
+		}
 
 		// Create an embed to display information about the Counting Game
 		const embed = new EmbedBuilder()
@@ -85,17 +90,15 @@ export default {
 
 		// Update components based on existing channel data
 		if (channel) {
-			if (channel.type !== GameType.CountingGame) {
-				await interaction.editReply(client.getLocalization<true>(userLocale, "gameAnother")(client.getLocalization(userLocale, channel.type)));
-				return;
-			}
-
 			// Update embed description and fields
 			embed.data.description = client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type));
 			embed.data.fields = await this.getFields(userLocale, {
 				multiplier: selectedMultiplier,
 				numberCount: channel.recentNumber / selectedMultiplier,
 			});
+
+			// Set default option for multiplier select menu
+			selectMultiplier.options.forEach((item) => item.setDefault(item.data.value === channel?.multiplier));
 
 			// Disable and enable buttons based on channel existence
 			setupButton.setDisabled(true);
@@ -132,77 +135,60 @@ export default {
 
 					// Update channel data in the database if it exists
 					if (channel) {
-						const newChannel = await prisma.countingGame.update({
-							where: {
-								id: channel.id,
-							},
-							data: {
-								multiplier: selectedMultiplier,
-							},
+						channel = await channel.setMultiplier(selectedMultiplier);
+
+						// Set default option for multiplier select menu
+						selectMultiplier.options.forEach((item) => item.setDefault(item.data.value === channel?.multiplier));
+
+						await interaction.editReply({
+							embeds: [
+								embed.setFields(
+									await this.getFields(userLocale, {
+										multiplier: channel.multiplier,
+										numberCount: channel.recentNumber / channel.multiplier,
+									})
+								),
+							],
+							components: rows,
 						});
-
-						// Update channel and components if the database update is successful
-						if (newChannel) {
-							channel = newChannel;
-
-							await interaction.editReply({
-								embeds: [
-									embed.setFields(
-										await this.getFields(userLocale, {
-											multiplier: channel.multiplier,
-											numberCount: channel.recentNumber / channel.multiplier,
-										})
-									),
-								],
-								components: rows,
-							});
-						}
 					}
 				} else if (componentInteraction.isButton()) {
 					// Handle interactions for buttons
 					if (customId.endsWith("setup")) {
 						// Handle setup button click
 
-						const newChannel = await prisma.countingGame.create({
-							data: {
-								id: selectedChannel.id,
-								multiplier: selectedMultiplier,
-								recentNumber: selectedMultiplier,
-							},
+						channel = await client.games.createCountingGame({
+							id: selectedChannel.id,
+							multiplier: selectedMultiplier,
+							recentNumber: selectedMultiplier,
 						});
 
-						// Update channel and components if channel creation is successful
-						if (newChannel) {
-							channel = newChannel;
+						embed
+							.setDescription(client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type)))
+							.addFields(
+								await this.getFields(userLocale, {
+									multiplier: channel.multiplier,
+									numberCount: channel.recentNumber / channel.multiplier,
+								})
+							);
 
-							embed
-								.setDescription(client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type)))
-								.addFields(
-									await this.getFields(userLocale, {
-										multiplier: channel.multiplier,
-                                        numberCount: channel.recentNumber / channel.multiplier
-									})
-								);
+						// Set default option for multiplier select menu
+						selectMultiplier.options.forEach((item) => item.setDefault(item.data.value === channel?.multiplier));
 
-							await interaction.editReply({
-								embeds: [embed],
-								components: rows.map((item, index) => {
-									if (index === rows.length - 1) {
-										item.components[0].setDisabled(true);
-										item.components[1].setDisabled(false);
-									}
+						await interaction.editReply({
+							embeds: [embed],
+							components: rows.map((item, index) => {
+								if (index === rows.length - 1) {
+									item.components[0].setDisabled(true);
+									item.components[1].setDisabled(false);
+								}
 
-									return item;
-								}),
-							});
-							await componentInteraction.editReply({
-								content: client.getLocalization(userLocale, "gameSetupSuccess"),
-							});
-						} else {
-							await componentInteraction.editReply({
-								content: client.getLocalization(userLocale, "anErrorOccured"),
-							});
-						}
+								return item;
+							}),
+						});
+						await componentInteraction.editReply({
+							content: client.getLocalization(userLocale, "gameSetupSuccess"),
+						});
 					} else if (customId.endsWith("remove")) {
 						// Handle remove button click
 						const confirmEmbed = new EmbedBuilder()
@@ -230,42 +216,32 @@ export default {
 								await buttonInteraction.deferReply({ ephemeral: true });
 
 								// Delete the Counting Game from the database upon confirmation
-								const oldGame = await prisma.countingGame.delete({
-									where: {
-										id: selectedChannel.id,
-									},
+								await client.games.delete(channel?.id);
+								channel = undefined;
+
+								embed.data.description = client.getLocalization(userLocale, "gameDoesntExists");
+								embed.data.fields = [];
+
+								interaction.editReply({
+									embeds: [embed],
+									components: rows.map((item, index) => {
+										if (index === rows.length - 1) {
+											item.components[1].setDisabled(true);
+											item.components[0].setDisabled(false);
+										}
+
+										return item;
+									}),
 								});
 
-								// Update embed and components after successful removal
-								if (oldGame) {
-									embed.data.description = client.getLocalization(userLocale, "gameDoesntExists");
-									embed.data.fields = [];
+								buttonInteraction.editReply({
+									content: client.getLocalization(userLocale, "gameRemoveSuccess"),
+								});
 
-									interaction.editReply({
-										embeds: [embed],
-										components: rows.map((item, index) => {
-											if (index === rows.length - 1) {
-												item.components[1].setDisabled(true);
-												item.components[0].setDisabled(false);
-											}
-
-											return item;
-										}),
-									});
-
-									buttonInteraction.editReply({
-										content: client.getLocalization(userLocale, "gameRemoveSuccess"),
-									});
-
-									componentInteraction.editReply({
-										embeds: [confirmEmbed.setDescription(client.getLocalization(userLocale, "confirmUsed"))],
-										components: [],
-									});
-								} else {
-									buttonInteraction.editReply({
-										embeds: [confirmEmbed.setDescription(client.getLocalization(userLocale, "anErrorOccured"))],
-									});
-								}
+								componentInteraction.editReply({
+									embeds: [confirmEmbed.setDescription(client.getLocalization(userLocale, "confirmUsed"))],
+									components: [],
+								});
 							})
 							.catch(() => {
 								componentInteraction.editReply({
