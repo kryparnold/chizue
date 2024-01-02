@@ -3,12 +3,13 @@ import { CountingGame as CountingGameModel, GameType } from "@prisma/client";
 import { Message } from "discord.js";
 
 export class CountingGame {
-	private id: string;
+	public id: string;
 	private player: string;
-    private multiplier: number;
+    public multiplier: number;
     public readonly type = GameType.CountingGame;
-    private recentNumber: number;
+    public recentNumber: number;
 
+    // Constructor to initialize the CountingGame instance
 	constructor(game: CountingGameModel) {
 		this.id = game.id;
 		this.player = game.player;
@@ -20,6 +21,14 @@ export class CountingGame {
         // TODO - Add number handling
     }
 
+    // Method to set the multiplier
+    async setMultiplier(multiplier: number){
+        this.multiplier = multiplier;
+        await this.save();
+        return this;
+    }
+
+    // Method to save the current game state to the database
     async save(){
         await prisma.countingGame.update({
             where: {
