@@ -31,7 +31,7 @@ class BotClient extends Client {
 	words: Words;
 	games: Games;
     //@ts-ignore
-    stats = stats.default;
+    stats: typeof stats = stats.default;
 	status = BotStatuses.Stable;
 	commands = new Collection<
 		string,
@@ -62,7 +62,7 @@ class BotClient extends Client {
 
 		setInterval(() => {
 			writeFileSync(config.statsPath, JSON.stringify(this.stats), "utf-8");
-		}, 10000);
+		}, 60000);
 	}
 
 	// Initialize various components of the bot
