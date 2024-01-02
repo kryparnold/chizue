@@ -179,7 +179,7 @@ export class WordGame {
 	}
 
 	// Method to change game mode
-	async changeMode(mode: GameMode) {
+	async setMode(mode: GameMode) {
 		this.mode = mode;
 		await prisma.wordGame.update({
 			where: {
@@ -189,10 +189,11 @@ export class WordGame {
 				mode: mode,
 			},
 		});
+        return this;
 	}
 
 	// Method to change locale
-	async changeLocale(locale: Locales) {
+	async setLocale(locale: Locales) {
 		this.locale = locale;
 		this.formattedLocale = Utils.formatLocale(locale);
 
@@ -204,6 +205,7 @@ export class WordGame {
 				locale,
 			},
 		});
+        return this;
 	}
 
 	// Method to save the current game state to the database

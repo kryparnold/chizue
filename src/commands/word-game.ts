@@ -119,21 +119,8 @@ export default {
 			});
 
 			// Set default options for locale and mode select menus
-			selectLocale.options.forEach((item) => {
-				if (item.data.value === channel?.locale) {
-					item.setDefault(true);
-				} else {
-					item.setDefault(false);
-				}
-			});
-
-			selectMode.options.forEach((item) => {
-				if (item.data.value === channel?.mode) {
-					item.setDefault(true);
-				} else {
-					item.setDefault(false);
-				}
-			});
+			selectLocale.options.forEach((item) => item.setDefault(item.data.value === channel?.locale));
+            selectMode.options.forEach((item) => item.setDefault(item.data.value === channel?.mode));
 
 			// Disable and enable buttons based on channel existence
 			setupButton.setDisabled(true);
@@ -171,14 +158,14 @@ export default {
 					if (customId.endsWith("locale")) {
 						// Handle locale change
 						channelPreferences.locale = selectedOption;
-						await channel?.changeLocale(selectedOption);
+						await channel?.setLocale(selectedOption);
 						await componentInteraction.editReply({
 							content: client.getLocalization<true>(userLocale, "gameLangChange")(localizedOption),
 						});
 					} else if (customId.endsWith("mode")) {
 						// Handle game mode change
 						channelPreferences.mode = selectedOption;
-						await channel?.changeMode(selectedOption);
+						await channel?.setMode(selectedOption);
 						await componentInteraction.editReply({
 							content: client.getLocalization<true>(userLocale, "gameModeChange")(localizedOption),
 						});
