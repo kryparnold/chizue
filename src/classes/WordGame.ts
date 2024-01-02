@@ -178,7 +178,7 @@ export class WordGame {
 		return await this.players.add(rawPlayer);
 	}
 
-	// Method to change game mode
+	// Method to set game mode
 	async setMode(mode: GameMode) {
 		this.mode = mode;
 		await prisma.wordGame.update({
@@ -192,7 +192,7 @@ export class WordGame {
         return this;
 	}
 
-	// Method to change locale
+	// Method to set locale
 	async setLocale(locale: Locales) {
 		this.locale = locale;
 		this.formattedLocale = Utils.formatLocale(locale);
