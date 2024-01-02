@@ -34,7 +34,8 @@ model CountingGame {
 }
 
 model Player {
-    id         String    @id
+    key        String    @id @default(uuid())
+    id         String
     score      Int       @default(0)
     WordGame   WordGame? @relation(fields: [wordGameId], references: [id])
     wordGameId String?
