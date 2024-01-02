@@ -59,16 +59,25 @@ export class WordGame {
 
 		// Checking if the word ends with 'ğ' or is one of the random words
 		if (word.endsWith("ğ") || this.randomWords.includes(word)) {
-			if (this.words.length >= this.limit) {
+			if (this.words.length >= this.limit && this.mode !== GameMode.Endless) {
 				// Reacting to the message with an emoji and restarting the game
 				await message.react(client.emotes.accept).catch(() => {});
 				await this.restartGame(word, player);
 			} else {
 				// Deleting the message and providing feedback to the player
-				await message.delete().catch(() => {});
-				await message.channel
-					.send(client.getLocalization<true>(this.formattedLocale, "wordGameNotYet")(this.words.length.toString()))
-					.then((reply) => setTimeout(() => reply.delete(), 5000));
+				if (this.mode === GameMode.Endless) {
+                    if(this.locale === Locales.Turkish){
+                        const randomLetter = Utils.randomLetter("tr");
+                        this.letter = randomLetter;
+                        await message.channel.send(client.getLocalization<true>(this.formattedLocale, "wordGameNewLetter")(randomLetter));
+                        await this.save();
+                    }
+				} else {
+					await message.delete().catch(() => {});
+					await message.channel
+						.send(client.getLocalization<true>(this.formattedLocale, "wordGameNotYet")(this.words.length.toString()))
+						.then((reply) => setTimeout(() => reply.delete(), 5000));
+				}
 			}
 		} else {
 			// Reacting to the message with an emoji and adding the word to the game
@@ -100,9 +109,10 @@ export class WordGame {
 	// Method to check the validity of a word
 	async checkWord(word: string, playerId: string) {
 		const firstLetter = word[0];
+		const last40Words = this.words.slice(-40);
 
 		if (playerId === this.player) {
-			// Player attempted to submit a word consecutively
+			// Player attempted to play in a row
 			return client.getLocalization(this.formattedLocale, "wordGameSamePlayer");
 		} else if (!Utils.Letters[this.formattedLocale].includes(firstLetter) || firstLetter != this.letter) {
 			// Invalid starting letter
@@ -114,6 +124,10 @@ export class WordGame {
 		} else if (this.words.includes(word)) {
 			// Word already used in the game
 			return client.getLocalization(this.formattedLocale, "wordGameSameWord");
+		} else if (this.mode === GameMode.Endless && last40Words.includes(word)) {
+			// Word can be used after n times word
+			const wordIndex = last40Words.indexOf(word);
+			return client.getLocalization<true>(this.formattedLocale, "wordGameNotYetAgain")((40 - wordIndex).toString());
 		}
 	}
 
