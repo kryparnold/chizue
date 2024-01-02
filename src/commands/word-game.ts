@@ -14,7 +14,7 @@ import {
 	StringSelectMenuBuilder,
 	StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { Utils, prisma, client } from "@/globals";
+import { Utils, prisma, client, WordGame } from "@/globals";
 import { GameMode, GameType, Locales } from "@prisma/client";
 
 // Export a default object with data and execute properties
@@ -49,11 +49,7 @@ export default {
 		const selectedChannel = interaction.options.getChannel("channel", true);
 
 		// Fetch the Word Game data from the database based on the channel ID
-		let channel = await prisma.wordGame.findUnique({
-			where: {
-				id: selectedChannel.id,
-			},
-		});
+		let channel = client.games.get(selectedChannel.id) as WordGame | undefined;
 
 		// Set default channel preferences or use existing values if available
 		const channelPreferences = {
@@ -85,11 +81,11 @@ export default {
 		const selectLocale = new StringSelectMenuBuilder().setCustomId("_locale").addOptions(
 			// Options for different locales
 			new StringSelectMenuOptionBuilder()
-				.setLabel(client.getLocalization(userLocale, "gameLocaleTr"))
+				.setLabel(client.getLocalization(userLocale, "Turkish"))
 				.setDescription(client.getLocalization(userLocale, "gameLocaleTrDesc"))
 				.setValue("Turkish"),
 			new StringSelectMenuOptionBuilder()
-				.setLabel(client.getLocalization(userLocale, "gameLocaleEn"))
+				.setLabel(client.getLocalization(userLocale, "English"))
 				.setDescription(client.getLocalization(userLocale, "gameLocaleEnDesc"))
 				.setValue("English")
 				.setDefault(true)
@@ -109,11 +105,10 @@ export default {
 
 		// Update components based on existing channel data
 		if (channel) {
-
-            if(channel.type !== GameType.WordGame){
-                await interaction.editReply(client.getLocalization<true>(userLocale,"gameAnother")(client.getLocalization(userLocale,channel.type)));
-                return;
-            }
+			if (channel.type !== GameType.WordGame) {
+				await interaction.editReply(client.getLocalization<true>(userLocale, "gameAnother")(client.getLocalization(userLocale, channel.type)));
+				return;
+			}
 
 			// Update embed description and fields
 			embed.data.description = client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type));
@@ -176,12 +171,14 @@ export default {
 					if (customId.endsWith("locale")) {
 						// Handle locale change
 						channelPreferences.locale = selectedOption;
+						await channel?.changeLocale(selectedOption);
 						await componentInteraction.editReply({
 							content: client.getLocalization<true>(userLocale, "gameLangChange")(localizedOption),
 						});
 					} else if (customId.endsWith("mode")) {
 						// Handle game mode change
 						channelPreferences.mode = selectedOption;
+						await channel?.changeMode(selectedOption);
 						await componentInteraction.editReply({
 							content: client.getLocalization<true>(userLocale, "gameModeChange")(localizedOption),
 						});
@@ -189,49 +186,34 @@ export default {
 
 					// Update channel data in the database if it exists
 					if (channel) {
-						const newChannel = await prisma.wordGame.update({
-							where: {
-								id: channel.id,
-							},
-							data: {
-								mode: channelPreferences.mode,
-								locale: channelPreferences.locale,
-							},
+						selectLocale.options.forEach((item) => {
+							if (item.data.value === channel?.locale) {
+								item.setDefault(true);
+							} else {
+								item.setDefault(false);
+							}
 						});
 
-						// Update channel and components if the database update is successful
-						if (newChannel) {
-							channel = newChannel;
+						selectMode.options.forEach((item) => {
+							if (item.data.value === channel?.mode) {
+								item.setDefault(true);
+							} else {
+								item.setDefault(false);
+							}
+						});
 
-							selectLocale.options.forEach((item) => {
-								if (item.data.value === channel?.locale) {
-									item.setDefault(true);
-								} else {
-									item.setDefault(false);
-								}
-							});
-
-							selectMode.options.forEach((item) => {
-								if (item.data.value === channel?.mode) {
-									item.setDefault(true);
-								} else {
-									item.setDefault(false);
-								}
-							});
-
-							await interaction.editReply({
-								embeds: [
-									embed.setFields(
-										await this.getFields(userLocale, {
-											channelLocale: channel.locale,
-											mode: channel.mode,
-											wordCount: channel.words.length,
-										})
-									),
-								],
-								components: rows,
-							});
-						}
+						await interaction.editReply({
+							embeds: [
+								embed.setFields(
+									await this.getFields(userLocale, {
+										channelLocale: channel.locale,
+										mode: channel.mode,
+										wordCount: channel.words.length,
+									})
+								),
+							],
+							components: rows,
+						});
 					}
 				} else if (componentInteraction.isButton()) {
 					// Handle interactions for buttons
@@ -239,64 +221,56 @@ export default {
 						// Handle setup button click
 						const randomLetter = Utils.random(Array.from(Utils.Letters["en"]));
 
-						const newChannel = await prisma.wordGame.create({
-							data: {
-								id: selectedChannel.id,
-								letter: randomLetter,
-								locale: channelPreferences.locale,
-								mode: channelPreferences.mode,
-							},
+						const randomWords = channelPreferences.locale === Locales.English ? Utils.getRandomWords(3) : [];
+
+						channel = await client.games.createWordGame({
+							id: selectedChannel.id,
+							letter: randomLetter,
+							locale: channelPreferences.locale,
+							mode: channelPreferences.mode,
+							randomWords,
 						});
 
-						// Update channel and components if channel creation is successful
-						if (newChannel) {
-							channel = newChannel;
+						embed
+							.setDescription(client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type)))
+							.addFields(
+								await this.getFields(userLocale, {
+									channelLocale: channel.locale,
+									mode: channel.mode,
+									wordCount: channel.words.length,
+								})
+							);
 
-							embed
-								.setDescription(client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type)))
-								.addFields(
-									await this.getFields(userLocale, {
-										channelLocale: channel.locale,
-										mode: channel.mode,
-										wordCount: channel.words.length,
-									})
-								);
+						selectLocale.options.forEach((item) => {
+							if (item.data.value === channel?.locale) {
+								item.setDefault(true);
+							} else {
+								item.setDefault(false);
+							}
+						});
 
-							selectLocale.options.forEach((item) => {
-								if (item.data.value === channel?.locale) {
-									item.setDefault(true);
-								} else {
-									item.setDefault(false);
+						selectMode.options.forEach((item) => {
+							if (item.data.value === channel?.mode) {
+								item.setDefault(true);
+							} else {
+								item.setDefault(false);
+							}
+						});
+
+						await interaction.editReply({
+							embeds: [embed],
+							components: rows.map((item, index) => {
+								if (index === rows.length - 1) {
+									item.components[0].setDisabled(true);
+									item.components[1].setDisabled(false);
 								}
-							});
 
-							selectMode.options.forEach((item) => {
-								if (item.data.value === channel?.mode) {
-									item.setDefault(true);
-								} else {
-									item.setDefault(false);
-								}
-							});
-
-							await interaction.editReply({
-								embeds: [embed],
-								components: rows.map((item, index) => {
-									if (index === rows.length - 1) {
-										item.components[0].setDisabled(true);
-										item.components[1].setDisabled(false);
-									}
-
-									return item;
-								}),
-							});
-							await componentInteraction.editReply({
-								content: client.getLocalization(userLocale, "gameSetupSuccess"),
-							});
-						} else {
-							await componentInteraction.editReply({
-								content: client.getLocalization(userLocale, "anErrorOccured"),
-							});
-						}
+								return item;
+							}),
+						});
+						await componentInteraction.editReply({
+							content: client.getLocalization(userLocale, "gameSetupSuccess"),
+						});
 					} else if (customId.endsWith("remove")) {
 						// Handle remove button click
 						const confirmEmbed = new EmbedBuilder()
