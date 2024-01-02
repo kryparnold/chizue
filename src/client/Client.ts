@@ -5,7 +5,6 @@ import {
 	Client,
 	Collection,
 	GatewayIntentBits,
-	Locale,
 	Message,
 	SlashCommandBuilder,
 } from "discord.js";
@@ -16,7 +15,7 @@ import * as config from "./config.json";
 import * as stats from "./stats.json";
 import { readdirSync, writeFileSync } from "fs";
 import path from "node:path";
-import { GameType, Locales } from "@prisma/client";
+import { GameType } from "@prisma/client";
 
 // Enum representing different states of the bot
 export enum BotStatuses {

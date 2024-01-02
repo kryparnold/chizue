@@ -1,4 +1,4 @@
-import { Player, prisma } from "@/globals";
+import { Player } from "@/globals";
 import { Player as RawPlayer } from "@prisma/client";
 import { Collection } from "discord.js";
 

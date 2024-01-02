@@ -9,14 +9,13 @@ import {
 	ComponentType,
 	EmbedBuilder,
 	EmbedFooterOptions,
-	Locale,
 	PermissionFlagsBits,
 	SlashCommandBuilder,
 	StringSelectMenuBuilder,
 } from "discord.js";
 
 // Import global variables and classes from project files
-import { Utils, prisma, client, CountingGame } from "@/globals";
+import { Utils, client, CountingGame } from "@/globals";
 import { GameType } from "@prisma/client";
 import { NumberSelectMenuBuilder } from "@/classes/NumberSelectMenuBuilder";
 

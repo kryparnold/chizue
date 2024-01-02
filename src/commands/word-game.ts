@@ -9,7 +9,6 @@ import {
     ComponentType,
     EmbedBuilder,
     EmbedFooterOptions,
-    Locale,
     PermissionFlagsBits,
     SlashCommandBuilder,
     StringSelectMenuBuilder,
@@ -17,7 +16,7 @@ import {
   } from "discord.js";
   
   // Import global variables and classes from project files
-  import { Utils, prisma, client, WordGame } from "@/globals";
+  import { Utils, client, WordGame } from "@/globals";
   import { GameMode, GameType, Locales } from "@prisma/client";
   
   // Export a default object with data and execute properties
