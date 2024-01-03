@@ -6,25 +6,34 @@ import { Locale, Message } from "discord.js";
 // Define the CountingGame class
 export class CountingGame {
 	// Properties of the CountingGame class
-	public id: string;
-	private playerId: string;
-    public guildId: string;
-	public multiplier: number;
-	public readonly type = GameType.CountingGame;
-	public recentNumber: number;
+	public id: string; // Unique identifier for the CountingGame instance
+	private playerId: string; // Current player's ID
+	public guildId: string; // Guild ID where the game is being played
+	public multiplier: number; // Multiplier for the counting game
+	public readonly type = GameType.CountingGame; // Type of the game
+	public recentNumber: number; // Most recent number in the game
+	private isProcessing = false; // Flag to check if a processing is in progress
 
 	// Constructor to initialize the CountingGame instance
 	constructor(game: CountingGameModel) {
 		this.id = game.id;
 		this.playerId = game.playerId;
-        this.guildId = game.guildId;
+		this.guildId = game.guildId;
 		this.multiplier = game.multiplier;
 		this.recentNumber = game.recentNumber;
 	}
 
-    // TODO - Implement thread safety
 	// Method to handle a number input in the counting game
 	async handleNumber(message: Message) {
+		// Check if a process is already in progress
+		if (this.isProcessing) {
+			// If so, wait for the process to complete
+			await this.waitForProcessing();
+		}
+
+		// Mark the start of the processing
+		this.isProcessing = true;
+
 		// Extract the integer from the message content
 		const integer = +message.content;
 
@@ -33,6 +42,7 @@ export class CountingGame {
 
 		// Check if the message author is the same as the player of the current game
 		if (message.author.id === this.playerId) {
+            this.isProcessing = false;
 			// Delete the current message and send a reply indicating the same player error
 			await message.delete().catch(() => {});
 			await message.channel.send(client.getLocalization(locale, "gameSamePlayer")).then((reply) => setTimeout(() => reply.delete(), 5000));
@@ -43,6 +53,8 @@ export class CountingGame {
 			await message.channel.send(this.multiplier.toString()).then(async (message) => await message.react(client.emotes.accept));
 			this.recentNumber = this.multiplier;
 			this.playerId = "";
+            await this.save();
+            this.isProcessing = false;
 			return;
 		}
 
@@ -51,6 +63,15 @@ export class CountingGame {
 		this.recentNumber = integer;
 		this.playerId = message.author.id;
 		await this.save();
+        this.isProcessing = false;
+	}
+
+	// Method to wait for the processing to complete
+	private async waitForProcessing() {
+		// Wait for isProcessing to become false
+		while (this.isProcessing) {
+			await new Promise((resolve) => setTimeout(resolve, 15)); // Adjust the delay if needed
+		}
 	}
 
 	// Method to set the multiplier of the counting game

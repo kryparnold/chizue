@@ -4,37 +4,46 @@ import { Message } from "discord.js";
 
 export class WordGame {
 	// Class properties
-	public id: string;
-	private playerId: string;
-    public guildId: string;
-	private players: Players;
-	public letter: string;
-	private limit: number;
-	private randomWords: string[];
-	public mode: GameMode;
-	public locale: Locales;
-	private formattedLocale: "tr" | "en";
-	readonly type = GameType.WordGame;
-	public words: string[];
+	public id: string; // Unique identifier for the WordGame instance
+	private playerId: string; // Current player's ID
+	public guildId: string; // Guild ID where the game is being played
+	private players: Players; // Collection of players in the game
+	public letter: string; // Current letter for the game
+	private limit: number; // Word limit for the game
+	private randomWords: string[]; // Array of random words
+	public mode: GameMode; // Game mode (Endless or Normal)
+	public locale: Locales; // Locale of the game
+	private formattedLocale: "tr" | "en"; // Formatted locale for better handling
+	readonly type = GameType.WordGame; // Type of the game
+	public words: string[]; // Array to store the entered words during the game
+	private isProcessing = false; // Flag to check if a processing is in progress
 
 	// Constructor to initialize the WordGame instance
 	constructor(game: RawWordGameWithPlayers) {
 		this.id = game.id;
 		this.playerId = game.playerId;
-        this.guildId = game.guildId;
+		this.guildId = game.guildId;
 		this.letter = game.letter;
 		this.limit = game.limit;
 		this.randomWords = game.randomWords;
 		this.mode = game.mode;
 		this.locale = game.locale;
-		this.formattedLocale = Utils.formatLocale("English");
+		this.formattedLocale = Utils.formatLocale(game.locale);
 		this.words = game.words;
 		this.players = game.players;
 	}
 
-    // TODO - Implement thread safety
 	// Method to handle a player's word input
 	async handleWord(message: Message) {
+		// Check if a process is already in progress
+		if (this.isProcessing) {
+			// If so, wait for the process to complete
+			await this.waitForProcessing();
+		}
+
+		// Mark the start of the processing
+		this.isProcessing = true;
+
 		// Processing the word from the message
 		const word = message.content.replace("I", "ı").toLowerCase().replace("i̇", "i");
 		// Getting the player or adding a new player
@@ -49,6 +58,9 @@ export class WordGame {
 		const reason = await this.checkWord(word, player.id);
 
 		if (reason) {
+			// Release the processing flag
+			this.isProcessing = false;
+
 			// Deleting the message and providing feedback to the player
 			await message.delete().catch(() => {});
 			await message.channel.send(`<@${player.id}>, ${reason}`).then(async (reply) =>
@@ -66,16 +78,22 @@ export class WordGame {
 				// Reacting to the message with an emoji and restarting the game
 				await message.react(client.emotes.accept).catch(() => {});
 				await this.restartGame(word, player);
+				// Release the processing flag
+				this.isProcessing = false;
 			} else {
 				// Deleting the message and providing feedback to the player
 				if (this.mode === GameMode.Endless) {
-                    if(this.locale === Locales.Turkish){
-                        const randomLetter = Utils.randomLetter("tr");
-                        this.letter = randomLetter;
-                        await message.channel.send(client.getLocalization<true>(this.formattedLocale, "wordGameNewLetter")(randomLetter));
-                        await this.save();
-                    }
+					if (this.locale === Locales.Turkish) {
+						const randomLetter = Utils.randomLetter("tr");
+						this.letter = randomLetter;
+						await message.channel.send(client.getLocalization<true>(this.formattedLocale, "wordGameNewLetter")(randomLetter));
+						await this.save();
+						// Release the processing flag
+						this.isProcessing = false;
+					}
 				} else {
+					// Release the processing flag
+					this.isProcessing = false;
 					await message.delete().catch(() => {});
 					await message.channel
 						.send(client.getLocalization<true>(this.formattedLocale, "wordGameNotYet")(this.words.length.toString()))
@@ -86,11 +104,21 @@ export class WordGame {
 			// Reacting to the message with an emoji and adding the word to the game
 			await message.react(client.emotes.accept).catch(() => {});
 			await this.addWord(word, player);
+			// Release the processing flag
+			this.isProcessing = false;
+		}
+	}
+
+	// Method to wait for the processing to complete
+	private async waitForProcessing() {
+		// Wait for isProcessing to become false
+		while (this.isProcessing) {
+			await new Promise(resolve => setTimeout(resolve, 15)); // Adjust the delay if needed
 		}
 	}
 
 	// Method to add a word to the game
-	async addWord(word: string, player: Player) {
+	private async addWord(word: string, player: Player) {
 		// Calculating word reward based on length
 		const wordReward = word.length > 6 ? 1 : word.length / 10;
 		// Incrementing word count in statistics
@@ -99,7 +127,7 @@ export class WordGame {
 		await player.addScore(wordReward);
 		// Updating game state
 		this.words.push(word);
-		this.letter = word.at(-1) as string;
+		this.letter = word.charAt(word.length - 1);
 		this.playerId = player.id;
 
 		await this.save();
@@ -110,14 +138,14 @@ export class WordGame {
 	}
 
 	// Method to check the validity of a word
-	async checkWord(word: string, playerId: string) {
+	private async checkWord(word: string, playerId: string) {
 		const firstLetter = word[0];
 		const last40Words = this.words.slice(-40);
 
 		if (playerId === this.playerId) {
 			// Player attempted to play in a row
 			return client.getLocalization(this.formattedLocale, "gameSamePlayer");
-		} else if (!Utils.Letters[this.formattedLocale].includes(firstLetter) || firstLetter != this.letter) {
+		} else if (!Utils.Letters[this.formattedLocale].includes(firstLetter) || firstLetter !== this.letter) {
 			// Invalid starting letter
 			return client.getLocalization<true>(this.formattedLocale, "wordGameInvalidLetter")(this.letter);
 			//@ts-ignore
@@ -135,7 +163,7 @@ export class WordGame {
 	}
 
 	// Method to restart the game
-	async restartGame(word: string, player: Player) {
+	private async restartGame(word: string, player: Player) {
 		// Storing the current word count
 		const wordCount = this.words.length;
 		// Calculating game and word rewards
@@ -170,7 +198,7 @@ export class WordGame {
 	}
 
 	// Method to add a new player to the game
-	async addPlayer(id: string) {
+	private async addPlayer(id: string) {
 		const rawPlayer = await prisma.player.create({
 			data: {
 				id,
@@ -192,7 +220,7 @@ export class WordGame {
 				mode: mode,
 			},
 		});
-        return this;
+		return this;
 	}
 
 	// Method to set locale
@@ -208,11 +236,11 @@ export class WordGame {
 				locale,
 			},
 		});
-        return this;
+		return this;
 	}
 
 	// Method to save the current game state to the database
-	async save() {
+	private async save() {
 		await prisma.wordGame.update({
 			where: {
 				id: this.id,
