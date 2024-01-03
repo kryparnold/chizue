@@ -7,7 +7,7 @@ export class WordGame {
 	public id: string;
 	private player: string;
 	private players: Players;
-	private letter: string;
+	public letter: string;
 	private limit: number;
 	private randomWords: string[];
 	public mode: GameMode;
