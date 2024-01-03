@@ -20,3 +20,4 @@ prisma/migrations/*
 
 src/commands/test.ts
 elebele.ts
+src/client/stats.json
