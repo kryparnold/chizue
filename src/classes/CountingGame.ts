@@ -7,7 +7,8 @@ import { Locale, Message } from "discord.js";
 export class CountingGame {
 	// Properties of the CountingGame class
 	public id: string;
-	private player: string;
+	private playerId: string;
+    public guildId: string;
 	public multiplier: number;
 	public readonly type = GameType.CountingGame;
 	public recentNumber: number;
@@ -15,11 +16,13 @@ export class CountingGame {
 	// Constructor to initialize the CountingGame instance
 	constructor(game: CountingGameModel) {
 		this.id = game.id;
-		this.player = game.player;
+		this.playerId = game.playerId;
+        this.guildId = game.guildId;
 		this.multiplier = game.multiplier;
 		this.recentNumber = game.recentNumber;
 	}
 
+    // TODO - Implement thread safety
 	// Method to handle a number input in the counting game
 	async handleNumber(message: Message) {
 		// Extract the integer from the message content
@@ -29,7 +32,7 @@ export class CountingGame {
 		const locale = Utils.formatLocale(message.guild?.preferredLocale ?? Locale.EnglishUS);
 
 		// Check if the message author is the same as the player of the current game
-		if (message.author.id === this.player) {
+		if (message.author.id === this.playerId) {
 			// Delete the current message and send a reply indicating the same player error
 			await message.delete().catch(() => {});
 			await message.channel.send(client.getLocalization(locale, "gameSamePlayer")).then((reply) => setTimeout(() => reply.delete(), 5000));
@@ -39,14 +42,14 @@ export class CountingGame {
 			await message.react(client.emotes.deny);
 			await message.channel.send(this.multiplier.toString()).then(async (message) => await message.react(client.emotes.accept));
 			this.recentNumber = this.multiplier;
-			this.player = "";
+			this.playerId = "";
 			return;
 		}
 
 		// If the input number is correct, react with an accept emoji and update the game state
 		await message.react(client.emotes.accept);
 		this.recentNumber = integer;
-		this.player = message.author.id;
+		this.playerId = message.author.id;
 		await this.save();
 	}
 
@@ -65,7 +68,7 @@ export class CountingGame {
 				id: this.id,
 			},
 			data: {
-				player: this.player,
+				playerId: this.playerId,
 				multiplier: this.multiplier,
 				recentNumber: this.recentNumber,
 			},

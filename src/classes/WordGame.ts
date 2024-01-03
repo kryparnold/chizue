@@ -5,7 +5,8 @@ import { Message } from "discord.js";
 export class WordGame {
 	// Class properties
 	public id: string;
-	private player: string;
+	private playerId: string;
+    public guildId: string;
 	private players: Players;
 	public letter: string;
 	private limit: number;
@@ -19,7 +20,8 @@ export class WordGame {
 	// Constructor to initialize the WordGame instance
 	constructor(game: RawWordGameWithPlayers) {
 		this.id = game.id;
-		this.player = game.player;
+		this.playerId = game.playerId;
+        this.guildId = game.guildId;
 		this.letter = game.letter;
 		this.limit = game.limit;
 		this.randomWords = game.randomWords;
@@ -30,6 +32,7 @@ export class WordGame {
 		this.players = game.players;
 	}
 
+    // TODO - Implement thread safety
 	// Method to handle a player's word input
 	async handleWord(message: Message) {
 		// Processing the word from the message
@@ -97,7 +100,7 @@ export class WordGame {
 		// Updating game state
 		this.words.push(word);
 		this.letter = word.at(-1) as string;
-		this.player = player.id;
+		this.playerId = player.id;
 
 		await this.save();
 
@@ -111,7 +114,7 @@ export class WordGame {
 		const firstLetter = word[0];
 		const last40Words = this.words.slice(-40);
 
-		if (playerId === this.player) {
+		if (playerId === this.playerId) {
 			// Player attempted to play in a row
 			return client.getLocalization(this.formattedLocale, "gameSamePlayer");
 		} else if (!Utils.Letters[this.formattedLocale].includes(firstLetter) || firstLetter != this.letter) {
@@ -150,7 +153,7 @@ export class WordGame {
 		// Resetting game state
 		this.words = [];
 		this.letter = randomLetter;
-		this.player = player.id;
+		this.playerId = player.id;
 
 		// Generating new random words for the next round (if English locale)
 		if (this.locale === Locales.English) {
@@ -219,7 +222,7 @@ export class WordGame {
 				limit: this.limit,
 				locale: this.locale,
 				mode: this.mode,
-				player: this.player,
+				playerId: this.playerId,
 				randomWords: this.randomWords,
 				words: this.words,
 			},
