@@ -62,7 +62,7 @@ class BotClient extends Client {
 
 		setInterval(() => {
 			writeFileSync(config.statsPath, JSON.stringify(this.stats), "utf-8");
-		}, 60000);
+		}, 120000);
 	}
 
 	// Initialize various components of the bot
