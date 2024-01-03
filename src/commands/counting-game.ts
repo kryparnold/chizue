@@ -159,6 +159,7 @@ export default {
 						channel = await client.games.createCountingGame({
 							id: selectedChannel.id,
 							multiplier: selectedMultiplier,
+                            guildId: interaction.guildId as string,
 							recentNumber: selectedMultiplier,
 						});
 

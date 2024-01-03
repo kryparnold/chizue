@@ -207,6 +207,7 @@ export default {
 							id: selectedChannel.id,
 							letter: randomLetter,
 							locale: channelPreferences.locale,
+                            guildId: interaction.guildId as string,
 							mode: channelPreferences.mode,
 							randomWords,
 						});
