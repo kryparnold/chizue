@@ -4,5 +4,6 @@
     "commandsPath": "../commands",
     "buttonsPath": "../buttons",
     "statsPath": "./src/client/stats.json",
-    "acceptEmote": "<:accept:1191578864057598014>"
+    "acceptEmote": "<:accept:1191578864057598014>",
+    "denyEmote": "<:deny:1192016663810428928>"
 }

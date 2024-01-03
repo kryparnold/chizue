@@ -48,6 +48,7 @@ class BotClient extends Client {
 	>();
 	emotes = {
 		accept: config.acceptEmote,
+        deny: config.denyEmote
 	};
 
 	constructor() {
@@ -144,10 +145,10 @@ class BotClient extends Client {
 			return;
 
 		if (game.type === GameType.WordGame && !Utils.invalidCharacters.test(message.content)) {
-			// Check if game type is WordGame(prisma) and the message content is a valid word.
+			// Check if game type is WordGame and the message content is a valid word.
 			game.handleWord(message);
 		} else if (game.type === GameType.CountingGame && !isNaN(+message.content)) {
-			// Check if game type is CountingGame(prisma) and the message content is a valid number.
+			// Check if game type is CountingGame and the message content is a valid number.
 			game.handleNumber(message);
 		}
 	}
