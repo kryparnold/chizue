@@ -113,7 +113,7 @@ export class WordGame {
 
 		if (playerId === this.player) {
 			// Player attempted to play in a row
-			return client.getLocalization(this.formattedLocale, "wordGameSamePlayer");
+			return client.getLocalization(this.formattedLocale, "gameSamePlayer");
 		} else if (!Utils.Letters[this.formattedLocale].includes(firstLetter) || firstLetter != this.letter) {
 			// Invalid starting letter
 			return client.getLocalization<true>(this.formattedLocale, "wordGameInvalidLetter")(this.letter);
