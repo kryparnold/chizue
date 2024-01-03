@@ -6,7 +6,21 @@ import { readdirSync } from "fs";
 import path from "node:path";
 
 const commands = [];
-
+/* 
+// TODO - /score {member?} - shows the member's score if specified, if not shows the score of the interaction author
+// TODO - /scores - gets the total scores in used guild
+// TODO - /wordle {language} {length} - starts a new wordle game with specified preferences
+// TODO - /word {word} {language} - reports a word to moderation team
+// TODO - /word-game(Quick Access Commands)
+// TODO - /counting-game(Quick Access Commands) 
+// TODO - /kryp - admin commands
+// Kryp Commands
+    // TODO - /kryp quit - to quit the bot safely
+    // TODO - /kryp add-word {word} {language} - to add words
+    // TODO - /kryp announce {announcement message} - to announce something on all game channels
+    // TODO - /kryp status {status} - to change the bot's custom status
+    // TODO - /kryp emote {emote} - to change bot's current accept emote
+*/
 const commandsPath = path.join(import.meta.dir, "../commands");
 
 const commandFiles = readdirSync(commandsPath);
