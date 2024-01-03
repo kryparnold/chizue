@@ -31,7 +31,7 @@ class BotClient extends Client {
 	games: Games;
     //@ts-ignore
     stats: typeof stats = stats.default;
-	status = BotStatuses.Stable;
+	status = BotStatuses.Initializing;
 	commands = new Collection<
 		string,
 		{
@@ -143,7 +143,7 @@ class BotClient extends Client {
 			message.author.system // Check if the message author is a system
 		)
 			return;
-
+            
 		if (game.type === GameType.WordGame && !Utils.invalidCharacters.test(message.content)) {
 			// Check if game type is WordGame and the message content is a valid word.
 			game.handleWord(message);

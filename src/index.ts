@@ -13,6 +13,8 @@ client.once(Events.ClientReady, async (readyClient) => {
 
 	// Initializing the client and waiting for completion
 	await client.init();
+    // Making the bot status Stable after initializing completion
+    client.status = BotStatuses.Stable;
 
 	// Logging the completion of client initialization with the duration
 	client.logger.log(`Client initialization completed in **${new Date().getTime() - startTime}ms**.`);
