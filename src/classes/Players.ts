@@ -21,4 +21,8 @@ export class Players {
         this.cache.set(player.id,newPlayer);
         return newPlayer;
     }
+
+    async count() {
+        return this.cache.size;
+    }
 }
