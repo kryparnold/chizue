@@ -1,7 +1,7 @@
 import { TextChannel } from "discord.js";
 
 class Logger{
-    public logChannel: TextChannel | undefined;
+    public logChannel!: TextChannel;
     private defaultPrefix = "[Chizue]";
     private logPool: string[] = [];
 
@@ -11,7 +11,7 @@ class Logger{
             if(this.logPool.length === 0) return;
             const logMessage = this.logPool.join("\n");
             this.logPool.length = 0;
-            this.logChannel?.send(logMessage);
+            this.logChannel.send(logMessage);
         },1500)
     }
 
