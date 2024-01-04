@@ -1,6 +1,6 @@
 import { Locales } from "@prisma/client";
 import { Locale } from "discord.js";
-import { client } from "..";
+import { client } from "@/globals";
 
 export class Utils {
 	static Letters = {

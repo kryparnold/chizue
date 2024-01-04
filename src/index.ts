@@ -1,6 +1,6 @@
 // Importing necessary modules and components from external files
 import { Events } from "discord.js";
-import { BotStatuses, client } from "./globals";
+import { BotStatuses, client } from "@/globals";
 
 // Importing and configuring environment variables using dotenv
 import { config as envConfig } from "dotenv";
@@ -45,6 +45,3 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 // Log in to Discord using the provided bot token
 client.login(process.env.TOKEN);
-
-// Export the client for external use if needed
-export { client };
