@@ -199,8 +199,7 @@ export default {
 					// Handle interactions for buttons
 					if (customId.endsWith("setup")) {
 						// Handle setup button click
-						const randomLetter = Utils.random(Array.from(Utils.Letters["en"]));
-
+						const randomLetter = Utils.randomLetter(Utils.formatLocale(channelPreferences.locale));
 						const randomWords = channelPreferences.locale === Locales.English ? Utils.getRandomWords(3) : [];
 
 						channel = await client.games.createWordGame({
