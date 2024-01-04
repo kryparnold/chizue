@@ -1,6 +1,6 @@
 import { WordGame as RawWordGame, CountingGame as RawCountingGame, Player as RawPlayer, GameType, Prisma } from "@prisma/client";
-import { Collection } from "discord.js";
-import { CountingGame, Players, WordGame, prisma } from "@/globals";
+import { Collection, TextChannel } from "discord.js";
+import { CountingGame, Players, Utils, WordGame, client, prisma } from "@/globals";
 
 export class Games {
 	private cache = new Collection<string, WordGame | CountingGame>();
@@ -30,6 +30,9 @@ export class Games {
 
 		this.cache.set(newGame.id, newGame);
 
+        const gameChannel = client.channels.cache.get(newGame.id) as TextChannel;
+        await gameChannel.send(client.getLocalization<true>(Utils.formatLocale(newGame.locale),"wordGameStarted")(newGame.letter));
+
 		return newGame;
 	}
 
@@ -42,8 +45,15 @@ export class Games {
 
 		this.cache.set(newGame.id, newGame);
 
+        const gameChannel = client.channels.cache.get(newGame.id) as TextChannel;
+        await gameChannel.send(client.getLocalization<true>(Utils.formatLocale(gameChannel.guild.preferredLocale),"countingGameStarted")(newGame.multiplier.toString()));
+
 		return newGame;
 	}
+
+    count() {
+        return this.cache.size;
+    }
 
 	async delete(gameId = "") {
 		const game = this.cache.get(gameId);
