@@ -27,10 +27,6 @@ export class Utils {
 
 		return randomWords;
 	}
-	static avatarBaseURL = "https://cdn.discordapp.com/";
-	static getAvatarURL(userId: string, avatarHash: string | null) {
-		return `${this.avatarBaseURL}avatars/${userId}/${avatarHash}.png?size=64`;
-	}
 	static invalidCharacters = /[^a-zA-ZğüşıöçĞÜŞİÖÇ]/;
 	static formatLocale(locale: Locales | Locale) {
 		if (["Turkish", Locale.Turkish].includes(locale)) {
@@ -39,4 +35,7 @@ export class Utils {
 			return "en";
 		}
 	}
+    static hourToMs(hour: number) {
+        return hour * 3600000;
+    }
 }
