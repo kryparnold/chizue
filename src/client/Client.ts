@@ -7,13 +7,13 @@ import {
 	GatewayIntentBits,
 	Message,
 	SlashCommandBuilder,
+    TextChannel,
 } from "discord.js";
-import { Logger, Words, localizations, prisma, Games, Utils } from "@/globals";
+import { Logger, Words, localizations, prisma, Games, Utils, Stats } from "@/globals";
 
 // Importing configuration and file system modules
 import * as config from "./config.json";
-import * as stats from "./stats.json";
-import { readdirSync, writeFileSync } from "fs";
+import { readdirSync } from "fs";
 import path from "node:path";
 import { GameType } from "@prisma/client";
 
@@ -29,8 +29,7 @@ class BotClient extends Client {
 	logger: Logger;
 	words: Words;
 	games: Games;
-    //@ts-ignore
-    stats: typeof stats = stats.default;
+    stats: Stats;
 	status = BotStatuses.Initializing;
 	commands = new Collection<
 		string,
@@ -59,15 +58,13 @@ class BotClient extends Client {
 		this.logger = new Logger();
 		this.words = new Words();
 		this.games = new Games();
-
-		setInterval(() => {
-			writeFileSync(config.statsPath, JSON.stringify(this.stats), "utf-8");
-		}, 120000);
+        this.stats = new Stats();
 	}
 
 	// Initialize various components of the bot
 	async init() {
 		await this.initLogger();
+        await this.initStats();
 		await this.initCommands();
 		await this.initButtons();
 		await this.initGames();
@@ -166,6 +163,20 @@ class BotClient extends Client {
 		this.logger.log(`${this.user?.username} is initializing...`);
 	}
 
+    // Initialize the Stats with the specified channel
+    async initStats() {
+        const statsChannel = await this.channels.fetch(config.statsChannelId);
+        const statsMessage = await (await this.channels.fetch(config.statsMessageChannelId) as TextChannel).messages.fetch(config.statsMessageId);
+
+        if(statsChannel?.type !== ChannelType.GuildText) {
+            throw "Stats Channel must be a Text Channel.";
+        }
+
+        await this.stats.init(statsChannel,statsMessage);
+
+        this.logger.log("Stats initialized.")
+    }
+
 	// Initialize slash commands
 	async initCommands() {
 		const commandsPath = path.join(import.meta.dir, config.commandsPath);
@@ -194,7 +205,7 @@ class BotClient extends Client {
 		this.logger.log(`Loaded ${buttonFiles.length} Buttons.`);
 	}
 
-	//Initialize games
+	// Initialize games
 	async initGames() {
 		const wordGames = (await prisma.wordGame.findMany()) ?? [];
 		const countingGames = (await prisma.countingGame.findMany()) ?? [];
@@ -225,6 +236,11 @@ class BotClient extends Client {
 			throw new Error(`Localization not found for ${key} in ${locale}`);
 		}
 	}
+
+    // Method to get player count from database
+    async playerCount() {
+        return await prisma.player.count();
+    }
 }
 
 // Create an instance of the bot client

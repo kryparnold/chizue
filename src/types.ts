@@ -75,4 +75,10 @@ export interface IWordleWords {
     };
 }
 
+export interface IStats {
+    startTime: number,
+    wordCount: number,
+    playerCount: number
+}
+
 export type RawWordGameWithPlayers = RawWordGame & {players: Players};

@@ -51,7 +51,6 @@ export class WordGame {
 
 		if (!player) {
 			player = await this.addPlayer(message.author.id);
-			client.stats.playerCount++;
 		}
 
 		// Checking if the word is valid
@@ -122,7 +121,7 @@ export class WordGame {
 		// Calculating word reward based on length
 		const wordReward = word.length > 6 ? 1 : word.length / 10;
 		// Incrementing word count in statistics
-		client.stats.wordCount++;
+		client.stats.increaseWordCount();
 		// Adding score to the player
 		await player.addScore(wordReward);
 		// Updating game state
@@ -173,7 +172,7 @@ export class WordGame {
 		const randomLetter = Utils.randomLetter(this.formattedLocale);
 
 		// Incrementing word count in statistics
-		client.stats.wordCount++;
+		client.stats.increaseWordCount();
 
 		// Adding total score to the player
 		await player.addScore(wordReward + gameReward);
