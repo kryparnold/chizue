@@ -60,7 +60,7 @@ export default {
 		const userLocale = Utils.formatLocale(interaction.locale);
 		const userFooter: EmbedFooterOptions = {
 			text: interaction.user.username,
-			iconURL: Utils.getAvatarURL(interaction.user.id, interaction.user.avatar),
+			iconURL: interaction.user.avatarURL() as string,
 		};
 
 		// Check the game type and reply if not Counting Game
