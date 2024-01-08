@@ -5,6 +5,7 @@ export default {
     data: new SlashCommandBuilder()
         .setName("ping")
         .setDescription("null")
+        .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction: ChatInputCommandInteraction){
         interaction.deferReply({
