@@ -4,6 +4,7 @@ import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { Utils, client } from "@/globals";
 import { writeFileSync } from "fs";
 import * as config from "@/client/config.json";
+import path from "path";
 
 // Define a class called Stats to encapsulate statistics-related functionality
 export class Stats {
@@ -19,7 +20,8 @@ export class Stats {
 	// Initialization method, takes a TextChannel and Message as parameters
 	async init(statsChannel: TextChannel, statsMessage: Message) {
 		// Dynamically import statistics from a specified path
-		const stats = (await import(config.statsPath)).default;
+		const statsPath = path.join(import.meta.dir, "../../" + config.statsPath);
+		const stats = (await import(statsPath)).default;
 		// Get current time, player count, and wiped data for initialization
 		const startTime = new Date().getTime();
 		const playerCount = await client.playerCount();
@@ -46,12 +48,13 @@ export class Stats {
 		await this.statsMessage.edit({
 			embeds: [await this.getAllStatsEmbed()],
 		});
-        await this.saveStats();
+		await this.saveStats();
 	}
 
 	// Save statistics to a file
 	async saveStats() {
-		writeFileSync(config.statsPath, JSON.stringify({ wordCount: this.all.wordCount }), { encoding: "utf-8" });
+		const statsPath = path.join(import.meta.dir, "../../" + config.statsPath);
+		writeFileSync(statsPath, JSON.stringify({ wordCount: this.all.wordCount }), { encoding: "utf-8" });
 	}
 
 	// Send statistics for a specific period to the Discord channel
@@ -123,6 +126,7 @@ export class Stats {
 					value: (playerCount - stats.playerCount).toString(),
 				}
 			);
+		// TODO - Add games and guilds
 	}
 
 	// Generate wiped data for periodic statistics
