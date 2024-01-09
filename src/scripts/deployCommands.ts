@@ -11,8 +11,6 @@ const commands = [];
 // TODO - /scores - gets the total scores in used guild
 // TODO - /wordle {language} {length} - starts a new wordle game with specified preferences
 // TODO - /word {word} {language} - reports a word to moderation team
-// TODO - /word-game(Quick Access Commands)
-// TODO - /counting-game(Quick Access Commands) 
 // TODO - /kryp - admin commands
 // Kryp Commands
     // TODO - /kryp quit - to quit the bot safely
