@@ -8,6 +8,6 @@
     "commandsPath": "../commands",
     "buttonsPath": "../buttons",
     "statsPath": "./src/database/json/stats.json",
-    "acceptEmote": "<:accept:1191578864057598014>",
-    "denyEmote": "<:deny:1192016663810428928>"
+    "acceptEmote": "<:accept:1194276045231235113>",
+    "denyEmote": "<:deny:1194276047940747274>"
 }
