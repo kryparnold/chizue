@@ -62,23 +62,20 @@ export interface IEnglishWords {
     z: string[];
 }
 
-export interface IWordleWords {
-    tr: {
-        4: string[];
-        5: string[];
-        6: string[];
+export type IWordleWords = {
+    [x in FormattedLocale]: {
+        [x in WordleLengths]: string[]
     };
-    en: {
-        4: string[];
-        5: string[];
-        6: string[];
-    };
-}
+};
+
+export type WordleLengths = 4 | 5 | 6;
 
 export interface IStats {
     startTime: number,
     wordCount: number,
     playerCount: number
 }
+
+export type FormattedLocale = "tr" | "en";
 
 export type RawWordGameWithPlayers = RawWordGame & {players: Players};
