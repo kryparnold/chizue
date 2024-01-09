@@ -121,6 +121,19 @@ export default {
 
 					// Showing the modal to the user
 					componentInteraction.showModal(submitModal);
+				} else if (customId === "_htp") {
+					// Handling the "How to Play" button
+					const howToPlayEmbed = new EmbedBuilder()
+						.setColor(Colors.Yellow)
+						.setTitle(client.getLocalization(userLocale, "wordleHowToPlayTitle"))
+						.setDescription(client.getLocalization(userLocale, "wordleHowToPlayDescription"))
+						.setFooter(userFooter);
+
+					// Sending the "How to Play" information as a reply to the button click
+					await componentInteraction.reply({
+						embeds: [howToPlayEmbed],
+						ephemeral: true,
+					});
 				}
 			}
 		});
