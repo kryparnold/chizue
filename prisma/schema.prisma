@@ -36,10 +36,10 @@ model CountingGame {
 }
 
 model Player {
-    id         String    @id
-    score      Int       @default(0)
-    scores     Json      @default("{}")
-    WordGame   WordGame[]
+    id       String     @id
+    score    Float      @default(0)
+    scores   Json       @default("{}")
+    WordGame WordGame[]
 }
 
 enum GameType {
