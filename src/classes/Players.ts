@@ -1,28 +1,40 @@
-import { Player } from "@/globals";
-import { Player as RawPlayer } from "@prisma/client";
+import { Player, prisma } from "@/globals";
 import { Collection } from "discord.js";
+import { Player as RawPlayer } from "@prisma/client";
 
 export class Players {
-    private cache = new Collection<string,Player>();
+	private cache = new Collection<string, Player>();
 
-    async init(players: RawPlayer[]){
-        players.forEach((player) => {
-            const newPlayer = new Player(player);
-            this.cache.set(player.id, newPlayer);
-        });
-    }
+	async init(players: RawPlayer[]) {
+		players.forEach((player) => this.cache.set(player.id, new Player(player)));
+	}
 
-    getPlayer(id: string){
-        return this.cache.get(id);
-    }
+	getAll() {
+		return this.cache.map((player) => player);
+	}
 
-    async add(player: RawPlayer){
-        const newPlayer = new Player(player);
-        this.cache.set(player.id,newPlayer);
-        return newPlayer;
-    }
+	get(id: string) {
+		return this.cache.get(id);
+	}
 
-    async count() {
-        return this.cache.size;
-    }
+	async create(playerId: string, guildId: string, gameId: string) {
+		const newRawPlayer = await prisma.player.create({
+			data: {
+				id: playerId,
+				scores: {
+					[guildId]: {
+						[gameId]: 0,
+					},
+				},
+			},
+		});
+
+		const player = new Player(newRawPlayer);
+
+		this.cache.set(playerId, player);
+
+		player.addGame(guildId, gameId);
+
+        return player;
+	}
 }

@@ -1,4 +1,4 @@
-import { Player, Players, RawWordGameWithPlayers, Utils, client, prisma } from "@/globals";
+import { GuildPlayers, Player, Players, RawWordGameWithPlayers, Utils, client, prisma } from "@/globals";
 import { GameMode, GameType, Locales } from "@prisma/client";
 import { Message } from "discord.js";
 
@@ -7,7 +7,7 @@ export class WordGame {
 	public id: string; // Unique identifier for the WordGame instance
 	private playerId: string; // Current player's ID
 	public guildId: string; // Guild ID where the game is being played
-	private players: Players; // Collection of players in the game
+	private players: GuildPlayers; // Collection of players in the game
 	public letter: string; // Current letter for the game
 	private limit: number; // Word limit for the game
 	private randomWords: string[]; // Array of random words
@@ -47,10 +47,11 @@ export class WordGame {
 		// Processing the word from the message
 		const word = message.content.replace("I", "ı").toLowerCase().replace("i̇", "i");
 		// Getting the player or adding a new player
-		let player = this.players.getPlayer(message.author.id);
+		const playerId = message.author.id;
+		let player = this.players.getPlayer(playerId);
 
 		if (!player) {
-			player = await this.addPlayer(message.author.id);
+			player = await this.addPlayer(playerId);
 		}
 
 		// Checking if the word is valid
@@ -112,7 +113,7 @@ export class WordGame {
 	private async waitForProcessing() {
 		// Wait for isProcessing to become false
 		while (this.isProcessing) {
-			await new Promise(resolve => setTimeout(resolve, 15)); // Adjust the delay if needed
+			await new Promise((resolve) => setTimeout(resolve, 15)); // Adjust the delay if needed
 		}
 	}
 
@@ -123,7 +124,7 @@ export class WordGame {
 		// Incrementing word count in statistics
 		client.stats.increaseWordCount();
 		// Adding score to the player
-		await player.addScore(wordReward);
+		await player.addScore(wordReward, this.guildId, this.id);
 		// Updating game state
 		this.words.push(word);
 		this.letter = word.charAt(word.length - 1);
@@ -175,7 +176,7 @@ export class WordGame {
 		client.stats.increaseWordCount();
 
 		// Adding total score to the player
-		await player.addScore(wordReward + gameReward);
+		await player.addScore(wordReward + gameReward, this.guildId, this.id);
 
 		// Resetting game state
 		this.words = [];
@@ -198,14 +199,13 @@ export class WordGame {
 
 	// Method to add a new player to the game
 	private async addPlayer(id: string) {
-		const rawPlayer = await prisma.player.create({
-			data: {
-				id,
-				wordGameId: this.id,
-			},
-		});
+		let player = client.players.get(id);
 
-		return await this.players.add(rawPlayer);
+        if(!player) {
+            player = await client.players.create(id, this.guildId, this.id);
+        }
+
+        return player;
 	}
 
 	// Method to set game mode

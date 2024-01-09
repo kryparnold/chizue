@@ -1,4 +1,4 @@
-import { Players } from "./globals";
+import { GuildPlayers } from "./globals";
 import { WordGame as RawWordGame } from "@prisma/client";
 
 
@@ -80,4 +80,4 @@ export interface IStats {
 
 export type FormattedLocale = "tr" | "en";
 
-export type RawWordGameWithPlayers = RawWordGame & {players: Players};
+export type RawWordGameWithPlayers = RawWordGame & {players: GuildPlayers};

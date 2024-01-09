@@ -36,11 +36,10 @@ model CountingGame {
 }
 
 model Player {
-    key        String    @id @default(uuid())
-    id         String
+    id         String    @id
     score      Int       @default(0)
-    WordGame   WordGame? @relation(fields: [wordGameId], references: [id])
-    wordGameId String?
+    scores     Json      @default("{}")
+    WordGame   WordGame[]
 }
 
 enum GameType {

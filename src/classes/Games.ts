@@ -1,7 +1,7 @@
 // Import necessary modules and types from Prisma, Discord.js, and local files
 import { WordGame as RawWordGame, CountingGame as RawCountingGame, Player as RawPlayer, GameType, Prisma } from "@prisma/client";
 import { Collection, TextChannel } from "discord.js";
-import { CountingGame, Players, Utils, WordGame, client, prisma } from "@/globals";
+import { CountingGame, GuildPlayers, Player, Utils, WordGame, client, prisma } from "@/globals";
 
 // Define a class called Games to manage and interact with WordGame and CountingGame instances
 export class Games {
@@ -9,14 +9,14 @@ export class Games {
 	private cache = new Collection<string, WordGame | CountingGame>();
 
 	// Initialization method, takes arrays of raw WordGame, Player, and CountingGame data
-	async init(wordGames: RawWordGame[], rawPlayers: RawPlayer[], countingGames: RawCountingGame[]) {
+	async init(wordGames: RawWordGame[], players: Player[], countingGames: RawCountingGame[]) {
 		// Initialize WordGame instances
 		wordGames.forEach(async (game) => {
 			// Create Players instance and initialize it with filtered player data
-			const players = new Players();
-			await players.init(rawPlayers.filter((player) => player.wordGameId === game.id));
+			const guildPlayers = new GuildPlayers();
+			await guildPlayers.init(players.filter((player) => Object.keys(Object.values(player.scores)).includes(game.id)));
 			// Create new WordGame instance and add it to the cache
-			const newGame = new WordGame({ ...game, players });
+			const newGame = new WordGame({ ...game, players: guildPlayers });
 
 			this.cache.set(game.id, newGame);
 		});
@@ -38,7 +38,7 @@ export class Games {
 		});
 
 		// Create a new WordGame instance with an empty Players instance
-		const newGame = new WordGame({ ...newRawGame, players: new Players() });
+		const newGame = new WordGame({ ...newRawGame, players: new GuildPlayers() });
 
 		// Add the new WordGame instance to the cache
 		this.cache.set(newGame.id, newGame);

@@ -9,7 +9,7 @@ import {
 	SlashCommandBuilder,
     TextChannel,
 } from "discord.js";
-import { Logger, Words, localizations, prisma, Games, Utils, Stats } from "@/globals";
+import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players } from "@/globals";
 
 // Importing configuration and file system modules
 import * as config from "./config.json";
@@ -30,6 +30,7 @@ class BotClient extends Client {
 	words: Words;
 	games: Games;
     stats: Stats;
+    players: Players;
 	status = BotStatuses.Initializing;
     activeWordles: string[] = [];
 	private commands = new Collection<
@@ -60,6 +61,7 @@ class BotClient extends Client {
 		this.words = new Words();
 		this.games = new Games();
         this.stats = new Stats();
+        this.players = new Players();
 	}
 
 	// Initialize various components of the bot
@@ -68,6 +70,7 @@ class BotClient extends Client {
         await this.initStats();
 		await this.initCommands();
 		await this.initButtons();
+        await this.initPlayers();
 		await this.initGames();
 		await this.initWords();
 	}
@@ -206,11 +209,20 @@ class BotClient extends Client {
 		this.logger.log(`Loaded ${buttonFiles.length} Buttons.`);
 	}
 
+    // Initialize players
+    async initPlayers() {
+        const players = (await prisma.player.findMany()) ?? [];
+
+        this.players.init(players);
+
+        this.logger.log(`Loaded ${players.length} Players.`);
+    }
+
 	// Initialize games
 	async initGames() {
 		const wordGames = (await prisma.wordGame.findMany()) ?? [];
 		const countingGames = (await prisma.countingGame.findMany()) ?? [];
-        const players = (await prisma.player.findMany()) ?? [];
+        const players = this.players.getAll();
 
 		this.games.init(wordGames, players, countingGames);
 
