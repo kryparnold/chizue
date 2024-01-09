@@ -31,14 +31,15 @@ class BotClient extends Client {
 	games: Games;
     stats: Stats;
 	status = BotStatuses.Initializing;
-	commands = new Collection<
+    activeWordles: string[] = [];
+	private commands = new Collection<
 		string,
 		{
 			data: SlashCommandBuilder;
 			execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
 		}
 	>();
-	buttons = new Collection<
+	private buttons = new Collection<
 		string,
 		{
 			data: { id: string };
