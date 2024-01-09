@@ -73,7 +73,9 @@ export type WordleLengths = 4 | 5 | 6;
 export interface IStats {
     startTime: number,
     wordCount: number,
-    playerCount: number
+    playerCount: number,
+    gameCount: number,
+    guildCount: number
 }
 
 export type FormattedLocale = "tr" | "en";

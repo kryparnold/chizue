@@ -59,13 +59,13 @@ export class Stats {
 
 	// Send statistics for a specific period to the Discord channel
 	async sendStats(periodName: string, periodKey: keyof typeof this.periodicStats) {
-		// Extract player count and word count for the specified period
-		const { playerCount, wordCount } = Object.assign({}, this.periodicStats[periodKey]);
+		// Extract player count, word count, game count, and guild count for the specified period
+		const { playerCount, wordCount, gameCount, guildCount } = Object.assign({}, this.periodicStats[periodKey]);
 		// Update the periodic statistics for the next period
 		this.periodicStats[periodKey] = await this.getWipedData();
 
 		// Create and send an embed with the periodic statistics
-		const periodicStatsEmbed = (await this.getStatsEmbed({ wordCount, playerCount })).setTitle(`${periodName} İstatistik Raporu`);
+		const periodicStatsEmbed = (await this.getStatsEmbed({ wordCount, playerCount, gameCount, guildCount })).setTitle(`${periodName} İstatistik Raporu`);
 
 		await this.statsChannel.send({
 			embeds: [periodicStatsEmbed],
@@ -79,7 +79,7 @@ export class Stats {
 		this.periodicStats.hourly.wordCount += count;
 	}
 
-	// Generate an embed with all statistics
+	// Generate an embed with all statistics, including games and guilds
 	private async getAllStatsEmbed() {
 		// Get counts for guilds, games, and players
 		const guildCount = client.guilds.cache.size;
@@ -107,8 +107,8 @@ export class Stats {
 		);
 	}
 
-	// Generate an embed with specific statistics
-	private async getStatsEmbed(stats: { wordCount: number; playerCount: number }) {
+	// Generate an embed with specific statistics, including games and guilds
+	private async getStatsEmbed(stats: { wordCount: number; playerCount: number; gameCount: number; guildCount: number }) {
 		// Get the current player count
 		const playerCount = await client.playerCount();
 
@@ -124,20 +124,31 @@ export class Stats {
 				{
 					name: "Eklenen Oyuncu",
 					value: (playerCount - stats.playerCount).toString(),
+				},
+				{
+					name: "Oyun Sayısı",
+					value: stats.gameCount.toString(),
+				},
+				{
+					name: "Sunucu Sayısı",
+					value: stats.guildCount.toString(),
 				}
 			);
-		// TODO - Add games and guilds
 	}
 
 	// Generate wiped data for periodic statistics
 	private async getWipedData() {
-		// Get the current player count
+		// Get the current player count, game count, and guild count
 		const playerCount = await client.playerCount();
+		const gameCount = client.games.count();
+		const guildCount = client.guilds.cache.size;
 
-		// Return wiped data with initial word count, player count, and start time
+		// Return wiped data with initial word count, player count, game count, guild count, and start time
 		return {
 			wordCount: 0,
 			playerCount: playerCount,
+			gameCount: gameCount,
+			guildCount: guildCount,
 			startTime: new Date().getHours(),
 		};
 	}
