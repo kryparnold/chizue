@@ -203,6 +203,8 @@ export class WordGame {
 
         if(!player) {
             player = await client.players.create(id, this.guildId, this.id);
+        } else {
+            await player.addGame(this.guildId, this.id);
         }
 
         return player;
