@@ -21,7 +21,7 @@ import { GameType } from "@prisma/client";
 export enum BotStatuses {
 	Initializing,
 	Stable,
-	Closing,
+	Quitting,
 }
 
 // Extension of the default Discord.js Client class with additional properties and methods
