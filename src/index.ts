@@ -22,7 +22,7 @@ client.once(Events.ClientReady, async (readyClient) => {
 
 // Event handler for when a message is created in a channel
 client.on(Events.MessageCreate, async (message) => {
-	if (client.status === BotStatuses.Initializing) return; //Check if the client is still initializing
+	if (client.status !== BotStatuses.Stable) return; // Check if the client is not stable
 
 	// Process the message by sending it to the client for handling games
 	await client.handleMessage(message);
@@ -30,8 +30,8 @@ client.on(Events.MessageCreate, async (message) => {
 
 // Event handler for when an interaction (command or button) is created
 client.on(Events.InteractionCreate, async (interaction) => {
-	// Check if the client is still initializing, and if so, return early
-	if (client.status === BotStatuses.Initializing) return;
+	// Check if the client is not stable, and if so, return early
+	if (client.status !== BotStatuses.Stable) return;
 
 	// Check if the interaction is a chat input command
 	if (interaction.isChatInputCommand()) {
