@@ -38,7 +38,7 @@ export class Stats {
 		this.statsMessage = statsMessage;
 
 		// Set up periodic updates using setInterval
-		setInterval(() => this.updateStats(), 5000);
+		setInterval(() => this.updateStats(), 60000);
 		setInterval(() => this.sendStats("Saatlik", "hourly"), Utils.hourToMs(3));
 		setInterval(() => this.sendStats("Günlük", "daily"), Utils.hourToMs(24));
 	}
