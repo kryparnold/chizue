@@ -48,7 +48,7 @@ export class WordGame {
 		const word = message.content.replace("I", "ı").toLowerCase().replace("i̇", "i");
 		// Getting the player or adding a new player
 		const playerId = message.author.id;
-		let player = this.players.getPlayer(playerId);
+		let player = this.players.get(playerId);
 
 		if (!player) {
 			player = await this.addPlayer(playerId);
