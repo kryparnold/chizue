@@ -12,7 +12,7 @@ import {
 import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players } from "@/globals";
 
 // Importing configuration and file system modules
-import * as config from "./config.json";
+import config from "../config";
 import { readdirSync } from "fs";
 import path from "node:path";
 import { GameType } from "@prisma/client";
@@ -133,7 +133,7 @@ class BotClient extends Client {
 		}
 	}
 
-	// Placeholder function for handling messages
+	// Handle messages
 	async handleMessage(message: Message) {
 		const game = this.games.get(message.channelId);
 
@@ -183,11 +183,10 @@ class BotClient extends Client {
 
 	// Initialize slash commands
 	async initCommands() {
-		const commandsPath = path.join(import.meta.dir, config.commandsPath);
-		const commandFiles = readdirSync(commandsPath);
+		const commandFiles = readdirSync(config.commandsPath);
 
 		for (const file of commandFiles) {
-			const filePath = path.join(commandsPath, file);
+			const filePath = path.join(config.commandsPath, file);
 			const command: any = await import(filePath);
 			client.commands.set(command.default.data.name, command.default);
 		}
@@ -197,11 +196,10 @@ class BotClient extends Client {
 
 	// Initialize buttons
 	async initButtons() {
-		const buttonsPath = path.join(import.meta.dir, config.buttonsPath);
-		const buttonFiles = readdirSync(buttonsPath);
+		const buttonFiles = readdirSync(config.buttonsPath);
 
 		for (const file of buttonFiles) {
-			const filePath = path.join(buttonsPath, file);
+			const filePath = path.join(config.buttonsPath, file);
 			const button: any = await import(filePath);
 			client.buttons.set(button.default.data.id, button.default);
 		}

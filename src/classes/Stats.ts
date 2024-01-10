@@ -3,7 +3,7 @@ import { IStats } from "@/types";
 import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { Utils, client } from "@/globals";
 import { writeFileSync } from "fs";
-import * as config from "@/client/config.json";
+import config from "@/config";
 import path from "path";
 
 // Define a class called Stats to encapsulate statistics-related functionality
@@ -20,7 +20,7 @@ export class Stats {
 	// Initialization method, takes a TextChannel and Message as parameters
 	async init(statsChannel: TextChannel, statsMessage: Message) {
 		// Dynamically import statistics from a specified path
-		const statsPath = path.join(import.meta.dir, "../../" + config.statsPath);
+		const statsPath = path.join(config.statsPath);
 		const stats = (await import(statsPath)).default;
 		// Get current time, player count, and wiped data for initialization
 		const startTime = new Date().getTime();
