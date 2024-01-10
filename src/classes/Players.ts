@@ -7,6 +7,7 @@ import { Player as RawPlayer } from "@prisma/client";
 export class Players {
     // Private property to store player instances using a Collection
     private cache = new Collection<string, Player>();
+    get = this.cache.get;
 
     // Asynchronous method to initialize the Players instance with an array of raw player data
     async init(players: RawPlayer[]) {
@@ -17,11 +18,6 @@ export class Players {
     // Method to retrieve all player instances from the cache
     getAll() {
         return this.cache.map((player) => player);
-    }
-
-    // Method to retrieve a player instance by their ID from the cache
-    get(id: string) {
-        return this.cache.get(id);
     }
 
     // Asynchronous method to create a new player, initializing their entry in the database and adding the player to the cache
