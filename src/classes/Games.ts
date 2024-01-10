@@ -7,7 +7,6 @@ import { CountingGame, GuildPlayers, Player, Utils, WordGame, client, prisma } f
 export class Games {
 	// Private property to store a cache of WordGame and CountingGame instances
 	private cache = new Collection<string, WordGame | CountingGame>();
-	get = this.cache.get;
 
 	// Initialization method, takes arrays of raw WordGame, Player, and CountingGame data
 	async init(wordGames: RawWordGame[], players: Player[], countingGames: RawCountingGame[]) {
@@ -99,5 +98,10 @@ export class Games {
 
 		// Remove the game instance from the cache
 		this.cache.delete(gameId);
+	}
+
+	// Method to get a game instance from the cache by its ID
+	get(gameId: string) {
+		return this.cache.get(gameId);
 	}
 }

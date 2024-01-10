@@ -6,7 +6,6 @@ import { Collection } from "discord.js";
 export class GuildPlayers {
     // Private property to store player data using a Collection
     private cache = new Collection<string, Player>();
-    get = this.cache.get;
 
     // Asynchronous method to initialize the GuildPlayers instance with an array of players
     async init(players: Player[]) {
@@ -14,5 +13,10 @@ export class GuildPlayers {
         players.forEach((player) => {
             this.cache.set(player.id, player);
         });
+    }
+
+    // Method to retrieve a player by their ID from the cache
+    get(id: string) {
+        return this.cache.get(id);
     }
 }
