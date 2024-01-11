@@ -65,14 +65,14 @@ export default {
 
 		// Check the game type and reply if not Counting Game
 		if (channel && channel.type !== GameType.CountingGame) {
-			await interaction.editReply(client.getLocalization<true>(userLocale, "gameAnother")(client.getLocalization(userLocale, channel.type)));
+			await interaction.editReply(client.getLocalization<true>(userLocale, "commandGameAnother")(client.getLocalization(userLocale, channel.type)));
 			return;
 		}
 
 		// Create an embed to display information about the Counting Game
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.guild?.name} - #${selectedChannel.name}`)
-			.setDescription(client.getLocalization(userLocale, "gameDoesntExists"))
+			.setDescription(client.getLocalization(userLocale, "commandGameDoesntExists"))
 			.setColor(Colors.Blue)
 			.setFooter(userFooter);
 
@@ -85,12 +85,12 @@ export default {
 			.setDisabled(true);
 		const selectMultiplier = new NumberSelectMenuBuilder()
 			.setCustomId("_multiplier")
-			.setRange(1, 25, client.getLocalization(userLocale, "gameMultiplier"), channel?.multiplier);
+			.setRange(1, 25, client.getLocalization(userLocale, "commandCountingGameMultiplier"), channel?.multiplier);
 
 		// Update components based on existing channel data
 		if (channel) {
 			// Update embed description and fields
-			embed.data.description = client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type));
+			embed.data.description = client.getLocalization<true>(userLocale, "commandGameExists")(client.getLocalization(userLocale, channel.type));
 			embed.data.fields = await this.getFields(userLocale, {
 				multiplier: selectedMultiplier,
 				numberCount: channel.recentNumber / selectedMultiplier,
@@ -129,7 +129,7 @@ export default {
 					selectedMultiplier = +selectedOption;
 
 					await componentInteraction.editReply({
-						content: client.getLocalization<true>(userLocale, "gameMultiplierChange")(selectedOption),
+						content: client.getLocalization<true>(userLocale, "commandCountingGameMultiplierChange")(selectedOption),
 					});
 
 					// Update channel data in the database if it exists
@@ -164,7 +164,7 @@ export default {
 						});
 
 						embed
-							.setDescription(client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type)))
+							.setDescription(client.getLocalization<true>(userLocale, "commandGameExists")(client.getLocalization(userLocale, channel.type)))
 							.addFields(
 								await this.getFields(userLocale, {
 									multiplier: channel.multiplier,
@@ -187,7 +187,7 @@ export default {
 							}),
 						});
 						await componentInteraction.editReply({
-							content: client.getLocalization(userLocale, "gameSetupSuccess"),
+							content: client.getLocalization(userLocale, "commandGameSetupSuccess"),
 						});
 					} else if (customId.endsWith("remove")) {
 						// Handle remove button click
@@ -219,7 +219,7 @@ export default {
 								await client.games.delete(channel?.id);
 								channel = undefined;
 
-								embed.data.description = client.getLocalization(userLocale, "gameDoesntExists");
+								embed.data.description = client.getLocalization(userLocale, "commandGameDoesntExists");
 								embed.data.fields = [];
 
 								interaction.editReply({
@@ -235,7 +235,7 @@ export default {
 								});
 
 								buttonInteraction.editReply({
-									content: client.getLocalization(userLocale, "gameRemoveSuccess"),
+									content: client.getLocalization(userLocale, "commandGameRemoveSuccess"),
 								});
 
 								componentInteraction.editReply({
@@ -268,11 +268,11 @@ export default {
 
 		return [
 			{
-				name: client.getLocalization(locale, "gameNumberCounter"),
+				name: client.getLocalization(locale, "commandCountingGameNumberCounter"),
 				value: numberCount.toString(),
 			},
 			{
-				name: client.getLocalization(locale, "gameMultiplier"),
+				name: client.getLocalization(locale, "commandCountingGameMultiplier"),
 				value: multiplier.toString(),
 			},
 		];

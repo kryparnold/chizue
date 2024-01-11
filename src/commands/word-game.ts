@@ -68,14 +68,14 @@ export default {
 
 		// Check the game type and reply if not Word Game
 		if (channel && channel.type !== GameType.WordGame) {
-			await interaction.editReply(client.getLocalization<true>(userLocale, "gameAnother")(client.getLocalization(userLocale, channel.type)));
+			await interaction.editReply(client.getLocalization<true>(userLocale, "commandGameAnother")(client.getLocalization(userLocale, channel.type)));
 			return;
 		}
 
 		// Create an embed to display information about the Word Game
 		const embed = new EmbedBuilder()
 			.setTitle(`${interaction.guild?.name} - #${selectedChannel.name}`)
-			.setDescription(client.getLocalization(userLocale, "gameDoesntExists"))
+			.setDescription(client.getLocalization(userLocale, "commandGameDoesntExists"))
 			.setColor(Colors.Blue)
 			.setFooter(userFooter);
 
@@ -90,11 +90,11 @@ export default {
 			// Options for different locales
 			new StringSelectMenuOptionBuilder()
 				.setLabel(client.getLocalization(userLocale, "Turkish"))
-				.setDescription(client.getLocalization(userLocale, "gameLocaleTrDesc"))
+				.setDescription(client.getLocalization(userLocale, "commandWordGameLocaleTrDesc"))
 				.setValue("Turkish"),
 			new StringSelectMenuOptionBuilder()
 				.setLabel(client.getLocalization(userLocale, "English"))
-				.setDescription(client.getLocalization(userLocale, "gameLocaleEnDesc"))
+				.setDescription(client.getLocalization(userLocale, "commandWordGameLocaleEnDesc"))
 				.setValue("English")
 				.setDefault(true)
 		);
@@ -102,19 +102,19 @@ export default {
 			// Options for different game modes
 			new StringSelectMenuOptionBuilder()
 				.setLabel("Normal")
-				.setDescription(client.getLocalization(userLocale, "gameModeNormalDesc"))
+				.setDescription(client.getLocalization(userLocale, "commandWordGameModeNormalDesc"))
 				.setValue("Normal")
 				.setDefault(true),
 			new StringSelectMenuOptionBuilder()
-				.setLabel(client.getLocalization(userLocale, "gameModeEndless"))
-				.setDescription(client.getLocalization(userLocale, "gameModeEndlessDesc"))
+				.setLabel(client.getLocalization(userLocale, "commandWordGameModeEndless"))
+				.setDescription(client.getLocalization(userLocale, "commandWordGameModeEndlessDesc"))
 				.setValue("Endless")
 		);
 
 		// Update components based on existing channel data
 		if (channel) {
 			// Update embed description and fields
-			embed.data.description = client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type));
+			embed.data.description = client.getLocalization<true>(userLocale, "commandGameExists")(client.getLocalization(userLocale, channel.type));
 			embed.data.fields = await this.getFields(userLocale, {
 				wordCount: channel.words.length,
                 letter: channel.letter,
@@ -164,14 +164,14 @@ export default {
 						channelPreferences.locale = selectedOption;
 						channel = await channel?.setLocale(selectedOption);
 						await componentInteraction.editReply({
-							content: client.getLocalization<true>(userLocale, "gameLangChange")(localizedOption),
+							content: client.getLocalization<true>(userLocale, "commandWordGameLangChange")(localizedOption),
 						});
 					} else if (customId.endsWith("mode")) {
 						// Handle game mode change
 						channelPreferences.mode = selectedOption;
 						channel = await channel?.setMode(selectedOption);
 						await componentInteraction.editReply({
-							content: client.getLocalization<true>(userLocale, "gameModeChange")(localizedOption),
+							content: client.getLocalization<true>(userLocale, "commandWordGameModeChange")(localizedOption),
 						});
 					}
 
@@ -212,7 +212,7 @@ export default {
 						});
 
 						embed
-							.setDescription(client.getLocalization<true>(userLocale, "gameExists")(client.getLocalization(userLocale, channel.type)))
+							.setDescription(client.getLocalization<true>(userLocale, "commandGameExists")(client.getLocalization(userLocale, channel.type)))
 							.addFields(
 								await this.getFields(userLocale, {
 									channelLocale: channel.locale,
@@ -238,7 +238,7 @@ export default {
 							}),
 						});
 						await componentInteraction.editReply({
-							content: client.getLocalization(userLocale, "gameSetupSuccess"),
+							content: client.getLocalization(userLocale, "commandGameSetupSuccess"),
 						});
 					} else if (customId.endsWith("remove")) {
 						// Handle remove button click
@@ -270,7 +270,7 @@ export default {
 								await client.games.delete(channel?.id);
 								channel = undefined;
 
-								embed.data.description = client.getLocalization(userLocale, "gameDoesntExists");
+								embed.data.description = client.getLocalization(userLocale, "commandGameDoesntExists");
 								embed.data.fields = [];
 
 								interaction.editReply({
@@ -286,7 +286,7 @@ export default {
 								});
 
 								buttonInteraction.editReply({
-									content: client.getLocalization(userLocale, "gameRemoveSuccess"),
+									content: client.getLocalization(userLocale, "commandGameRemoveSuccess"),
 								});
 
 								componentInteraction.editReply({
@@ -319,19 +319,19 @@ export default {
 
 		return [
 			{
-				name: client.getLocalization(locale, "gameWordCounter"),
+				name: client.getLocalization(locale, "commandWordGameWordCounter"),
 				value: wordCount.toString(),
 			},
 			{
-                name: client.getLocalization(locale, "gameLetter"),
+                name: client.getLocalization(locale, "commandWordGameLetter"),
                 value: letter,
             },
 			{
-				name: client.getLocalization(locale, "gameLocale"),
+				name: client.getLocalization(locale, "commandWordGameLocale"),
 				value: client.getLocalization(locale, channelLocale),
 			},
 			{
-				name: client.getLocalization(locale, "gameMode"),
+				name: client.getLocalization(locale, "commandWordGameMode"),
 				value: client.getLocalization(locale, mode),
 			},
 		];
