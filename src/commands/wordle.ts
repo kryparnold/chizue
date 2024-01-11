@@ -148,103 +148,101 @@ export default {
 
 		// Main game loop for collecting user guesses
 		while (submitCounter < 6) {
-			await (async () => {
-				try {
-					// Waiting for user to submit their guess through a modal
-					const modalInteraction = await interaction.awaitModalSubmit({ time: 300000 }); // 5-minute timeout for each guess
+			try {
+				// Waiting for user to submit their guess through a modal
+				const modalInteraction = await interaction.awaitModalSubmit({ time: 300000 }); // 5-minute timeout for each guess
 
-					// Retrieving user's guess from the modal
-					const word = modalInteraction.fields.getTextInputValue("word");
+				// Retrieving user's guess from the modal
+				const word = modalInteraction.fields.getTextInputValue("word");
 
-					// Checking the validity of the user's guess
-					const reason = await this.checkWord(word, gameLength, gameLocale);
+				// Checking the validity of the user's guess
+				const reason = await this.checkWord(word, gameLength, gameLocale);
 
-					// Handling invalid guesses
-					if (reason) {
-						modalInteraction.reply({
-							content: reason,
-							ephemeral: true,
-						});
-						return;
-					}
-
-					// Processing the user's guess and providing feedback
-					const wordChars = word.split("");
-					const colors = "0".repeat(gameLength).split("");
-
-					for (let i = 0; i < gameLength; i++) {
-						if (word[i] === randomWord[i] && wordChars.includes(word[i])) {
-							colors[i] = "2";
-							wordChars[i] = "*";
-						}
-					}
-
-					for (let i = 0; i < gameLength; i++) {
-						if (randomWord.includes(word[i]) && wordChars.includes(word[i]) && colors[i] === "0") {
-							const charIndex = wordChars.indexOf(word[i]);
-							colors[i] = "1";
-							wordChars[charIndex] = "*";
-						}
-						//@ts-ignore
-						emoteString += Utils.wordleEmotes[colors[i]][word[i]];
-					}
-					emoteString += "\n";
-
-					// Handling the case where the user correctly guesses the word
-					if (randomWord === word) {
-						guessButton.data.disabled = true;
-
-						await interaction.editReply({
-							embeds: [wordleEmbed.setColor(Colors.Green).setDescription(emoteString + client.getLocalization(userLocale, "wordleYouWin"))],
-							components: [buttonRow],
-						});
-
-						await modalInteraction.reply({
-							content: client.getLocalization(userLocale, "wordleYouWin"),
-							ephemeral: true,
-						});
-
-						submitCounter = 6;
-						return;
-					}
-
-					// Incrementing the submit counter for the next guess
-					submitCounter++;
-
-					// Handling the case where the user reaches the maximum number of guesses
-					if (submitCounter === 6) {
-						guessButton.data.disabled = true;
-
-						await interaction.editReply({
-							embeds: [wordleEmbed.setColor(Colors.Red).setDescription(emoteString)],
-						});
-
-						await modalInteraction.reply({
-							content: client.getLocalization(userLocale, "wordleYouLose"),
-							ephemeral: true,
-						});
-
-						return;
-					}
-
-					// Updating the game embed with the current state
-					await interaction.editReply({
-						embeds: [wordleEmbed.setDescription(emoteString)],
-					});
-
-					// Providing feedback to the user about their guess
-					await modalInteraction.reply({
-						content: client.getLocalization<true>(userLocale, "worldeYourGuess")(word),
+				// Handling invalid guesses
+				if (reason) {
+					modalInteraction.reply({
+						content: reason,
 						ephemeral: true,
 					});
-				} catch (err) {
-					// Handling errors and notifying the user about the timeout
-					await interaction.followUp({
-						content: client.getLocalization(userLocale, "wordleGuessTimedOut"),
-						ephemeral: true,
-					});
+					continue;
 				}
-			})();
+
+				// Processing the user's guess and providing feedback
+				const wordChars = word.split("");
+				const colors = "0".repeat(gameLength).split("");
+
+				for (let i = 0; i < gameLength; i++) {
+					if (word[i] === randomWord[i] && wordChars.includes(word[i])) {
+						colors[i] = "2";
+						wordChars[i] = "*";
+					}
+				}
+
+				for (let i = 0; i < gameLength; i++) {
+					if (randomWord.includes(word[i]) && wordChars.includes(word[i]) && colors[i] === "0") {
+						const charIndex = wordChars.indexOf(word[i]);
+						colors[i] = "1";
+						wordChars[charIndex] = "*";
+					}
+					//@ts-ignore
+					emoteString += Utils.wordleEmotes[colors[i]][word[i]];
+				}
+				emoteString += "\n";
+
+				// Handling the case where the user correctly guesses the word
+				if (randomWord === word) {
+					guessButton.data.disabled = true;
+
+					await interaction.editReply({
+						embeds: [wordleEmbed.setColor(Colors.Green).setDescription(emoteString + client.getLocalization(userLocale, "wordleYouWin"))],
+						components: [buttonRow],
+					});
+
+					await modalInteraction.reply({
+						content: client.getLocalization(userLocale, "wordleYouWin"),
+						ephemeral: true,
+					});
+
+					submitCounter = 6;
+					continue;
+				}
+
+				// Incrementing the submit counter for the next guess
+				submitCounter++;
+
+				// Handling the case where the user reaches the maximum number of guesses
+				if (submitCounter === 6) {
+					guessButton.data.disabled = true;
+
+					await interaction.editReply({
+						embeds: [wordleEmbed.setColor(Colors.Red).setDescription(emoteString)],
+					});
+
+					await modalInteraction.reply({
+						content: client.getLocalization(userLocale, "wordleYouLose"),
+						ephemeral: true,
+					});
+
+					continue;
+				}
+
+				// Updating the game embed with the current state
+				await interaction.editReply({
+					embeds: [wordleEmbed.setDescription(emoteString)],
+				});
+
+				// Providing feedback to the user about their guess
+				await modalInteraction.reply({
+					content: client.getLocalization<true>(userLocale, "worldeYourGuess")(word),
+					ephemeral: true,
+				});
+			} catch (err) {
+				// Handling errors and notifying the user about the timeout
+				await interaction.followUp({
+					content: client.getLocalization(userLocale, "wordleGuessTimedOut"),
+					ephemeral: true,
+				});
+			}
 		}
 
 		// Removing the user from the active Wordles list after the game ends
