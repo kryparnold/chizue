@@ -62,6 +62,10 @@ export const localizations = {
 		commandGameExists: (gameType: string) => `Bu kanalda **${gameType}** mevcut.`,
 		commandGameDoesntExists: "Bu kanalda oyun yok.",
 		commandGameAnother: (game: string) => `Bu kanalda ${game} mevcut.`,
+        commandScoreTitle: (username: string) => `${username} için Skor`,
+        commandScoreNoScore: "Bu kullanıcının hiç skoru yok.",
+        commandScoreTotalScore: "Toplam Skor",
+        commandScoreGuildScore: "Sunucu Skoru",
 		commandTimeout: (command: string) => `Bu komut artık geçerli değil, **/${command}** yazarak tekrar kullanabilirsin.`,
 	},
 	en: {
@@ -127,6 +131,10 @@ export const localizations = {
 		commandGameExists: (gameType: string) => `There is a **${gameType}** in this channel.`,
 		commandGameDoesntExists: "There is no game in this channel.",
 		commandGameAnother: (game: string) => `There is ${game} in this channel.`,
+        commandScoreTitle: (username: string) => `Score for ${username}`,
+        commandScoreNoScore: "This user has no score.",
+        commandScoreTotalScore: "Total Score",
+        commandScoreGuildScore: "Guild Score",
 		commandTimeout: (command: string) => `This command has expired. You can use it again by typing **/${command}**.`,
 	},
 };
