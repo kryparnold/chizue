@@ -20,8 +20,7 @@ export class Stats {
 	// Initialization method, takes a TextChannel and Message as parameters
 	async init(statsChannel: TextChannel, statsMessage: Message) {
 		// Dynamically import statistics from a specified path
-		const statsPath = path.join(config.statsPath);
-		const stats = (await import(statsPath)).default;
+		const stats = (await import(config.statsPath)).default;
 		// Get current time, player count, and wiped data for initialization
 		const startTime = new Date().getTime();
 		const playerCount = await client.playerCount();
@@ -53,8 +52,7 @@ export class Stats {
 
 	// Save statistics to a file
 	async saveStats() {
-		const statsPath = path.join(import.meta.dir, "../../" + config.statsPath);
-		writeFileSync(statsPath, JSON.stringify({ wordCount: this.all.wordCount }), { encoding: "utf-8" });
+		writeFileSync(config.statsPath, JSON.stringify({ wordCount: this.all.wordCount }), { encoding: "utf-8" });
 	}
 
 	// Send statistics for a specific period to the Discord channel
