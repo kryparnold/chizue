@@ -17,12 +17,11 @@ const commands = [];
     // TODO - /kryp status {status} - to change the bot's custom status
     // TODO - /kryp emote {emote} - to change bot's current accept emote
 */
-const commandsPath = path.join(import.meta.dir, "../commands");
 
-const commandFiles = readdirSync(commandsPath);
+const commandFiles = readdirSync(config.commandsPath);
 
 for (const file of commandFiles){
-    const filePath = path.join(commandsPath, file);
+    const filePath = path.join(config.commandsPath, file);
     const command: any = await import(filePath);
     commands.push(command.default.data.toJSON());
 }
