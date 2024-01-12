@@ -7,9 +7,7 @@ import path from "node:path";
 
 const commands = [];
 /* 
-// TODO - /score {member?} - shows the member's score if specified, if not shows the score of the interaction author
 // TODO - /scores - gets the total scores in used guild
-// TODO - /wordle {language} {length} - starts a new wordle game with specified preferences
 // TODO - /word {word} {language} - reports a word to moderation team
 // TODO - /kryp - admin commands
 // Kryp Commands
