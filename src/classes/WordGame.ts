@@ -131,10 +131,6 @@ export class WordGame {
 		this.recentPlayerId = player.id;
 
 		await this.save();
-
-		// Logging for debugging
-		console.log(`Word added: ${word}`);
-		console.log(`Player score updated: ${player.score}`);
 	}
 
 	// Method to check the validity of a word
@@ -191,10 +187,6 @@ export class WordGame {
 
 		// Saving the updated game state
 		await this.save();
-
-		// Logging for debugging
-		console.log(`Game restarted with word: ${word}`);
-		console.log(`Player total score updated: ${player.score}`);
 	}
 
 	// Method to add a new player to the game
@@ -259,8 +251,5 @@ export class WordGame {
                 playerIds: this.players.getIds()
 			},
 		});
-
-		// Logging for debugging
-		console.log(`Game state saved. Letter: ${this.letter}, Word count: ${this.words.length}`);
 	}
 }
