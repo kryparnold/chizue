@@ -1,6 +1,6 @@
 import { Locales } from "@prisma/client";
-import { Locale } from "discord.js";
-import { client } from "@/globals";
+import { EmbedFooterData, Locale, User } from "discord.js";
+import { FormattedLocale, client } from "@/globals";
 
 export class Utils {
 	static Letters = {
@@ -28,15 +28,26 @@ export class Utils {
 		return randomWords;
 	}
 	static invalidCharacters = /[^a-zA-ZğüşıöçĞÜŞİÖÇ]/;
-	static formatLocale(locale: Locales | Locale) {
+	static formatLocale(locale: Locales | Locale): FormattedLocale {
 		if (["Turkish", Locale.Turkish].includes(locale)) {
 			return "tr";
-		} else {
-			return "en";
 		}
+		return "en";
 	}
 	static hourToMs(hour: number) {
 		return hour * 3600000;
+	}
+	static getUserMetadata(locale: Locale, user: User) {
+		const userLocale = this.formatLocale(locale);
+		const userFooter: EmbedFooterData = {
+			text: user.username,
+			iconURL: user.avatarURL() as string,
+		};
+
+		return {
+			userLocale,
+			userFooter,
+		};
 	}
 	static wordleEmotes = {
 		"0": {

@@ -14,11 +14,7 @@ export default {
 	async execute(interaction: ChatInputCommandInteraction) {
 		const selectedMember = interaction.options.getUser("member") ?? interaction.user;
 
-		const userLocale = Utils.formatLocale(interaction.locale);
-		const userFooter: EmbedFooterData = {
-			text: interaction.user.username,
-			iconURL: interaction.user.avatarURL() as string,
-		};
+        const { userFooter, userLocale } = Utils.getUserMetadata(interaction.locale,interaction.user);
 
 		const initialEmbed = new EmbedBuilder()
 			.setTitle(client.getLocalization<true>(userLocale, "commandScoreTitle")(selectedMember.displayName))

@@ -60,11 +60,7 @@ export default {
 		};
 
 		// Get the user's locale and prepare user-specific footer for embeds
-		const userLocale = Utils.formatLocale(interaction.locale);
-		const userFooter: EmbedFooterOptions = {
-			text: interaction.user.username,
-			iconURL: interaction.user.avatarURL() as string,
-		};
+		const { userFooter, userLocale } = Utils.getUserMetadata(interaction.locale,interaction.user);
 
 		// Check the game type and reply if not Word Game
 		if (channel && channel.type !== GameType.WordGame) {
