@@ -39,7 +39,6 @@ model Player {
     id         String @id
     score      Float  @default(0)
     scores     Json   @default("{}")
-    wordGameId String
 }
 
 enum GameType {
