@@ -7,7 +7,7 @@ import { Locale, Message } from "discord.js";
 export class CountingGame {
 	// Properties of the CountingGame class
 	public id: string; // Unique identifier for the CountingGame instance
-	private playerId: string; // Current player's ID
+	private recentPlayerId: string; // Current player's ID
 	public guildId: string; // Guild ID where the game is being played
 	public multiplier: number; // Multiplier for the counting game
 	public readonly type = GameType.CountingGame; // Type of the game
@@ -17,7 +17,7 @@ export class CountingGame {
 	// Constructor to initialize the CountingGame instance
 	constructor(game: CountingGameModel) {
 		this.id = game.id;
-		this.playerId = game.playerId;
+		this.recentPlayerId = game.recentPlayerId;
 		this.guildId = game.guildId;
 		this.multiplier = game.multiplier;
 		this.recentNumber = game.recentNumber;
@@ -41,7 +41,7 @@ export class CountingGame {
 		const locale = Utils.formatLocale(message.guild?.preferredLocale ?? Locale.EnglishUS);
 
 		// Check if the message author is the same as the player of the current game
-		if (message.author.id === this.playerId) {
+		if (message.author.id === this.recentPlayerId) {
             this.isProcessing = false;
 			// Delete the current message and send a reply indicating the same player error
 			await message.delete().catch(() => {});
@@ -52,7 +52,7 @@ export class CountingGame {
 			await message.react(client.emotes.deny);
 			await message.channel.send(this.multiplier.toString()).then(async (message) => await message.react(client.emotes.accept));
 			this.recentNumber = this.multiplier;
-			this.playerId = "";
+			this.recentPlayerId = "";
             await this.save();
             this.isProcessing = false;
 			return;
@@ -61,7 +61,7 @@ export class CountingGame {
 		// If the input number is correct, react with an accept emoji and update the game state
 		await message.react(client.emotes.accept);
 		this.recentNumber = integer;
-		this.playerId = message.author.id;
+		this.recentPlayerId = message.author.id;
 		await this.save();
         this.isProcessing = false;
 	}
@@ -89,7 +89,7 @@ export class CountingGame {
 				id: this.id,
 			},
 			data: {
-				playerId: this.playerId,
+				recentPlayerId: this.recentPlayerId,
 				multiplier: this.multiplier,
 				recentNumber: this.recentNumber,
 			},

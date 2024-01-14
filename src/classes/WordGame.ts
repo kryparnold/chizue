@@ -5,9 +5,9 @@ import { Message } from "discord.js";
 export class WordGame {
 	// Class properties
 	public id: string; // Unique identifier for the WordGame instance
-	private playerId: string; // Current player's ID
+	private recentPlayerId: string; // Current player's ID
 	public guildId: string; // Guild ID where the game is being played
-	private players: GuildPlayers; // Collection of players in the game
+	public players: GuildPlayers; // Collection of players in the game
 	public letter: string; // Current letter for the game
 	private limit: number; // Word limit for the game
 	private randomWords: string[]; // Array of random words
@@ -21,7 +21,7 @@ export class WordGame {
 	// Constructor to initialize the WordGame instance
 	constructor(game: RawWordGameWithPlayers) {
 		this.id = game.id;
-		this.playerId = game.playerId;
+		this.recentPlayerId = game.recentPlayerId;
 		this.guildId = game.guildId;
 		this.letter = game.letter;
 		this.limit = game.limit;
@@ -128,7 +128,7 @@ export class WordGame {
 		// Updating game state
 		this.words.push(word);
 		this.letter = word.charAt(word.length - 1);
-		this.playerId = player.id;
+		this.recentPlayerId = player.id;
 
 		await this.save();
 
@@ -142,7 +142,7 @@ export class WordGame {
 		const firstLetter = word[0];
 		const last40Words = this.words.slice(-40);
 
-		if (playerId === this.playerId) {
+		if (playerId === this.recentPlayerId) {
 			// Player attempted to play in a row
 			return client.getLocalization(this.formattedLocale, "gameSamePlayer");
 		} else if (!Utils.Letters[this.formattedLocale].includes(firstLetter) || firstLetter !== this.letter) {
@@ -181,7 +181,7 @@ export class WordGame {
 		// Resetting game state
 		this.words = [];
 		this.letter = randomLetter;
-		this.playerId = player.id;
+		this.recentPlayerId = player.id;
 
 		// Generating new random words for the next round (if English locale)
 		if (this.locale === Locales.English) {
@@ -251,7 +251,7 @@ export class WordGame {
 				limit: this.limit,
 				locale: this.locale,
 				mode: this.mode,
-				playerId: this.playerId,
+				recentPlayerId: this.recentPlayerId,
 				randomWords: this.randomWords,
 				words: this.words,
 			},

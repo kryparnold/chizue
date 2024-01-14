@@ -12,13 +12,13 @@ datasource db {
 
 model WordGame {
     id          String   @id
-    playerId    String   @default("")
+    recentPlayerId    String   @default("")
     guildId     String
     letter      String
     limit       Int      @default(40)
     randomWords String[] @default([])
     createdAt   DateTime @default(now())
-    players     Player[]
+    playerIds   String[] @default([])
     mode        GameMode
     locale      Locales
     type        GameType @default(WordGame)
@@ -26,20 +26,20 @@ model WordGame {
 }
 
 model CountingGame {
-    id           String   @id
-    playerId     String   @default("")
-    guildId      String
-    multiplier   Int      @default(1)
-    createdAt    DateTime @default(now())
-    recentNumber Int      @default(1)
-    type         GameType @default(CountingGame)
+    id             String   @id
+    recentPlayerId String   @default("")
+    guildId        String
+    multiplier     Int      @default(1)
+    createdAt      DateTime @default(now())
+    recentNumber   Int      @default(1)
+    type           GameType @default(CountingGame)
 }
 
 model Player {
-    id       String     @id
-    score    Float      @default(0)
-    scores   Json       @default("{}")
-    WordGame WordGame[]
+    id         String @id
+    score      Float  @default(0)
+    scores     Json   @default("{}")
+    wordGameId String
 }
 
 enum GameType {
