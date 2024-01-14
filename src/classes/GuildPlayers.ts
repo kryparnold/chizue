@@ -15,8 +15,23 @@ export class GuildPlayers {
         });
     }
 
+    // Method to retrieve all player ids
+    getIds() {
+        return this.cache.map(player => player.id);
+    }
+
+    // Method to retrieve all players
+    getAll() {
+        return this.cache.map(player => player);
+    }
+
     // Method to retrieve a player by their ID from the cache
     get(id: string) {
         return this.cache.get(id);
+    }
+
+    // Method to add player
+    add(player: Player) {
+        this.cache.set(player.id,player);
     }
 }
