@@ -7,7 +7,6 @@ import path from "node:path";
 
 const commands = [];
 /* 
-// TODO - /scores - gets the total scores in used guild
 // TODO - /word {word} {language} - reports a word to moderation team
 // TODO - /kryp - admin commands
 // Kryp Commands
