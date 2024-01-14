@@ -14,7 +14,7 @@ export class Games {
 		wordGames.forEach(async (game) => {
 			// Create Players instance and initialize it with filtered player data
 			const guildPlayers = new GuildPlayers();
-			await guildPlayers.init(players.filter((player) => Object.keys(Object.values(player.scores)).includes(game.id)));
+			await guildPlayers.init(players.filter((player) => player.wordGameId === game.id));
 			// Create new WordGame instance and add it to the cache
 			const newGame = new WordGame({ ...game, players: guildPlayers });
 

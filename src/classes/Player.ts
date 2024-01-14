@@ -17,12 +17,14 @@ export class Player {
 	id: string;
 	score: number;
 	scores: IScores;
+    wordGameId: string;
 
 	// Constructor to create a Player instance from a PlayerModel
 	constructor(player: PlayerModel) {
 		this.id = player.id;
 		this.score = player.score;
-		this.scores = (player.scores as {}) ?? {};
+        this.wordGameId = player.wordGameId;
+		this.scores = (player.scores as IScores) ?? {};
 	}
 
 	// Asynchronous method to add a score to the player's total and per-game scores
