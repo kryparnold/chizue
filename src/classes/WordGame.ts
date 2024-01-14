@@ -1,4 +1,4 @@
-import { GuildPlayers, Player, Players, RawWordGameWithPlayers, Utils, client, prisma } from "@/globals";
+import { FormattedLocale, GuildPlayers, Player, Players, RawWordGameWithPlayers, Utils, client, prisma } from "@/globals";
 import { GameMode, GameType, Locales } from "@prisma/client";
 import { Message } from "discord.js";
 
@@ -13,7 +13,7 @@ export class WordGame {
 	private randomWords: string[]; // Array of random words
 	public mode: GameMode; // Game mode (Endless or Normal)
 	public locale: Locales; // Locale of the game
-	private formattedLocale: "tr" | "en"; // Formatted locale for better handling
+	private formattedLocale: FormattedLocale; // Formatted locale for better handling
 	readonly type = GameType.WordGame; // Type of the game
 	public words: string[]; // Array to store the entered words during the game
 	private isProcessing = false; // Flag to check if a processing is in progress
@@ -207,6 +207,8 @@ export class WordGame {
             await player.addGame(this.guildId, this.id);
         }
 
+        this.players.add(player);
+
         return player;
 	}
 
@@ -254,6 +256,7 @@ export class WordGame {
 				recentPlayerId: this.recentPlayerId,
 				randomWords: this.randomWords,
 				words: this.words,
+                playerIds: this.players.getIds()
 			},
 		});
 
