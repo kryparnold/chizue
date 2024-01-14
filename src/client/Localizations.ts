@@ -43,6 +43,7 @@ export const localizations = {
 		wordleHowToPlayTitle: "Wordle Nasıl Oynanır?",
 		wordleHowToPlayDescription:
 			"Wordle oyunu, gizli bir kelimenin harflerini doğru sırayla tahmin etmeye dayalı bir oyundur. Her tahmininizde, doğru harfin doğru konumda olup olmadığını ve yanlış harflerin doğru konumda olup olmadığını gösteren ipuçları alırsınız. Oyunun amacı, belirlenen kelimeyi en az tahminle bulmaktır. Her seferinde bir harf veya tam bir kelime tahmin edebilirsin. İyi şanslar!",
+		commandTimeout: (command: string) => `Bu komut artık geçerli değil, **/${command}** yazarak tekrar kullanabilirsin.`,
 		commandGameSetupSuccess: "Oyun başarıyla kuruldu!",
 		commandGameRemoveSuccess: "Oyun başarıyla kaldırıldı.",
 		commandWordGameWordCounter: "Yazılan Kelime",
@@ -62,11 +63,12 @@ export const localizations = {
 		commandGameExists: (gameType: string) => `Bu kanalda **${gameType}** mevcut.`,
 		commandGameDoesntExists: "Bu kanalda oyun yok.",
 		commandGameAnother: (game: string) => `Bu kanalda ${game} mevcut.`,
-        commandScoreTitle: (username: string) => `${username} için Skor`,
-        commandScoreNoScore: "Bu kullanıcının hiç skoru yok.",
-        commandScoreTotalScore: "Toplam Skor",
-        commandScoreGuildScore: "Sunucu Skoru",
-		commandTimeout: (command: string) => `Bu komut artık geçerli değil, **/${command}** yazarak tekrar kullanabilirsin.`,
+		commandScoreTitle: (username: string) => `${username} için Skor`,
+		commandScoreNoScore: "Bu kullanıcının hiç skoru yok.",
+		commandScoreTotalScore: "Toplam Skor",
+		commandScoreGuildScore: "Sunucu Skoru",
+        commandScoresTitle: (guildName: string) => `${guildName} için Skorlar`,
+        commandScoresNoGames: "Bu sunucuda kimsenin skoru yok."
 	},
 	en: {
 		English: "English",
@@ -112,7 +114,8 @@ export const localizations = {
 		wordleHowToPlayTitle: "How to Play Wordle",
 		wordleHowToPlayDescription:
 			"Wordle is a game based on guessing the letters of a hidden word in the correct order. With each guess, you receive clues indicating whether the correct letter is in the correct position and whether incorrect letters are in the correct position. The goal of the game is to find the specified word with the fewest guesses. You can guess one letter or the entire word each time. Good luck!",
-		commandGameSetupSuccess: "Game setup successful!",
+        commandTimeout: (command: string) => `This command has expired. You can use it again by typing **/${command}**.`,
+        commandGameSetupSuccess: "Game setup successful!",
 		commandGameRemoveSuccess: "Game removal successful.",
 		commandWordGameWordCounter: "Word Counter",
 		commandCountingGameNumberCounter: "Number Counter",
@@ -131,10 +134,11 @@ export const localizations = {
 		commandGameExists: (gameType: string) => `There is a **${gameType}** in this channel.`,
 		commandGameDoesntExists: "There is no game in this channel.",
 		commandGameAnother: (game: string) => `There is ${game} in this channel.`,
-        commandScoreTitle: (username: string) => `Score for ${username}`,
-        commandScoreNoScore: "This user has no score.",
-        commandScoreTotalScore: "Total Score",
-        commandScoreGuildScore: "Guild Score",
-		commandTimeout: (command: string) => `This command has expired. You can use it again by typing **/${command}**.`,
+		commandScoreTitle: (username: string) => `Score for ${username}`,
+		commandScoreNoScore: "This user has no score.",
+		commandScoreTotalScore: "Total Score",
+		commandScoreGuildScore: "Guild Score",
+        commandScoresTitle: (guildName: string) => `Scores for ${guildName}`,
+        commandScoresNoGames: "There is no player with score in this guild."
 	},
 };
