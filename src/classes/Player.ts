@@ -17,20 +17,20 @@ export class Player {
 	id: string;
 	score: number;
 	scores: IScores;
-    wordGameId: string;
 
 	// Constructor to create a Player instance from a PlayerModel
 	constructor(player: PlayerModel) {
 		this.id = player.id;
 		this.score = player.score;
-        this.wordGameId = player.wordGameId;
 		this.scores = (player.scores as IScores) ?? {};
 	}
 
 	// Asynchronous method to add a score to the player's total and per-game scores
 	async addScore(score: number, guildId: string, gameId: string) {
-		this.score += score;
-		this.scores[guildId][gameId] += score;
+		const playerScore = this.score;
+		const playerGameScore = this.scores[guildId][gameId];
+		this.score = +(playerScore + score).toFixed(1);
+		this.scores[guildId][gameId] = +(playerGameScore + score).toFixed(1);
 		await this.save();
 	}
 
@@ -43,8 +43,6 @@ export class Player {
 
 		// Initializing the game entry with a score of 0
 		this.scores[guildId][gameId] = 0;
-        console.log("Added new game");
-        console.log(this.scores);
 
 		// Saving the updated data to the database
 		await this.save();
