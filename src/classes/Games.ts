@@ -14,7 +14,11 @@ export class Games {
 		wordGames.forEach(async (game) => {
 			// Create Players instance and initialize it with filtered player data
 			const guildPlayers = new GuildPlayers();
-			await guildPlayers.init(players.filter((player) => player.wordGameId === game.id));
+			await guildPlayers.init(
+				players.filter((player) => {
+					return Object.keys(Object.values(player.scores)[0]).includes(game.id);
+				})
+			);
 			// Create new WordGame instance and add it to the cache
 			const newGame = new WordGame({ ...game, players: guildPlayers });
 
@@ -105,8 +109,8 @@ export class Games {
 		return this.cache.get(gameId);
 	}
 
-    // Method to get all the game instances from the cache by its guild ID
-    getGuildGames(guildId: string) {
-        return this.cache.filter((game) => game.guildId === guildId).map(game => game) as WordGame[];
-    }
+	// Method to get all the game instances from the cache by its guild ID
+	getGuildGames(guildId: string) {
+		return this.cache.filter((game) => game.guildId === guildId).map((game) => game) as WordGame[];
+	}
 }
