@@ -40,7 +40,5 @@ const rest = new REST().setToken(process.env.TOKEN!);
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
 		console.error(error);
-	}finally {
-        process.exit(0);
-    }
+	}
 })();
