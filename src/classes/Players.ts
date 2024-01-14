@@ -35,6 +35,7 @@ export class Players {
                         [gameId]: 0,
                     },
                 },
+                wordGameId: gameId
             },
         });
 
