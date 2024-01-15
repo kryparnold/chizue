@@ -66,6 +66,8 @@ class BotClient extends Client {
 
 	// Initialize various components of the bot
 	async init() {
+		this.updateStatus();
+		setInterval(() => this.updateStatus(), 600000);
 		await this.initLogger();
 		await this.initStats();
 		await this.initCommands();
@@ -73,6 +75,11 @@ class BotClient extends Client {
 		await this.initPlayers();
 		await this.initGames();
 		await this.initWords();
+	}
+
+	// Method to update client status
+	updateStatus() {
+		this.user?.setActivity(config.clientStatus, { type: 4 });
 	}
 
 	// Handle chat input commands
