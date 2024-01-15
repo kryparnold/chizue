@@ -5,6 +5,7 @@ export default {
     guildId: "<GUILD_ID>",
     logChannelId: "<LOG_CHANNEL_ID>",
     clientId: "<CLIENT_ID>",
+    clientStatus: "<CLIENT_STATUS>",
     statsMessageId: "<STATS_MESSAGE_ID>",
     statsMessageChannelId: "<STATS_MESSAGE_CHANNEL_ID>",
     statsChannelId: "<STATS_CHANNEL_ID>",
