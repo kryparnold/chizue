@@ -7,9 +7,9 @@ import {
 	GatewayIntentBits,
 	Message,
 	SlashCommandBuilder,
-    TextChannel,
+	TextChannel,
 } from "discord.js";
-import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players } from "@/globals";
+import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players, ButtonParams } from "@/globals";
 
 // Importing configuration and file system modules
 import config from "../config";
@@ -29,10 +29,10 @@ class BotClient extends Client {
 	logger: Logger;
 	words: Words;
 	games: Games;
-    stats: Stats;
-    players: Players;
+	stats: Stats;
+	players: Players;
 	status = BotStatuses.Initializing;
-    activeWordles: string[] = [];
+	activeWordles: string[] = [];
 	private commands = new Collection<
 		string,
 		{
@@ -43,13 +43,13 @@ class BotClient extends Client {
 	private buttons = new Collection<
 		string,
 		{
-			data: { id: string };
-			execute: (interaction: ButtonInteraction) => Promise<void>;
+			data: { id: string; params: string[] };
+			execute: (interaction: ButtonInteraction, params: ButtonParams) => Promise<void>;
 		}
 	>();
 	emotes = {
 		accept: config.acceptEmote,
-        deny: config.denyEmote
+		deny: config.denyEmote,
 	};
 
 	constructor() {
@@ -60,17 +60,17 @@ class BotClient extends Client {
 		this.logger = new Logger();
 		this.words = new Words();
 		this.games = new Games();
-        this.stats = new Stats();
-        this.players = new Players();
+		this.stats = new Stats();
+		this.players = new Players();
 	}
 
 	// Initialize various components of the bot
 	async init() {
 		await this.initLogger();
-        await this.initStats();
+		await this.initStats();
 		await this.initCommands();
 		await this.initButtons();
-        await this.initPlayers();
+		await this.initPlayers();
 		await this.initGames();
 		await this.initWords();
 	}
@@ -107,14 +107,24 @@ class BotClient extends Client {
 	async handleButton(interaction: ButtonInteraction) {
 		if (interaction.customId.startsWith("_")) return;
 
-		const button = client.buttons.get(interaction.customId);
+		const [buttonId, ..._params] = interaction.customId.split("_");
+
+		const button = client.buttons.get(buttonId);
 
 		if (!button) {
-			throw "Button not found: " + interaction.customId;
+			throw "Button not found: " + buttonId;
+		}
+
+		const params: ButtonParams = {};
+
+		if (_params) {
+			button.data.params.forEach((param, index) => {
+				params[param] = _params[index] ?? undefined;
+			});
 		}
 
 		try {
-			await button.execute(interaction);
+			await button.execute(interaction, params);
 		} catch (error) {
 			console.error(error);
 
@@ -144,7 +154,7 @@ class BotClient extends Client {
 			message.author.system // Check if the message author is a system
 		)
 			return;
-            
+
 		if (game.type === GameType.WordGame && !Utils.invalidCharacters.test(message.content)) {
 			// Check if game type is WordGame and the message content is a valid word.
 			game.handleWord(message);
@@ -167,19 +177,19 @@ class BotClient extends Client {
 		this.logger.log(`${this.user?.username} is initializing...`);
 	}
 
-    // Initialize the Stats with the specified channel
-    async initStats() {
-        const statsChannel = await this.channels.fetch(config.statsChannelId);
-        const statsMessage = await (await this.channels.fetch(config.statsMessageChannelId) as TextChannel).messages.fetch(config.statsMessageId);
+	// Initialize the Stats with the specified channel
+	async initStats() {
+		const statsChannel = await this.channels.fetch(config.statsChannelId);
+		const statsMessage = await ((await this.channels.fetch(config.statsMessageChannelId)) as TextChannel).messages.fetch(config.statsMessageId);
 
-        if(statsChannel?.type !== ChannelType.GuildText) {
-            throw "Stats Channel must be a Text Channel.";
-        }
+		if (statsChannel?.type !== ChannelType.GuildText) {
+			throw "Stats Channel must be a Text Channel.";
+		}
 
-        await this.stats.init(statsChannel,statsMessage);
+		await this.stats.init(statsChannel, statsMessage);
 
-        this.logger.log("Stats initialized.")
-    }
+		this.logger.log("Stats initialized.");
+	}
 
 	// Initialize slash commands
 	async initCommands() {
@@ -207,20 +217,20 @@ class BotClient extends Client {
 		this.logger.log(`Loaded ${buttonFiles.length} Buttons.`);
 	}
 
-    // Initialize players
-    async initPlayers() {
-        const players = (await prisma.player.findMany()) ?? [];
+	// Initialize players
+	async initPlayers() {
+		const players = (await prisma.player.findMany()) ?? [];
 
-        this.players.init(players);
+		this.players.init(players);
 
-        this.logger.log(`Loaded ${players.length} Players.`);
-    }
+		this.logger.log(`Loaded ${players.length} Players.`);
+	}
 
 	// Initialize games
 	async initGames() {
 		const wordGames = (await prisma.wordGame.findMany()) ?? [];
 		const countingGames = (await prisma.countingGame.findMany()) ?? [];
-        const players = this.players.getAll();
+		const players = this.players.getAll();
 
 		this.games.init(wordGames, players, countingGames);
 
@@ -229,11 +239,11 @@ class BotClient extends Client {
 
 	// Initialize word data
 	async initWords() {
-        const wordReportChannel = await this.channels.fetch(config.wordReportChannelId);
+		const wordReportChannel = await this.channels.fetch(config.wordReportChannelId);
 
-        if(wordReportChannel?.type !== ChannelType.GuildText) {
-            throw "Word Report Channel must be a Text Channel.";
-        }
+		if (wordReportChannel?.type !== ChannelType.GuildText) {
+			throw "Word Report Channel must be a Text Channel.";
+		}
 
 		const wordSums = await this.words.init(wordReportChannel);
 
@@ -254,10 +264,10 @@ class BotClient extends Client {
 		}
 	}
 
-    // Method to get player count from database
-    async playerCount() {
-        return await prisma.player.count();
-    }
+	// Method to get player count from database
+	async playerCount() {
+		return await prisma.player.count();
+	}
 }
 
 // Create an instance of the bot client
