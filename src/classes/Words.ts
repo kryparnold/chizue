@@ -43,7 +43,7 @@ export class Words {
 			embeds: [
 				new EmbedBuilder()
 					.setTitle("Word")
-					.setDescription(`Added **${word}** to ${client.getLocalization("en", language)}`)
+					.setDescription(`Added **${word}** to ${client.getLocalization("en", language)} Words`)
 					.setColor(Colors.Green)
 					.setAuthor({
 						name: user.username,
@@ -67,7 +67,7 @@ export class Words {
 			embeds: [
 				new EmbedBuilder()
 					.setTitle("Word")
-					.setDescription(`Removed **${word}** from ${client.getLocalization("en", language)}`)
+					.setDescription(`Removed **${word}** from ${client.getLocalization("en", language)} Words`)
 					.setColor(Colors.Red)
 					.setAuthor({
 						name: user.username,
