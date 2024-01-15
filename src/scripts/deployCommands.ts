@@ -6,6 +6,7 @@ import { readdirSync } from "fs";
 import path from "node:path";
 
 const commands = [];
+const guildCommands: { [x: string]: { id: string; commands: any[] } } = {};
 /* 
 // TODO - /kryp - admin commands
 // Kryp Commands
@@ -18,24 +19,35 @@ const commands = [];
 
 const commandFiles = readdirSync(config.commandsPath);
 
-for (const file of commandFiles){
-    const filePath = path.join(config.commandsPath, file);
-    const command: any = await import(filePath);
-    commands.push(command.default.data.toJSON());
+for (const file of commandFiles) {
+	const filePath = path.join(config.commandsPath, file);
+	const command: any = (await import(filePath)).default;
+	if (command.guildId) {
+		if (!guildCommands[command.guildId]) {
+			guildCommands[command.guildId] = { id: command.guildId, commands: [] };
+		}
+		guildCommands[command.guildId].commands.push(command.data.toJSON());
+	} else {
+		commands.push(command.data.toJSON());
+	}
 }
 
 const rest = new REST().setToken(process.env.TOKEN!);
 
 (async () => {
-    try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+	try {
+		console.log(`Started refreshing application and guild (/) commands.`);
 
-		const data: any = await rest.put(
-			Routes.applicationCommands(config.clientId),
-			{ body: commands },
-		);
+		const data: any = await rest.put(Routes.applicationCommands(config.clientId), { body: commands });
 
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+		let guildCommandCounter = 0;
+
+		Object.values(guildCommands).forEach(async (guild) => {
+            guildCommandCounter += guild.commands.length;
+			await rest.put(Routes.applicationGuildCommands(config.clientId, guild.id), { body: guild.commands });
+		});
+
+		console.log(`Successfully reloaded ${data.length} application, ${guildCommandCounter} guild (/) commands.`);
 	} catch (error) {
 		console.error(error);
 	}
