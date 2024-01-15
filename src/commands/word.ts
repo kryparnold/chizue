@@ -62,7 +62,7 @@ export default {
 
 		const addButton = new ButtonBuilder().setCustomId(`add-word_${word}_${language}`).setLabel("Ekle").setStyle(ButtonStyle.Success).setDisabled(wordExists);
 
-		const removeButton = new ButtonBuilder().setCustomId("word-remove").setLabel("Kaldır").setStyle(ButtonStyle.Danger).setDisabled(!wordExists);
+		const removeButton = new ButtonBuilder().setCustomId(`remove-word_${word}_${language}`).setLabel("Kaldır").setStyle(ButtonStyle.Danger).setDisabled(!wordExists);
 
 		const deleteButton = new ButtonBuilder().setCustomId("delete").setEmoji("🗑️").setStyle(ButtonStyle.Secondary);
 
