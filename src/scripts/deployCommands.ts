@@ -7,7 +7,6 @@ import path from "node:path";
 
 const commands = [];
 /* 
-// TODO - /word {word} {language} - reports a word to moderation team
 // TODO - /kryp - admin commands
 // Kryp Commands
     // TODO - /kryp quit - to quit the bot safely
