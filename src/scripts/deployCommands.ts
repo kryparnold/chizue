@@ -11,7 +11,6 @@ const guildCommands: { [x: string]: { id: string; commands: any[] } } = {};
 // TODO - /kryp - admin commands
 // Kryp Commands
     // TODO - /kryp quit - to quit the bot safely
-    // TODO - /kryp add-word {word} {language} - to add words
     // TODO - /kryp announce {announcement message} - to announce something on all game channels
     // TODO - /kryp status {status} - to change the bot's custom status
     // TODO - /kryp emote {emote} - to change bot's current accept emote
