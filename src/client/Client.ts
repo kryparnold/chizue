@@ -247,12 +247,13 @@ class BotClient extends Client {
 	// Initialize word data
 	async initWords() {
 		const wordReportChannel = await this.channels.fetch(config.wordReportChannelId);
+        const wordLogChannel = await this.channels.fetch(config.wordLogChannelId);
 
-		if (wordReportChannel?.type !== ChannelType.GuildText) {
-			throw "Word Report Channel must be a Text Channel.";
+		if (wordReportChannel?.type !== ChannelType.GuildText || wordLogChannel?.type !== ChannelType.GuildText) {
+			throw "Word Report && Word Log Channel must be a Text Channel.";
 		}
 
-		const wordSums = await this.words.init(wordReportChannel);
+		const wordSums = await this.words.init(wordReportChannel, wordLogChannel);
 
 		this.logger.log(`**${wordSums.tr}** Turkish Word initialized.`);
 		this.logger.log(`**${wordSums.en}** English Word initialized.`);
