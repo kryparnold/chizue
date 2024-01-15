@@ -117,7 +117,7 @@ class BotClient extends Client {
 
 		const params: ButtonParams = {};
 
-		if (_params) {
+		if (_params.length) {
 			button.data.params.forEach((param, index) => {
 				params[param] = _params[index] ?? undefined;
 			});
