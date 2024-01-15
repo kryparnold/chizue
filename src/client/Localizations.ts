@@ -68,7 +68,10 @@ export const localizations = {
 		commandScoreTotalScore: "Toplam Skor",
 		commandScoreGuildScore: "Sunucu Skoru",
         commandScoresTitle: (guildName: string) => `${guildName} için Skorlar`,
-        commandScoresNoGames: "Bu sunucuda kimsenin skoru yok."
+        commandScoresNoGames: "Bu sunucuda kimsenin skoru yok.",
+        commandWordTitle: "Kelime Raporu",
+        commandWordWrongLanguage: "Yanlış kelime veya dil.",
+        commandWordThanks: "Kelime bildirin için çok teşekkür ederiz."
 	},
 	en: {
 		English: "English",
@@ -139,6 +142,9 @@ export const localizations = {
 		commandScoreTotalScore: "Total Score",
 		commandScoreGuildScore: "Guild Score",
         commandScoresTitle: (guildName: string) => `Scores for ${guildName}`,
-        commandScoresNoGames: "There is no player with score in this guild."
+        commandScoresNoGames: "There is no player with score in this guild.",
+        commandWordTitle: "Word Report",
+        commandWordWrongLanguage: "Invalid word or language.",
+        commandWordThanks: "Thanks for your report."
 	},
 };
