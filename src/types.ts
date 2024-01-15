@@ -81,3 +81,5 @@ export interface IStats {
 export type FormattedLocale = "tr" | "en";
 
 export type RawWordGameWithPlayers = RawWordGame & {players: GuildPlayers};
+
+export type ButtonParams = {[x: string]: string};
