@@ -7,6 +7,7 @@ export default {
     statsMessageId: "<STATS_MESSAGE_ID>",
     statsMessageChannelId: "<STATS_MESSAGE_CHANNEL_ID>",
     statsChannelId: "<STATS_CHANNEL_ID>",
+    wordReportChannelId: "<WORD_REPORT_CHANNEL_ID>",
     commandsPath: srcPath + "/<COMMANDS_FOLDER_PATH>",
     buttonsPath: srcPath + "/<BUTTONS_FOLDER_PATH>",
     statsPath: srcPath + "/<STATS_JSON_PATH>",
