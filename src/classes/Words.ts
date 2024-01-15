@@ -1,7 +1,6 @@
 import config from "@/config";
 import { FormattedLocale, IEnglishWords, ITurkishWords, IWordleWords, WordleLengths } from "@/globals";
 import { TextChannel } from "discord.js";
-import fs from "fs";
 
 export class Words {
 	tr!: ITurkishWords;
@@ -39,8 +38,8 @@ export class Words {
 	}
 
 	async save() {
-		await fs.promises.writeFile(config.turkishWordsPath, JSON.stringify(this.tr), { encoding: "utf-8" });
-		await fs.promises.writeFile(config.englishWordsPath, JSON.stringify(this.en), { encoding: "utf-8" });
-		await fs.promises.writeFile(config.wordleWordsPath, JSON.stringify(this.wordleWords), { encoding: "utf-8" });
+		await Bun.write(config.turkishWordsPath, JSON.stringify(this.tr));
+		await Bun.write(config.englishWordsPath, JSON.stringify(this.en));
+		await Bun.write(config.wordleWordsPath, JSON.stringify(this.wordleWords));
 	}
 }
