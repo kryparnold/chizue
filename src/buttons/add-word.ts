@@ -10,7 +10,11 @@ export default {
 		const word = params["word"];
 		const language = params["language"] as FormattedLocale;
 
-		await client.words.addWord(word, language);
+		await client.words.addWord(word, language, interaction.user);
+
+        await interaction.message.edit({
+            components: []
+        });
 
 		await interaction.reply({
 			content: `The word **${word}** added to ${client.getLocalization("en", language)} Words.`,
