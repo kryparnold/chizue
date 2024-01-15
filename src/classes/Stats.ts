@@ -2,7 +2,9 @@
 import { IStats } from "@/types";
 import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { Utils, client } from "@/globals";
+import { writeFileSync } from "fs";
 import config from "@/config";
+import path from "path";
 
 // Define a class called Stats to encapsulate statistics-related functionality
 export class Stats {
@@ -50,7 +52,7 @@ export class Stats {
 
 	// Save statistics to a file
 	async saveStats() {
-        await Bun.write(config.statsPath,JSON.stringify({ wordCount: this.all.wordCount }));
+		writeFileSync(config.statsPath, JSON.stringify({ wordCount: this.all.wordCount }), { encoding: "utf-8" });
 	}
 
 	// Send statistics for a specific period to the Discord channel

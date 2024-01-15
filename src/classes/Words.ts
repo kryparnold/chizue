@@ -1,6 +1,7 @@
 import config from "@/config";
 import { FormattedLocale, IEnglishWords, ITurkishWords, IWordleWords, Utils, WordleLengths, client } from "@/globals";
 import { Colors, EmbedBuilder, TextChannel, User } from "discord.js";
+import fs from "fs";
 
 export class Words {
 	tr!: ITurkishWords;
@@ -28,7 +29,7 @@ export class Words {
 		return { tr: trSum, en: enSum };
 	}
 
-	async addWord(word: string, language: FormattedLocale,user: User) {
+	async addWord(word: string, language: FormattedLocale, user: User) {
 		//@ts-ignore
 		this[language][word.at(0)].push(word);
 
@@ -38,7 +39,7 @@ export class Words {
 
 		await this.save();
 
-        await this.wordLogChannel.send({
+		await this.wordLogChannel.send({
 			embeds: [
 				new EmbedBuilder()
 					.setTitle("Word")
@@ -77,8 +78,8 @@ export class Words {
 	}
 
 	async save() {
-		await Bun.write(config.turkishWordsPath, JSON.stringify(this.tr));
-		await Bun.write(config.englishWordsPath, JSON.stringify(this.en));
-		await Bun.write(config.wordleWordsPath, JSON.stringify(this.wordleWords));
+		await fs.promises.writeFile(config.turkishWordsPath, JSON.stringify(this.tr), { encoding: "utf-8" });
+		await fs.promises.writeFile(config.englishWordsPath, JSON.stringify(this.en), { encoding: "utf-8" });
+		await fs.promises.writeFile(config.wordleWordsPath, JSON.stringify(this.wordleWords), { encoding: "utf-8" });
 	}
 }
