@@ -12,11 +12,9 @@ export default {
 
 		await client.words.addWord(word, language, interaction.user);
 
-		if (interaction.message.editable) {
-			await interaction.message.edit({
-				components: [],
-			});
-		}
+		interaction.message.edit({
+			components: [],
+		}).catch(() => {});
 
 		await interaction.reply({
 			content: `The word **${word}** added to ${client.getLocalization("en", language)} Words.`,

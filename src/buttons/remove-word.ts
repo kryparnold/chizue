@@ -12,11 +12,9 @@ export default {
 
 		await client.words.removeWord(word, language, interaction.user);
 
-		if (interaction.message.editable) {
-			await interaction.message.edit({
-				components: [],
-			});
-		}
+		interaction.message.edit({
+			components: [],
+		}).catch(() => {});
 
 		await interaction.reply({
 			content: `The word **${word}** removed from ${client.getLocalization("en", language)} Words.`,
