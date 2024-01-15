@@ -37,6 +37,17 @@ export class Words {
 		await this.save();
 	}
 
+    async removeWord(word: string, language: FormattedLocale) {
+        //@ts-ignore
+        this[language][word.at(0)].splice(this[language][word.at(0)].indexOf(word),1);
+
+        if ([4, 5, 6].includes(word.length)) {
+            this.wordleWords[language][word.length as WordleLengths].splice(this.wordleWords[language][word.length as WordleLengths].indexOf(word),1);
+        }
+
+        await this.save();
+    }
+
 	async save() {
 		await Bun.write(config.turkishWordsPath, JSON.stringify(this.tr));
 		await Bun.write(config.englishWordsPath, JSON.stringify(this.en));
