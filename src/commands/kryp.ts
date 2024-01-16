@@ -1,4 +1,3 @@
-import config from "@/config";
 import { FormattedLocale, Utils, client } from "@/globals";
 import {
 	ActionRowBuilder,
@@ -58,7 +57,7 @@ export default {
 						.setRequired(true)
 				)
 		),
-	guildId: config.guildId,
+	guildId: client.config.guildId,
 	async execute(interaction: ChatInputCommandInteraction) {
 		const subCommand = interaction.options.getSubcommand(true);
 

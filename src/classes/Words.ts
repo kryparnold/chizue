@@ -1,4 +1,3 @@
-import config from "@/config";
 import { FormattedLocale, IEnglishWords, ITurkishWords, IWordleWords, Utils, WordleLengths, client } from "@/globals";
 import { Colors, EmbedBuilder, TextChannel, User } from "discord.js";
 import fs from "fs";
@@ -13,9 +12,9 @@ export class Words {
 	async init(wordReportChannel: TextChannel, wordLogChannel: TextChannel) {
 		this.wordReportChannel = wordReportChannel;
 		this.wordLogChannel = wordLogChannel;
-		const turkishWords = (await import(config.turkishWordsPath)).default as ITurkishWords;
-		const englishWords = (await import(config.englishWordsPath)).default as IEnglishWords;
-		const wordleWords = (await import(config.wordleWordsPath)).default as IWordleWords;
+		const turkishWords = (await import(client.config.turkishWordsPath)).default as ITurkishWords;
+		const englishWords = (await import(client.config.englishWordsPath)).default as IEnglishWords;
+		const wordleWords = (await import(client.config.wordleWordsPath)).default as IWordleWords;
 
 		let trSum = 0;
 		let enSum = 0;
@@ -78,8 +77,8 @@ export class Words {
 	}
 
 	async save() {
-		await fs.promises.writeFile(config.turkishWordsPath, JSON.stringify(this.tr), { encoding: "utf-8" });
-		await fs.promises.writeFile(config.englishWordsPath, JSON.stringify(this.en), { encoding: "utf-8" });
-		await fs.promises.writeFile(config.wordleWordsPath, JSON.stringify(this.wordleWords), { encoding: "utf-8" });
+		await fs.promises.writeFile(client.config.turkishWordsPath, JSON.stringify(this.tr), { encoding: "utf-8" });
+		await fs.promises.writeFile(client.config.englishWordsPath, JSON.stringify(this.en), { encoding: "utf-8" });
+		await fs.promises.writeFile(client.config.wordleWordsPath, JSON.stringify(this.wordleWords), { encoding: "utf-8" });
 	}
 }

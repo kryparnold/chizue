@@ -9,10 +9,9 @@ import {
 	SlashCommandBuilder,
 	TextChannel,
 } from "discord.js";
-import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players, ButtonParams } from "@/globals";
+import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players, ButtonParams, Config } from "@/globals";
 
 // Importing configuration and file system modules
-import config from "../config";
 import { readdirSync } from "fs";
 import path from "node:path";
 import { GameType } from "@prisma/client";
@@ -31,6 +30,7 @@ class BotClient extends Client {
 	games: Games;
 	stats: Stats;
 	players: Players;
+    config = new Config();
 	status = BotStatuses.Initializing;
 	activeWordles: string[] = [];
 	private commands = new Collection<
@@ -48,8 +48,8 @@ class BotClient extends Client {
 		}
 	>();
 	emotes = {
-		accept: config.acceptEmote,
-		deny: config.denyEmote,
+		accept: this.config.acceptEmote,
+		deny: this.config.denyEmote,
 	};
 
 	constructor() {
@@ -79,7 +79,7 @@ class BotClient extends Client {
 
 	// Method to update client status
 	updateStatus() {
-		this.user?.setActivity(config.clientStatus, { type: 4 });
+		this.user?.setActivity(this.config.clientStatus, { type: 4 });
 	}
 
 	// Handle chat input commands
@@ -173,7 +173,7 @@ class BotClient extends Client {
 
 	// Initialize the logger with the specified client username
 	async initLogger() {
-		const logChannel = await this.channels.fetch(config.logChannelId);
+		const logChannel = await this.channels.fetch(this.config.logChannelId);
 
 		if (logChannel?.type !== ChannelType.GuildText) {
 			throw "Log Channel must be a Text Channel.";
@@ -186,8 +186,8 @@ class BotClient extends Client {
 
 	// Initialize the Stats with the specified channel
 	async initStats() {
-		const statsChannel = await this.channels.fetch(config.statsChannelId);
-		const statsMessage = await ((await this.channels.fetch(config.statsMessageChannelId)) as TextChannel).messages.fetch(config.statsMessageId);
+		const statsChannel = await this.channels.fetch(this.config.statsChannelId);
+		const statsMessage = await ((await this.channels.fetch(this.config.statsMessageChannelId)) as TextChannel).messages.fetch(this.config.statsMessageId);
 
 		if (statsChannel?.type !== ChannelType.GuildText) {
 			throw "Stats Channel must be a Text Channel.";
@@ -200,10 +200,10 @@ class BotClient extends Client {
 
 	// Initialize slash commands
 	async initCommands() {
-		const commandFiles = readdirSync(config.commandsPath);
+		const commandFiles = readdirSync(this.config.commandsPath);
 
 		for (const file of commandFiles) {
-			const filePath = path.join(config.commandsPath, file);
+			const filePath = path.join(this.config.commandsPath, file);
 			const command: any = await import(filePath);
 			client.commands.set(command.default.data.name, command.default);
 		}
@@ -213,10 +213,10 @@ class BotClient extends Client {
 
 	// Initialize buttons
 	async initButtons() {
-		const buttonFiles = readdirSync(config.buttonsPath);
+		const buttonFiles = readdirSync(this.config.buttonsPath);
 
 		for (const file of buttonFiles) {
-			const filePath = path.join(config.buttonsPath, file);
+			const filePath = path.join(this.config.buttonsPath, file);
 			const button: any = await import(filePath);
 			client.buttons.set(button.default.data.id, button.default);
 		}
@@ -246,8 +246,8 @@ class BotClient extends Client {
 
 	// Initialize word data
 	async initWords() {
-		const wordReportChannel = await this.channels.fetch(config.wordReportChannelId);
-        const wordLogChannel = await this.channels.fetch(config.wordLogChannelId);
+		const wordReportChannel = await this.channels.fetch(this.config.wordReportChannelId);
+        const wordLogChannel = await this.channels.fetch(this.config.wordLogChannelId);
 
 		if (wordReportChannel?.type !== ChannelType.GuildText || wordLogChannel?.type !== ChannelType.GuildText) {
 			throw "Word Report && Word Log Channel must be a Text Channel.";

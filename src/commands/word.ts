@@ -1,4 +1,3 @@
-import config from "@/config";
 import { FormattedLocale, Utils, client } from "@/globals";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 

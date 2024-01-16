@@ -1,9 +1,9 @@
 import { REST, Routes } from "discord.js";
 import { config as envConfig } from "dotenv";
 envConfig();
-import config from "../config";
 import { readdirSync } from "fs";
 import path from "node:path";
+import { Config } from "@/classes/Config";
 
 const commands = [];
 const guildCommands: { [x: string]: { id: string; commands: any[] } } = {};
@@ -15,6 +15,8 @@ const guildCommands: { [x: string]: { id: string; commands: any[] } } = {};
     // TODO - /kryp status {status} - to change the bot's custom status
     // TODO - /kryp emote {emote} - to change bot's current accept emote
 */
+
+const config = new Config();
 
 const commandFiles = readdirSync(config.commandsPath);
 
@@ -42,7 +44,7 @@ const rest = new REST().setToken(process.env.TOKEN!);
 		let guildCommandCounter = 0;
 
 		Object.values(guildCommands).forEach(async (guild) => {
-            guildCommandCounter += guild.commands.length;
+			guildCommandCounter += guild.commands.length;
 			await rest.put(Routes.applicationGuildCommands(config.clientId, guild.id), { body: guild.commands });
 		});
 

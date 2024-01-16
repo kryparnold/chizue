@@ -3,8 +3,6 @@ import { IStats } from "@/types";
 import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { Utils, client } from "@/globals";
 import { writeFileSync } from "fs";
-import config from "@/config";
-import path from "path";
 
 // Define a class called Stats to encapsulate statistics-related functionality
 export class Stats {
@@ -20,7 +18,7 @@ export class Stats {
 	// Initialization method, takes a TextChannel and Message as parameters
 	async init(statsChannel: TextChannel, statsMessage: Message) {
 		// Dynamically import statistics from a specified path
-		const stats = (await import(config.statsPath)).default;
+		const stats = (await import(client.config.statsPath)).default;
 		// Get current time, player count, and wiped data for initialization
 		const startTime = new Date().getTime();
 		const playerCount = await client.playerCount();
@@ -52,7 +50,7 @@ export class Stats {
 
 	// Save statistics to a file
 	async saveStats() {
-		writeFileSync(config.statsPath, JSON.stringify({ wordCount: this.all.wordCount }), { encoding: "utf-8" });
+		writeFileSync(client.config.statsPath, JSON.stringify({ wordCount: this.all.wordCount }), { encoding: "utf-8" });
 	}
 
 	// Send statistics for a specific period to the Discord channel
