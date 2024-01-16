@@ -1,0 +1,19 @@
+{
+    "guildId": "<GUILD_ID>",
+    "logChannelId": "<LOG_CHANNEL_ID>",
+    "clientId": "<CLIENT_ID>",
+    "clientStatus": "<CLIENT_STATUS>",
+    "statsMessageId": "<STATS_MESSAGE_ID>",
+    "statsMessageChannelId": "<STATS_MESSAGE_CHANNEL_ID>",
+    "statsChannelId": "<STATS_CHANNEL_ID>",
+    "wordReportChannelId": "<WORD_REPORT_CHANNEL_ID>",
+    "wordLogChannelId": "<WORD_LOG_CHANNEL_ID>",
+    "commandsPath": "/<COMMANDS_FOLDER_NAME>",
+    "buttonsPath": "/<BUTTONS_FOLDER_NAME",
+    "statsPath": "/<STATS_JSON_PATH>",
+    "englishWordsPath": "/<ENGLISH_WORDS_JSON_FILENAME>",
+    "turkishWordsPath": "/<TURKISH_WORDS_JSON_FILENAME>",
+    "wordleWordsPath": "/<WORDLE_WORDS_JSON_FILENAME>",
+    "acceptEmote": "<ACCEPT_EMOTE_TAG_STRING>",
+    "denyEmote": "<DENY_EMOTE_TAG_STRING>"
+}
