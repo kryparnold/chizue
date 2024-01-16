@@ -34,8 +34,7 @@ export class Players {
                     [guildId]: {
                         [gameId]: 0,
                     },
-                },
-                wordGameId: gameId
+                }
             },
         });
 
