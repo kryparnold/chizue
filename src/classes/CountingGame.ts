@@ -42,7 +42,7 @@ export class CountingGame {
 
 		// Check if the message author is the same as the player of the current game
 		if (message.author.id === this.recentPlayerId) {
-            this.isProcessing = false;
+			this.isProcessing = false;
 			// Delete the current message and send a reply indicating the same player error
 			await message.delete().catch(() => {});
 			await message.channel.send(client.getLocalization(locale, "gameSamePlayer")).then((reply) => setTimeout(() => reply.delete(), 5000));
@@ -53,8 +53,8 @@ export class CountingGame {
 			await message.channel.send(this.multiplier.toString()).then(async (message) => await message.react(client.emotes.accept));
 			this.recentNumber = this.multiplier;
 			this.recentPlayerId = "";
-            await this.save();
-            this.isProcessing = false;
+			await this.save();
+			this.isProcessing = false;
 			return;
 		}
 
@@ -63,7 +63,7 @@ export class CountingGame {
 		this.recentNumber = integer;
 		this.recentPlayerId = message.author.id;
 		await this.save();
-        this.isProcessing = false;
+		this.isProcessing = false;
 	}
 
 	// Method to wait for the processing to complete

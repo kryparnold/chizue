@@ -1,7 +1,7 @@
 import { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 
 export class NumberSelectMenuBuilder extends StringSelectMenuBuilder {
-	public setRange(from: number, to: number,desc: string, current?: number) {
+	public setRange(from: number, to: number, desc: string, current?: number) {
 		const numberList = this.getNumberRangeList(from, to);
 
 		if (numberList.length > 25) {

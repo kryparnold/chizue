@@ -1,25 +1,44 @@
+// Importing the TextChannel class from the "discord.js" library
 import { TextChannel } from "discord.js";
 
-class Logger{
-    public logChannel!: TextChannel;
-    private defaultPrefix = "[Chizue]";
-    private logPool: string[] = [];
+// Logger class definition
+export class Logger {
+	// Declaration of the logChannel property with the TextChannel type
+	public logChannel!: TextChannel;
 
-    async init(logChannel: TextChannel){
-        this.logChannel = logChannel;
-        setInterval(() => {
-            if(this.logPool.length === 0) return;
-            const logMessage = this.logPool.join("\n");
-            this.logPool.length = 0;
-            this.logChannel.send(logMessage);
-        },1500)
-    }
+	// Default prefix for log messages
+	private defaultPrefix = "[Chizue]";
 
-    log(logMessage: string){
-        console.log(`${this.defaultPrefix} ${logMessage.replaceAll("**","")}`);
-        this.logPool.push(`${this.defaultPrefix} ${logMessage}`);
-    }
-    
+	// Array to store log messages before sending them to the channel
+	private logPool: string[] = [];
+
+	// Initialization method for the Logger class
+	async init(logChannel: TextChannel) {
+		// Assigning the provided log channel to the logChannel property
+		this.logChannel = logChannel;
+
+		// Setting up an interval to periodically send log messages to the channel
+		setInterval(() => {
+			// Check if there are any log messages in the pool
+			if (this.logPool.length === 0) return;
+
+			// Concatenate log messages into a single string separated by newlines
+			const logMessage = this.logPool.join("\n");
+
+			// Clearing the log pool
+			this.logPool.length = 0;
+
+			// Sending the concatenated log message to the log channel
+			this.logChannel.send(logMessage);
+		}, 1500); // Sending log messages every 1.5 seconds
+	}
+
+	// Method for logging messages
+	log(logMessage: string) {
+		// Log the message to the console with the default prefix and without bold formatting
+		console.log(`${this.defaultPrefix} ${logMessage.replaceAll("**", "")}`);
+
+		// Pushing the modified log message to the log pool
+		this.logPool.push(`${this.defaultPrefix} ${logMessage}`);
+	}
 }
-
-export { Logger };

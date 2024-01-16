@@ -30,7 +30,7 @@ class BotClient extends Client {
 	games: Games;
 	stats: Stats;
 	players: Players;
-    config = new Config();
+	config = new Config();
 	status = BotStatuses.Initializing;
 	activeWordles: string[] = [];
 	private commands = new Collection<
@@ -247,7 +247,7 @@ class BotClient extends Client {
 	// Initialize word data
 	async initWords() {
 		const wordReportChannel = await this.channels.fetch(this.config.wordReportChannelId);
-        const wordLogChannel = await this.channels.fetch(this.config.wordLogChannelId);
+		const wordLogChannel = await this.channels.fetch(this.config.wordLogChannelId);
 
 		if (wordReportChannel?.type !== ChannelType.GuildText || wordLogChannel?.type !== ChannelType.GuildText) {
 			throw "Word Report && Word Log Channel must be a Text Channel.";

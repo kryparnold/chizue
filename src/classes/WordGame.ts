@@ -193,15 +193,15 @@ export class WordGame {
 	private async addPlayer(id: string) {
 		let player = client.players.get(id);
 
-        if(!player) {
-            player = await client.players.create(id, this.guildId, this.id);
-        } else {
-            await player.addGame(this.guildId, this.id);
-        }
+		if (!player) {
+			player = await client.players.create(id, this.guildId, this.id);
+		} else {
+			await player.addGame(this.guildId, this.id);
+		}
 
-        this.players.add(player);
+		this.players.add(player);
 
-        return player;
+		return player;
 	}
 
 	// Method to set game mode
@@ -248,7 +248,7 @@ export class WordGame {
 				recentPlayerId: this.recentPlayerId,
 				randomWords: this.randomWords,
 				words: this.words,
-                playerIds: this.players.getIds()
+				playerIds: this.players.getIds(),
 			},
 		});
 	}

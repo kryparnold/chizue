@@ -60,7 +60,7 @@ export default {
 		};
 
 		// Get the user's locale and prepare user-specific footer for embeds
-		const { userFooter, userLocale } = Utils.getUserMetadata(interaction.locale,interaction.user);
+		const { userFooter, userLocale } = Utils.getUserMetadata(interaction.locale, interaction.user);
 
 		// Check the game type and reply if not Word Game
 		if (channel && channel.type !== GameType.WordGame) {
@@ -113,7 +113,7 @@ export default {
 			embed.data.description = client.getLocalization<true>(userLocale, "commandGameExists")(client.getLocalization(userLocale, channel.type));
 			embed.data.fields = await this.getFields(userLocale, {
 				wordCount: channel.words.length,
-                letter: channel.letter,
+				letter: channel.letter,
 				channelLocale: channel.locale,
 				mode: channel.mode,
 			});
@@ -182,7 +182,7 @@ export default {
 								embed.setFields(
 									await this.getFields(userLocale, {
 										channelLocale: channel.locale,
-                                        letter: channel.letter,
+										letter: channel.letter,
 										mode: channel.mode,
 										wordCount: channel.words.length,
 									})
@@ -202,7 +202,7 @@ export default {
 							id: selectedChannel.id,
 							letter: randomLetter,
 							locale: channelPreferences.locale,
-                            guildId: interaction.guildId as string,
+							guildId: interaction.guildId as string,
 							mode: channelPreferences.mode,
 							randomWords,
 						});
@@ -212,7 +212,7 @@ export default {
 							.addFields(
 								await this.getFields(userLocale, {
 									channelLocale: channel.locale,
-                                    letter: channel.letter,
+									letter: channel.letter,
 									mode: channel.mode,
 									wordCount: channel.words.length,
 								})
@@ -310,7 +310,7 @@ export default {
 			});
 	},
 	// Helper function to generate fields for the embed
-	async getFields(locale: any, props: { wordCount: number; letter: string, channelLocale: Locales; mode: GameMode }) {
+	async getFields(locale: any, props: { wordCount: number; letter: string; channelLocale: Locales; mode: GameMode }) {
 		const { channelLocale, mode, wordCount, letter } = props;
 
 		return [
@@ -319,9 +319,9 @@ export default {
 				value: wordCount.toString(),
 			},
 			{
-                name: client.getLocalization(locale, "commandWordGameLetter"),
-                value: letter,
-            },
+				name: client.getLocalization(locale, "commandWordGameLetter"),
+				value: letter,
+			},
 			{
 				name: client.getLocalization(locale, "commandWordGameLocale"),
 				value: client.getLocalization(locale, channelLocale),

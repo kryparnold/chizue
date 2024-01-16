@@ -57,7 +57,7 @@ export default {
 		let selectedMultiplier = channel?.multiplier ?? 1;
 
 		// Get the user's locale and prepare user-specific footer for embeds
-        const { userFooter, userLocale } = Utils.getUserMetadata(interaction.locale,interaction.user);
+		const { userFooter, userLocale } = Utils.getUserMetadata(interaction.locale, interaction.user);
 
 		// Check the game type and reply if not Counting Game
 		if (channel && channel.type !== GameType.CountingGame) {
@@ -155,7 +155,7 @@ export default {
 						channel = await client.games.createCountingGame({
 							id: selectedChannel.id,
 							multiplier: selectedMultiplier,
-                            guildId: interaction.guildId as string,
+							guildId: interaction.guildId as string,
 							recentNumber: selectedMultiplier,
 						});
 
