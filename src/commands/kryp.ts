@@ -156,7 +156,7 @@ export default {
 				ephemeral: true,
 			});
 		} else if (subCommand === "status") {
-			// Getting status option from interaction
+			// Getting status option from the interaction options
 			const statusOption = interaction.options.getString("status", true);
 
 			// Setting the client status with given status option
@@ -164,18 +164,37 @@ export default {
 
 			// Responding to the interaction with success message
 			await interaction.reply({
-				content: `Status successfully changed to \`\`${statusOption}\`\``,
+				content: `Status successfully changed to: **${statusOption}**`,
 				ephemeral: true,
 			});
 		} else if (subCommand === "accept-emote") {
+            // Getting emote option from the interaction options
             const emote = interaction.options.getString("emote",true);
 
+            // Setting the client accept emote with given emote option
             client.setAcceptEmote(emote);
 
+            // Responding to the interaction with success message
             await interaction.reply({
                 content: `Accept emote successfully set to: ${emote}`,
                 ephemeral: true
             });
-		}
+		} else if (subCommand === "announcement") {
+            // Defer the reply as soon as possible
+            await interaction.deferReply({
+                ephemeral: true,
+            });
+
+            // Getting announcement option from the interaction options
+            const announcementOption = interaction.options.getString("announcement",true);
+
+            // Calling the announcement method from client that returns how many announcements made
+            const announcementCounter = await client.makeAnnouncement(announcementOption);
+
+            // Responding to the interaction with success message and announcement
+            await interaction.editReply({
+                content: `**${announcementCounter}** announcements made successfully.`
+            });
+        }
 	},
 };
