@@ -4,10 +4,10 @@ export default {
     data: {
         id: "ping",
     },
-    async execute(interaction: ButtonInteraction){
+    async execute(interaction: ButtonInteraction) {
         await interaction.reply({
-            content:"Pong!",
-            ephemeral: true
+            content: "Pong!",
+            ephemeral: true,
         });
-    }
-}
+    },
+};

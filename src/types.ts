@@ -1,7 +1,6 @@
 import { GuildPlayers } from "./globals";
 import { WordGame as RawWordGame } from "@prisma/client";
 
-
 export interface ITurkishWords {
     a: string[];
     b: string[];
@@ -64,22 +63,22 @@ export interface IEnglishWords {
 
 export type IWordleWords = {
     [x in FormattedLocale]: {
-        [x in WordleLengths]: string[]
+        [x in WordleLengths]: string[];
     };
 };
 
 export type WordleLengths = 4 | 5 | 6;
 
 export interface IStats {
-    startTime: number,
-    wordCount: number,
-    playerCount: number,
-    gameCount: number,
-    guildCount: number
+    startTime: number;
+    wordCount: number;
+    playerCount: number;
+    gameCount: number;
+    guildCount: number;
 }
 
 export type FormattedLocale = "tr" | "en";
 
-export type RawWordGameWithPlayers = RawWordGame & {players: GuildPlayers};
+export type RawWordGameWithPlayers = RawWordGame & { players: GuildPlayers };
 
-export type ButtonParams = {[x: string]: string};
+export type ButtonParams = { [x: string]: string };

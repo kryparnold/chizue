@@ -11,18 +11,18 @@ datasource db {
 }
 
 model WordGame {
-    id          String   @id
-    recentPlayerId    String   @default("")
-    guildId     String
-    letter      String
-    limit       Int      @default(40)
-    randomWords String[] @default([])
-    createdAt   DateTime @default(now())
-    playerIds   String[] @default([])
-    mode        GameMode
-    locale      Locales
-    type        GameType @default(WordGame)
-    words       String[]
+    id             String   @id
+    recentPlayerId String   @default("")
+    guildId        String
+    letter         String
+    limit          Int      @default(40)
+    randomWords    String[] @default([])
+    createdAt      DateTime @default(now())
+    playerIds      String[] @default([])
+    mode           GameMode
+    locale         Locales
+    type           GameType @default(WordGame)
+    words          String[]
 }
 
 model CountingGame {
@@ -36,9 +36,9 @@ model CountingGame {
 }
 
 model Player {
-    id         String @id
-    score      Float  @default(0)
-    scores     Json   @default("{}")
+    id     String @id
+    score  Float  @default(0)
+    scores Json   @default("{}")
 }
 
 enum GameType {
