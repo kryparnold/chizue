@@ -50,7 +50,7 @@ export class Stats {
 
     // Save statistics to a file
     async saveStats() {
-        writeFileSync(client.config.statsPath, JSON.stringify({ wordCount: this.all.wordCount }), { encoding: "utf-8" });
+        writeFileSync(client.config.statsPath, JSON.stringify({ wordCount: this.all.wordCount }, null, 4), { encoding: "utf-8" });
     }
 
     // Send statistics for a specific period to the Discord channel

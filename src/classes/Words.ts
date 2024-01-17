@@ -99,8 +99,8 @@ export class Words {
     // Method to save the current state of word lists to their respective files
     async save() {
         // Writing the word lists to their respective files in JSON format
-        await fs.promises.writeFile(client.config.turkishWordsPath, JSON.stringify(this.tr), { encoding: "utf-8" });
-        await fs.promises.writeFile(client.config.englishWordsPath, JSON.stringify(this.en), { encoding: "utf-8" });
-        await fs.promises.writeFile(client.config.wordleWordsPath, JSON.stringify(this.wordleWords), { encoding: "utf-8" });
+        await fs.promises.writeFile(client.config.turkishWordsPath, JSON.stringify(this.tr, null, 4), { encoding: "utf-8" });
+        await fs.promises.writeFile(client.config.englishWordsPath, JSON.stringify(this.en, null, 4), { encoding: "utf-8" });
+        await fs.promises.writeFile(client.config.wordleWordsPath, JSON.stringify(this.wordleWords, null, 4), { encoding: "utf-8" });
     }
 }

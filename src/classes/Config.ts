@@ -59,25 +59,29 @@ export class Config {
         // Writing the configuration data to the "config.json" file
         await fs.promises.writeFile(
             "./src/config.json",
-            JSON.stringify({
-                guildId: this.guildId,
-                logChannelId: this.logChannelId,
-                clientId: this.clientId,
-                clientStatus: this.clientStatus,
-                statsMessageId: this.statsMessageId,
-                statsMessageChannelId: this.statsMessageChannelId,
-                statsChannelId: this.statsChannelId,
-                wordReportChannelId: this.wordReportChannelId,
-                wordLogChannelId: this.wordLogChannelId,
-                commandsPath: this.commandsPath,
-                buttonsPath: this.buttonsPath,
-                statsPath: this.statsPath,
-                englishWordsPath: this.englishWordsPath,
-                turkishWordsPath: this.turkishWordsPath,
-                wordleWordsPath: this.wordleWordsPath,
-                acceptEmote: this.acceptEmote,
-                denyEmote: this.denyEmote,
-            })
+            JSON.stringify(
+                {
+                    guildId: this.guildId,
+                    logChannelId: this.logChannelId,
+                    clientId: this.clientId,
+                    clientStatus: this.clientStatus,
+                    statsMessageId: this.statsMessageId,
+                    statsMessageChannelId: this.statsMessageChannelId,
+                    statsChannelId: this.statsChannelId,
+                    wordReportChannelId: this.wordReportChannelId,
+                    wordLogChannelId: this.wordLogChannelId,
+                    commandsPath: this.commandsPath,
+                    buttonsPath: this.buttonsPath,
+                    statsPath: this.statsPath,
+                    englishWordsPath: this.englishWordsPath,
+                    turkishWordsPath: this.turkishWordsPath,
+                    wordleWordsPath: this.wordleWordsPath,
+                    acceptEmote: this.acceptEmote,
+                    denyEmote: this.denyEmote,
+                },
+                null,
+                4
+            )
         );
     }
 }
