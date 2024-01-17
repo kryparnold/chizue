@@ -172,7 +172,7 @@ export default {
             const emote = interaction.options.getString("emote", true);
 
             // Setting the client accept emote with given emote option
-            client.setAcceptEmote(emote);
+            await client.setAcceptEmote(emote);
 
             // Responding to the interaction with success message
             await interaction.reply({
