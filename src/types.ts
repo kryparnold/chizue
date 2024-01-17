@@ -1,5 +1,6 @@
 import { GuildPlayers } from "./globals";
 import { WordGame as RawWordGame } from "@prisma/client";
+import { UUID } from "crypto";
 
 export interface ITurkishWords {
     a: string[];
@@ -82,3 +83,52 @@ export type FormattedLocale = "tr" | "en";
 export type RawWordGameWithPlayers = RawWordGame & { players: GuildPlayers };
 
 export type ButtonParams = { [x: string]: string };
+
+export enum ProcessTypes {
+    SlashCommand,
+    Word,
+    Number,
+    Button,
+}
+
+interface BaseProcess {
+    id: UUID;
+    startTime: number;
+}
+
+interface ISlashCommandProcess extends BaseProcess {
+    type: ProcessTypes.SlashCommand;
+    props: {
+        authorId: string;
+        authorName: string;
+        name: string;
+        subCommand?: string;
+    };
+}
+
+interface IButtonProcess extends BaseProcess {
+    type: ProcessTypes.Button;
+    props: {
+        authorId: string;
+        authorName: string;
+        name: string;
+    };
+}
+
+interface IWordProcess extends BaseProcess {
+    type: ProcessTypes.Word;
+    props: {
+        word: string;
+        playerId: string;
+    };
+}
+
+interface INumberProcess extends BaseProcess {
+    type: ProcessTypes.Number;
+    props: {
+        integer: number;
+        playerId: string;
+    };
+}
+
+export type Process = ISlashCommandProcess | IButtonProcess | IWordProcess | INumberProcess;
