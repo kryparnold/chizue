@@ -59,6 +59,21 @@ export default {
 						)
 						.setRequired(true)
 				)
+		)
+		.addSubcommand((statusCommand) =>
+			statusCommand
+				.setName("status")
+				.setNameLocalization("tr", "durum")
+				.setDescription("To set the bot status.")
+				.setDescriptionLocalization("tr", "Bot durumunu ayarlamak için.")
+				.addStringOption((option) =>
+					option
+						.setName("status")
+						.setNameLocalization("tr", "durum")
+						.setDescription("Status of the bot.")
+						.setDescriptionLocalization("tr", "Bot durumu.")
+						.setRequired(true)
+				)
 		),
 	// Guild ID from the configuration
 	guildId: client.config.guildId,
@@ -123,6 +138,18 @@ export default {
 			await interaction.reply({
 				embeds: [wordReportEmbed],
 				components: [buttonRow],
+				ephemeral: true,
+			});
+		} else if (subCommand === "status") {
+            // Getting status option from interaction
+			const statusOption = interaction.options.getString("status", true);
+
+            // Setting the client status with given status option
+			await client.setStatus(statusOption);
+
+            // Responding to the interaction with success message
+			await interaction.reply({
+				content: `Status successfully changed to \`\`${statusOption}\`\``,
 				ephemeral: true,
 			});
 		}
