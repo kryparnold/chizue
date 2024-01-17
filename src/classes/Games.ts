@@ -113,4 +113,9 @@ export class Games {
 	getGuildGames(guildId: string) {
 		return this.cache.filter((game) => game.guildId === guildId).map((game) => game) as WordGame[];
 	}
+
+    // Method to get all the game ids from the cache
+    getIds() {
+        return this.cache.map(game => game.id);
+    }
 }
