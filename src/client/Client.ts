@@ -278,8 +278,13 @@ class BotClient extends Client {
 	}
 
     // Method to set client status
-    async setStatus(status: string) {
+    setStatus(status: string) {
         this.updateStatus(status);
+    }
+
+    // Method to set client accept emote
+    setAcceptEmote(emote: string) {
+        this.config.acceptEmote = emote;
     }
 }
 
