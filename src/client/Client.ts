@@ -6,15 +6,17 @@ import {
     Collection,
     GatewayIntentBits,
     Message,
+    Options,
     SlashCommandBuilder,
     TextChannel,
 } from "discord.js";
-import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players, ButtonParams, Config } from "@/globals";
+import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players, ButtonParams, Config, ProcessTracker, Process, ProcessTypes } from "@/globals";
 
 // Importing configuration and file system modules
 import { readdirSync } from "fs";
 import path from "node:path";
 import { GameType } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 // Enum representing different states of the bot
 export enum BotStatuses {
@@ -30,6 +32,7 @@ class BotClient extends Client {
     games: Games;
     stats: Stats;
     players: Players;
+    processes: ProcessTracker;
     config = new Config();
     status = BotStatuses.Initializing;
     activeWordles: string[] = [];
@@ -62,6 +65,7 @@ class BotClient extends Client {
         this.games = new Games();
         this.stats = new Stats();
         this.players = new Players();
+        this.processes = new ProcessTracker();
     }
 
     // Initialize various components of the bot
@@ -85,13 +89,34 @@ class BotClient extends Client {
     // Handle chat input commands
     async handleCommand(interaction: ChatInputCommandInteraction) {
         const command = client.commands.get(interaction.commandName);
+        const subCommand = interaction.options.getSubcommand(false) ?? undefined;
 
         if (!command) {
             throw "Command not found: " + interaction.commandName;
         }
 
         try {
+            // Create a Slash Command Process to track the command execution
+            const commandProcess: Process = {
+                id: randomUUID(),
+                startTime: new Date().getTime(),
+                type: ProcessTypes.SlashCommand,
+                props: {
+                    name: interaction.commandName,
+                    subCommand,
+                    authorId: interaction.user.id,
+                    authorName: interaction.user.username,
+                },
+            };
+
+            // Add the Slash Command Process to the tracker
+            this.processes.add(commandProcess);
+
+            // Call the command's execute method
             await command.execute(interaction);
+
+            // Remove the Slash Command Process from the tracker after processing
+            this.processes.remove(commandProcess.id);
         } catch (error) {
             console.error(error);
 
@@ -131,7 +156,26 @@ class BotClient extends Client {
         }
 
         try {
+            // Create a Button Process to track the button execution
+            const buttonProcess: Process = {
+                id: randomUUID(),
+                startTime: new Date().getTime(),
+                type: ProcessTypes.Button,
+                props: {
+                    name: buttonId,
+                    authorId: interaction.user.id,
+                    authorName: interaction.user.username,
+                },
+            };
+
+            // Add the Button Process to the tracker
+            this.processes.add(buttonProcess);
+
+            // Call the button's execute method
             await button.execute(interaction, params);
+
+            // Remove the Button Process from the tracker after processing
+            this.processes.remove(buttonProcess.id);
         } catch (error) {
             console.error(error);
 
@@ -150,24 +194,65 @@ class BotClient extends Client {
         }
     }
 
-    // Handle messages
+    // Handle messages for the game
     async handleMessage(message: Message) {
+        // Retrieve the game associated with the message's channel
         const game = this.games.get(message.channelId);
 
+        // Check conditions that may indicate the message is not relevant for the game
         if (
-            !game || // Check if there is a game in message's channel
+            !game || // Check if there is a game in the message's channel
             !message.content || // Not all messages have content
             message.author.bot || // Check if the message author is a bot
             message.author.system // Check if the message author is a system
         )
             return;
 
+        // Handle messages based on the type of game
         if (game.type === GameType.WordGame && !Utils.invalidCharacters.test(message.content)) {
-            // Check if game type is WordGame and the message content is a valid word.
-            game.handleWord(message);
+            // Check if the game type is WordGame and the message content is a valid word.
+
+            // Create a Word Process to track the word-related operation
+            const wordProcess: Process = {
+                id: randomUUID(),
+                startTime: new Date().getTime(),
+                type: ProcessTypes.Word,
+                props: {
+                    word: message.content,
+                    playerId: message.author.id,
+                },
+            };
+
+            // Add the Word Process to the tracker
+            this.processes.add(wordProcess);
+
+            // Call the game's handleWord method to process the word-related operation
+            await game.handleWord(message);
+
+            // Remove the Word Process from the tracker after processing
+            this.processes.remove(wordProcess.id);
         } else if (game.type === GameType.CountingGame && !isNaN(+message.content)) {
-            // Check if game type is CountingGame and the message content is a valid number.
-            game.handleNumber(message);
+            // Check if the game type is CountingGame and the message content is a valid number.
+
+            // Create a Number Process to track the number-related operation
+            const numberProcess: Process = {
+                id: randomUUID(),
+                startTime: new Date().getTime(),
+                type: ProcessTypes.Number,
+                props: {
+                    integer: +message.content,
+                    playerId: message.author.id,
+                },
+            };
+
+            // Add the Number Process to the tracker
+            this.processes.add(numberProcess);
+
+            // Call the game's handleNumber method to process the number-related operation
+            await game.handleNumber(message);
+
+            // Remove the Number Process from the tracker after processing
+            this.processes.remove(numberProcess.id);
         }
     }
 
