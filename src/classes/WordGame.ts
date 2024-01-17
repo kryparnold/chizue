@@ -113,7 +113,7 @@ export class WordGame {
     private async waitForProcessing() {
         // Wait for isProcessing to become false
         while (this.isProcessing) {
-            await new Promise((resolve) => setTimeout(resolve, 15)); // Adjust the delay if needed
+            await new Promise((resolve) => setTimeout(resolve, 50));
         }
     }
 
