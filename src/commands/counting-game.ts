@@ -131,6 +131,8 @@ export default {
                     // Handle interactions for string select menus
                     const selectedOption: any = componentInteraction.values[0];
                     selectedMultiplier = +selectedOption;
+                    // Set default option for multiplier select menu
+                    selectMultiplier.options.forEach((item) => item.setDefault(item.data.value === channel?.multiplier));
 
                     // Update the reply with a message indicating the multiplier change
                     await componentInteraction.editReply({
@@ -140,9 +142,6 @@ export default {
                     // Update channel data in the database if it exists
                     if (channel) {
                         channel = await channel.setMultiplier(selectedMultiplier);
-
-                        // Set default option for multiplier select menu
-                        selectMultiplier.options.forEach((item) => item.setDefault(item.data.value === channel?.multiplier));
 
                         // Update the reply with new embed and components
                         await interaction.editReply({
