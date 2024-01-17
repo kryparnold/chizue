@@ -58,7 +58,7 @@ export class Config {
     async save() {
         // Writing the configuration data to the "config.json" file
         await fs.promises.writeFile(
-            "../config.json",
+            "config.json",
             JSON.stringify({
                 guildId: this.guildId,
                 logChannelId: this.logChannelId,
