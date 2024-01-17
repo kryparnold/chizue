@@ -74,6 +74,21 @@ export default {
 						.setDescriptionLocalization("tr", "Bot durumu.")
 						.setRequired(true)
 				)
+		)
+		.addSubcommand((acceptEmoteCommand) =>
+			acceptEmoteCommand
+				.setName("accept-emote")
+				.setNameLocalization("tr", "kabul-emoji")
+				.setDescription("To set the accept emote of bot.")
+				.setDescriptionLocalization("tr", "Botun kabul emojisini ayarlamak için.")
+				.addStringOption((option) =>
+					option
+						.setName("emote")
+						.setNameLocalization("tr", "emoji")
+						.setDescription("Accept emote of the bot")
+						.setDescriptionLocalization("tr", "Botun kabul emojisi")
+						.setRequired(true)
+				)
 		),
 	// Guild ID from the configuration
 	guildId: client.config.guildId,
@@ -141,17 +156,26 @@ export default {
 				ephemeral: true,
 			});
 		} else if (subCommand === "status") {
-            // Getting status option from interaction
+			// Getting status option from interaction
 			const statusOption = interaction.options.getString("status", true);
 
-            // Setting the client status with given status option
-			await client.setStatus(statusOption);
+			// Setting the client status with given status option
+			client.setStatus(statusOption);
 
-            // Responding to the interaction with success message
+			// Responding to the interaction with success message
 			await interaction.reply({
 				content: `Status successfully changed to \`\`${statusOption}\`\``,
 				ephemeral: true,
 			});
+		} else if (subCommand === "accept-emote") {
+            const emote = interaction.options.getString("emote",true);
+
+            client.setAcceptEmote(emote);
+
+            await interaction.reply({
+                content: `Accept emote successfully set to: ${emote}`,
+                ephemeral: true
+            });
 		}
 	},
 };
