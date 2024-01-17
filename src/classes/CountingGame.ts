@@ -49,8 +49,8 @@ export class CountingGame {
             return;
         } else if (integer != this.recentNumber + this.multiplier) {
             // If the input number is incorrect, react with a deny emoji, send the correct number, and reset the game state
-            await message.react(client.emotes.deny);
-            await message.channel.send(this.multiplier.toString()).then(async (message) => await message.react(client.emotes.accept));
+            await message.react(client.config.denyEmote);
+            await message.channel.send(this.multiplier.toString()).then(async (message) => await message.react(client.config.acceptEmote));
             this.recentNumber = this.multiplier;
             this.recentPlayerId = "";
             await this.save();
@@ -59,7 +59,7 @@ export class CountingGame {
         }
 
         // If the input number is correct, react with an accept emoji and update the game state
-        await message.react(client.emotes.accept);
+        await message.react(client.config.acceptEmote);
         this.recentNumber = integer;
         this.recentPlayerId = message.author.id;
         await this.save();

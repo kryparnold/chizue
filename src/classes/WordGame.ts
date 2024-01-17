@@ -76,7 +76,7 @@ export class WordGame {
         if (word.endsWith("ğ") || this.randomWords.includes(word)) {
             if (this.words.length >= this.limit && this.mode !== GameMode.Endless) {
                 // Reacting to the message with an emoji and restarting the game
-                await message.react(client.emotes.accept).catch(() => {});
+                await message.react(client.config.acceptEmote).catch(() => {});
                 await this.restartGame(word, player);
                 // Release the processing flag
                 this.isProcessing = false;
@@ -102,7 +102,7 @@ export class WordGame {
             }
         } else {
             // Reacting to the message with an emoji and adding the word to the game
-            await message.react(client.emotes.accept).catch(() => {});
+            await message.react(client.config.acceptEmote).catch(() => {});
             await this.addWord(word, player);
             // Release the processing flag
             this.isProcessing = false;

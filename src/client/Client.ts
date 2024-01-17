@@ -50,10 +50,6 @@ class BotClient extends Client {
             execute: (interaction: ButtonInteraction, params: ButtonParams) => Promise<void>;
         }
     >();
-    emotes = {
-        accept: this.config.acceptEmote,
-        deny: this.config.denyEmote,
-    };
 
     constructor() {
         super({
