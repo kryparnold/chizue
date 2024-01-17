@@ -116,11 +116,147 @@ export default {
 
         // Continue looping until a component interaction or a timeout occurs
         while (waitForComponent) {
-            // Wait for a message component interaction with a timeout of 90 seconds
-            const componentInteraction = await reply.awaitMessageComponent({ time: 90000 });
+            try {
+                // Wait for a message component interaction with a timeout of 90 seconds
+                const componentInteraction = await reply.awaitMessageComponent({ time: 90000 });
 
-            // If no component interaction within the timeout, update reply and exit loop
-            if (!componentInteraction) {
+                // Extract custom ID from the interaction
+                const customId = componentInteraction.customId;
+
+                // Defer the reply for ephemeral interactions
+                await componentInteraction.deferReply({ ephemeral: true });
+
+                // Check if the interaction is a StringSelectMenu
+                if (componentInteraction.isStringSelectMenu()) {
+                    // Handle interactions for string select menus
+                    const selectedOption: any = componentInteraction.values[0];
+                    selectedMultiplier = +selectedOption;
+
+                    // Update the reply with a message indicating the multiplier change
+                    await componentInteraction.editReply({
+                        content: client.getLocalization<true>(userLocale, "commandCountingGameMultiplierChange")(selectedOption),
+                    });
+
+                    // Update channel data in the database if it exists
+                    if (channel) {
+                        channel = await channel.setMultiplier(selectedMultiplier);
+
+                        // Set default option for multiplier select menu
+                        selectMultiplier.options.forEach((item) => item.setDefault(item.data.value === channel?.multiplier));
+
+                        // Update the reply with new embed and components
+                        await interaction.editReply({
+                            embeds: [
+                                embed.setFields(
+                                    await this.getFields(userLocale, {
+                                        multiplier: channel.multiplier,
+                                        numberCount: channel.recentNumber / channel.multiplier,
+                                    })
+                                ),
+                            ],
+                            components: rows,
+                        });
+                    }
+                } else if (componentInteraction.isButton()) {
+                    // Handle interactions for buttons
+                    if (customId.endsWith("setup")) {
+                        // Handle setup button click
+
+                        // Create a counting game and update the reply with relevant information
+                        channel = await client.games.createCountingGame({
+                            id: selectedChannel.id,
+                            multiplier: selectedMultiplier,
+                            guildId: interaction.guildId as string,
+                            recentNumber: selectedMultiplier,
+                        });
+
+                        // Update the reply with a success message and modified components
+                        await interaction.editReply({
+                            embeds: [embed],
+                            components: rows.map((item, index) => {
+                                if (index === rows.length - 1) {
+                                    item.components[0].setDisabled(true);
+                                    item.components[1].setDisabled(false);
+                                }
+
+                                return item;
+                            }),
+                        });
+                        await componentInteraction.editReply({
+                            content: client.getLocalization(userLocale, "commandGameSetupSuccess"),
+                        });
+                    } else if (customId.endsWith("remove")) {
+                        // Handle remove button click
+
+                        // Create a confirmation embed
+                        const confirmEmbed = new EmbedBuilder()
+                            .setTitle(client.getLocalization(userLocale, "confirmRemove"))
+                            .setDescription(client.getLocalization(userLocale, "confirmRemoveDesc"))
+                            .setColor(Colors.Red)
+                            .setFooter(userFooter);
+
+                        // Create a confirmation button
+                        const confirmButton = new ButtonBuilder()
+                            .setCustomId("_confirm")
+                            .setLabel(client.getLocalization(userLocale, "buttonConfirm"))
+                            .setStyle(ButtonStyle.Primary);
+
+                        // Create an action row with the confirmation button
+                        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(confirmButton);
+
+                        // Display a confirmation message and button
+                        const componentReply = await componentInteraction.editReply({
+                            embeds: [confirmEmbed],
+                            components: [row],
+                        });
+
+                        // Await user confirmation or timeout
+                        componentReply
+                            .awaitMessageComponent({ time: 15000, componentType: ComponentType.Button })
+                            .then(async (buttonInteraction) => {
+                                // Handle user confirmation
+                                await buttonInteraction.deferReply({ ephemeral: true });
+
+                                // Delete the Counting Game from the database upon confirmation
+                                await client.games.delete(channel?.id);
+                                channel = undefined;
+
+                                // Update the reply with a success message and modified components
+                                interaction.editReply({
+                                    embeds: [embed],
+                                    components: rows.map((item, index) => {
+                                        if (index === rows.length - 1) {
+                                            item.components[1].setDisabled(true);
+                                            item.components[0].setDisabled(false);
+                                        }
+
+                                        return item;
+                                    }),
+                                });
+
+                                // Update the confirmation reply to indicate successful removal
+                                buttonInteraction.editReply({
+                                    content: client.getLocalization(userLocale, "commandGameRemoveSuccess"),
+                                });
+
+                                // Update the original interaction reply to indicate removal
+                                componentInteraction.editReply({
+                                    embeds: [confirmEmbed.setDescription(client.getLocalization(userLocale, "confirmUsed"))],
+                                    components: [],
+                                });
+                            })
+                            .catch(() => {
+                                // Handle timeout for confirmation
+
+                                // Update the confirmation reply to indicate timeout
+                                componentInteraction.editReply({
+                                    embeds: [confirmEmbed.setDescription(client.getLocalization(userLocale, "confirmRemoveExpire"))],
+                                    components: [],
+                                });
+                            });
+                    }
+                }
+            } catch (err) {
                 waitForComponent = false;
 
                 // Update the reply with a timeout message
@@ -129,142 +265,6 @@ export default {
                     embeds: [embed],
                     components: [],
                 });
-            }
-
-            // Extract custom ID from the interaction
-            const customId = componentInteraction.customId;
-
-            // Defer the reply for ephemeral interactions
-            await componentInteraction.deferReply({ ephemeral: true });
-
-            // Check if the interaction is a StringSelectMenu
-            if (componentInteraction.isStringSelectMenu()) {
-                // Handle interactions for string select menus
-                const selectedOption: any = componentInteraction.values[0];
-                selectedMultiplier = +selectedOption;
-
-                // Update the reply with a message indicating the multiplier change
-                await componentInteraction.editReply({
-                    content: client.getLocalization<true>(userLocale, "commandCountingGameMultiplierChange")(selectedOption),
-                });
-
-                // Update channel data in the database if it exists
-                if (channel) {
-                    channel = await channel.setMultiplier(selectedMultiplier);
-
-                    // Set default option for multiplier select menu
-                    selectMultiplier.options.forEach((item) => item.setDefault(item.data.value === channel?.multiplier));
-
-                    // Update the reply with new embed and components
-                    await interaction.editReply({
-                        embeds: [
-                            embed.setFields(
-                                await this.getFields(userLocale, {
-                                    multiplier: channel.multiplier,
-                                    numberCount: channel.recentNumber / channel.multiplier,
-                                })
-                            ),
-                        ],
-                        components: rows,
-                    });
-                }
-            } else if (componentInteraction.isButton()) {
-                // Handle interactions for buttons
-                if (customId.endsWith("setup")) {
-                    // Handle setup button click
-
-                    // Create a counting game and update the reply with relevant information
-                    channel = await client.games.createCountingGame({
-                        id: selectedChannel.id,
-                        multiplier: selectedMultiplier,
-                        guildId: interaction.guildId as string,
-                        recentNumber: selectedMultiplier,
-                    });
-
-                    // Update the reply with a success message and modified components
-                    await interaction.editReply({
-                        embeds: [embed],
-                        components: rows.map((item, index) => {
-                            if (index === rows.length - 1) {
-                                item.components[0].setDisabled(true);
-                                item.components[1].setDisabled(false);
-                            }
-
-                            return item;
-                        }),
-                    });
-                    await componentInteraction.editReply({
-                        content: client.getLocalization(userLocale, "commandGameSetupSuccess"),
-                    });
-                } else if (customId.endsWith("remove")) {
-                    // Handle remove button click
-
-                    // Create a confirmation embed
-                    const confirmEmbed = new EmbedBuilder()
-                        .setTitle(client.getLocalization(userLocale, "confirmRemove"))
-                        .setDescription(client.getLocalization(userLocale, "confirmRemoveDesc"))
-                        .setColor(Colors.Red)
-                        .setFooter(userFooter);
-
-                    // Create a confirmation button
-                    const confirmButton = new ButtonBuilder()
-                        .setCustomId("_confirm")
-                        .setLabel(client.getLocalization(userLocale, "buttonConfirm"))
-                        .setStyle(ButtonStyle.Primary);
-
-                    // Create an action row with the confirmation button
-                    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(confirmButton);
-
-                    // Display a confirmation message and button
-                    const componentReply = await componentInteraction.editReply({
-                        embeds: [confirmEmbed],
-                        components: [row],
-                    });
-
-                    // Await user confirmation or timeout
-                    componentReply
-                        .awaitMessageComponent({ time: 15000, componentType: ComponentType.Button })
-                        .then(async (buttonInteraction) => {
-                            // Handle user confirmation
-
-                            // Delete the Counting Game from the database upon confirmation
-                            await client.games.delete(channel?.id);
-                            channel = undefined;
-
-                            // Update the reply with a success message and modified components
-                            interaction.editReply({
-                                embeds: [embed],
-                                components: rows.map((item, index) => {
-                                    if (index === rows.length - 1) {
-                                        item.components[1].setDisabled(true);
-                                        item.components[0].setDisabled(false);
-                                    }
-
-                                    return item;
-                                }),
-                            });
-
-                            // Update the confirmation reply to indicate successful removal
-                            buttonInteraction.editReply({
-                                content: client.getLocalization(userLocale, "commandGameRemoveSuccess"),
-                            });
-
-                            // Update the original interaction reply to indicate removal
-                            componentInteraction.editReply({
-                                embeds: [confirmEmbed.setDescription(client.getLocalization(userLocale, "confirmUsed"))],
-                                components: [],
-                            });
-                        })
-                        .catch(() => {
-                            // Handle timeout for confirmation
-
-                            // Update the confirmation reply to indicate timeout
-                            componentInteraction.editReply({
-                                embeds: [confirmEmbed.setDescription(client.getLocalization(userLocale, "confirmRemoveExpire"))],
-                                components: [],
-                            });
-                        });
-                }
             }
         }
     },
