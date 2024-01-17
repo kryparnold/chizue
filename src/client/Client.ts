@@ -66,8 +66,8 @@ class BotClient extends Client {
 
 	// Initialize various components of the bot
 	async init() {
-		this.updateStatus();
-		setInterval(() => this.updateStatus(), 600000);
+		this.updateStatus(this.config.clientStatus);
+		setInterval(() => this.updateStatus(this.config.clientStatus), 600000);
 		await this.initLogger();
 		await this.initStats();
 		await this.initCommands();
@@ -78,8 +78,8 @@ class BotClient extends Client {
 	}
 
 	// Method to update client status
-	updateStatus() {
-		this.user?.setActivity(this.config.clientStatus, { type: 4 });
+	updateStatus(status: string) {
+		this.user?.setActivity(status, { type: 4 });
 	}
 
 	// Handle chat input commands
@@ -276,6 +276,11 @@ class BotClient extends Client {
 	async playerCount() {
 		return await prisma.player.count();
 	}
+
+    // Method to set client status
+    async setStatus(status: string) {
+        this.updateStatus(status);
+    }
 }
 
 // Create an instance of the bot client
