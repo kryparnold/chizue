@@ -286,6 +286,26 @@ class BotClient extends Client {
     setAcceptEmote(emote: string) {
         this.config.acceptEmote = emote;
     }
+
+    // Method to make announcement in all game channels
+    async makeAnnouncement(announcement: string) {
+        const gameChannelIds = this.games.getIds();
+        let announcementCounter = 0;
+
+        for(let i = 0; i < gameChannelIds.length; i++) {
+            const channelId = gameChannelIds[i];
+            const channel = await client.channels.fetch(channelId) as TextChannel;
+
+            if(!channel) {
+                throw "Invalid game channel.";
+            }
+
+            announcementCounter++;
+            await channel.send(announcement);
+        }
+
+        return announcementCounter;
+    }
 }
 
 // Create an instance of the bot client
