@@ -363,13 +363,16 @@ class BotClient extends Client {
     }
 
     // Method to set client status
-    setStatus(status: string) {
+    async setStatus(status: string) {
         this.updateStatus(status);
+        this.config.clientStatus = status;
+        await this.config.save();
     }
 
     // Method to set client accept emote
-    setAcceptEmote(emote: string) {
+    async setAcceptEmote(emote: string) {
         this.config.acceptEmote = emote;
+        await this.config.save();
     }
 
     // Method to make announcement in all game channels
