@@ -35,7 +35,7 @@ export class Logger {
         this.logPool.length = 0;
 
         // Sending the concatenated log message to the log channel
-        this.logChannel.send(logMessage);
+        await this.logChannel.send(logMessage);
     }
 
     // Method to stop the logger, clear logs, and send remaining logs
