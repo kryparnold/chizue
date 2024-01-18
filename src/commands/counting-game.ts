@@ -126,11 +126,11 @@ export default {
                 // Defer the reply for ephemeral interactions
                 await componentInteraction.deferReply({ ephemeral: true });
 
-                // Check if the interaction is a StringSelectMenu
                 if (componentInteraction.isStringSelectMenu()) {
                     // Handle interactions for string select menus
                     const selectedOption: any = componentInteraction.values[0];
                     selectedMultiplier = +selectedOption;
+
                     // Set default option for multiplier select menu
                     selectMultiplier.options.forEach((item) => item.setDefault(item.data.value === channel?.multiplier));
 
@@ -141,6 +141,8 @@ export default {
 
                     // Update channel data in the database if it exists
                     if (channel) {
+
+                        // Set the channel mutliplier with selected mutliplier
                         channel = await channel.setMultiplier(selectedMultiplier);
 
                         // Update the reply with new embed and components
@@ -169,18 +171,17 @@ export default {
                             recentNumber: selectedMultiplier,
                         });
 
-                        // Update the reply with a success message and modified components
-                        await interaction.editReply({
-                            embeds: [embed],
-                            components: rows.map((item, index) => {
-                                if (index === rows.length - 1) {
-                                    item.components[0].setDisabled(true);
-                                    item.components[1].setDisabled(false);
-                                }
+                        // Enable the remove button and disable the setup button
+                        setupButton.data.disabled = true;
+                        removeButton.data.disabled = false;
 
-                                return item;
-                            }),
+                        // Update the initial reply with modified components
+                        interaction.editReply({
+                            embeds: [embed],
+                            components: rows,
                         });
+
+                        // Reply with success message
                         await componentInteraction.editReply({
                             content: client.getLocalization(userLocale, "commandGameSetupSuccess"),
                         });
@@ -220,17 +221,14 @@ export default {
                                 await client.games.delete(channel?.id);
                                 channel = undefined;
 
-                                // Update the reply with a success message and modified components
+                                // Disable the remove button and enable the setup button
+                                setupButton.data.disabled = false;
+                                removeButton.data.disabled = true;
+
+                                // Update the reply with a success message
                                 interaction.editReply({
                                     embeds: [embed],
-                                    components: rows.map((item, index) => {
-                                        if (index === rows.length - 1) {
-                                            item.components[1].setDisabled(true);
-                                            item.components[0].setDisabled(false);
-                                        }
-
-                                        return item;
-                                    }),
+                                    components: rows,
                                 });
 
                                 // Update the confirmation reply to indicate successful removal
@@ -256,6 +254,7 @@ export default {
                     }
                 }
             } catch (err) {
+                // Exit the loop
                 waitForComponent = false;
 
                 // Update the reply with a timeout message

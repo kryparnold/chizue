@@ -161,25 +161,29 @@ export default {
                     if (customId.endsWith("locale")) {
                         // Handle locale change
                         channelPreferences.locale = selectedOption;
-                        channel = await channel?.setLocale(selectedOption);
+                        if (channel) {
+                            channel = await channel.setLocale(selectedOption);
+                        }
                         await componentInteraction.editReply({
                             content: client.getLocalization<true>(userLocale, "commandWordGameLangChange")(localizedOption),
                         });
                     } else if (customId.endsWith("mode")) {
                         // Handle game mode change
                         channelPreferences.mode = selectedOption;
-                        channel = await channel?.setMode(selectedOption);
+                        if (channel) {
+                            channel = await channel.setMode(selectedOption);
+                        }
                         await componentInteraction.editReply({
                             content: client.getLocalization<true>(userLocale, "commandWordGameModeChange")(localizedOption),
                         });
                     }
 
+                    // Set default options for locale and mode select menus
+                    selectLocale.options.forEach((item) => item.setDefault(item.data.value === channel?.locale));
+                    selectMode.options.forEach((item) => item.setDefault(item.data.value === channel?.mode));
+
                     // Update channel data in the database if it exists
                     if (channel) {
-                        // Set default options for locale and mode select menus
-                        selectLocale.options.forEach((item) => item.setDefault(item.data.value === channel?.locale));
-                        selectMode.options.forEach((item) => item.setDefault(item.data.value === channel?.mode));
-
                         await interaction.editReply({
                             embeds: [
                                 embed.setFields(
@@ -225,17 +229,17 @@ export default {
                         selectLocale.options.forEach((item) => item.setDefault(item.data.value === channel?.locale));
                         selectMode.options.forEach((item) => item.setDefault(item.data.value === channel?.mode));
 
+                        // Enable the remove button and disable the setup button
+                        setupButton.data.disabled = true;
+                        removeButton.data.disabled = false;
+
+                        // Update the initial reply
                         await interaction.editReply({
                             embeds: [embed],
-                            components: rows.map((item, index) => {
-                                if (index === rows.length - 1) {
-                                    item.components[0].setDisabled(true);
-                                    item.components[1].setDisabled(false);
-                                }
-
-                                return item;
-                            }),
+                            components: rows,
                         });
+
+                        // Reply the interaction with a success message
                         await componentInteraction.editReply({
                             content: client.getLocalization(userLocale, "commandGameSetupSuccess"),
                         });
@@ -272,16 +276,13 @@ export default {
                                 embed.data.description = client.getLocalization(userLocale, "commandGameDoesntExists");
                                 embed.data.fields = [];
 
+                                // Disable the remove button and enable the setup button
+                                setupButton.data.disabled = false;
+                                removeButton.data.disabled = true;
+
                                 interaction.editReply({
                                     embeds: [embed],
-                                    components: rows.map((item, index) => {
-                                        if (index === rows.length - 1) {
-                                            item.components[1].setDisabled(true);
-                                            item.components[0].setDisabled(false);
-                                        }
-
-                                        return item;
-                                    }),
+                                    components: rows,
                                 });
 
                                 buttonInteraction.editReply({
