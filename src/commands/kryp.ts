@@ -89,6 +89,13 @@ export default {
                         .setDescriptionLocalization("tr", "Botun kabul emojisi")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand((quitCommand) =>
+            quitCommand
+                .setName("quit")
+                .setNameLocalization("tr", "çıkış")
+                .setDescription("To quit the bot safely")
+                .setDescriptionLocalization("tr", "Botu güvenli bir şekilde kapatmak için.")
         ),
     // Guild ID from the configuration
     guildId: client.config.guildId,
@@ -195,6 +202,13 @@ export default {
             await interaction.editReply({
                 content: `**${announcementCounter}** announcements made successfully.`,
             });
+        } else if (subCommand === "quit") {
+            await interaction.reply({
+                content: "Quitting the bot safely.",
+                ephemeral: true
+            });
+
+            client.quit();
         }
     },
 };
