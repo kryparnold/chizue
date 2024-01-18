@@ -24,6 +24,11 @@ export class Players {
         return this.cache.get(id);
     }
 
+    // Method to retrieve player count by cache size
+    count() {
+        return this.cache.size;
+    }
+
     // Asynchronous method to create a new player, initializing their entry in the database and adding the player to the cache
     async create(playerId: string, guildId: string, gameId: string) {
         // Creating a new raw player entry in the database
