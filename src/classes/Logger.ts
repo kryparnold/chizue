@@ -11,6 +11,7 @@ export class Logger {
 
     // Array to store log messages before sending them to the channel
     private logPool: string[] = [];
+    private logInterval!: NodeJS.Timeout;
 
     // Initialization method for the Logger class
     async init(logChannel: TextChannel) {
@@ -18,19 +19,32 @@ export class Logger {
         this.logChannel = logChannel;
 
         // Setting up an interval to periodically send log messages to the channel
-        setInterval(() => {
-            // Check if there are any log messages in the pool
-            if (this.logPool.length === 0) return;
+        // Sending log messages every 1.5 seconds
+        this.logInterval = setInterval(async () => await this.sendLogs(), 1500);
+    }
 
-            // Concatenate log messages into a single string separated by newlines
-            const logMessage = this.logPool.join("\n");
+    // Method to send accumulated log messages to the channel
+    async sendLogs() {
+        // Check if there are any log messages in the pool
+        if (this.logPool.length === 0) return;
 
-            // Clearing the log pool
-            this.logPool.length = 0;
+        // Concatenate log messages into a single string separated by newlines
+        const logMessage = this.logPool.join("\n");
 
-            // Sending the concatenated log message to the log channel
-            this.logChannel.send(logMessage);
-        }, 1500); // Sending log messages every 1.5 seconds
+        // Clearing the log pool
+        this.logPool.length = 0;
+
+        // Sending the concatenated log message to the log channel
+        this.logChannel.send(logMessage);
+    }
+
+    // Method to stop the logger, clear logs, and send remaining logs
+    async stop() {
+        // Stopping the interval with its reference
+        clearInterval(this.logInterval);
+
+        // Checking the logs one last time before stopping
+        await this.sendLogs();
     }
 
     // Method for logging messages
