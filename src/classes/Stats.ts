@@ -6,7 +6,7 @@ import { writeFileSync } from "fs";
 
 // Define a class called Stats to encapsulate statistics-related functionality
 export class Stats {
-    // Private properties to store Discord TextChannel, Message, and various statistics
+    // Private properties to store Discord TextChannel, Message, Intervals and various statistics
     private statsChannel!: TextChannel;
     private statsMessage!: Message;
     private all!: IStats;
@@ -14,6 +14,7 @@ export class Stats {
         hourly: IStats;
         daily: IStats;
     };
+    private updateIntervals!: NodeJS.Timeout[];
 
     // Initialization method, takes a TextChannel and Message as parameters
     async init(statsChannel: TextChannel, statsMessage: Message) {
@@ -35,9 +36,11 @@ export class Stats {
         this.statsMessage = statsMessage;
 
         // Set up periodic updates using setInterval
-        setInterval(() => this.updateStats(), 60000);
-        setInterval(() => this.sendStats("Saatlik", "hourly"), Utils.hourToMs(3));
-        setInterval(() => this.sendStats("Günlük", "daily"), Utils.hourToMs(24));
+        this.updateIntervals = [
+            setInterval(() => this.updateStats(), 60000),
+            setInterval(() => this.sendStats("Saatlik", "hourly"), Utils.hourToMs(3)),
+            setInterval(() => this.sendStats("Günlük", "daily"), Utils.hourToMs(24)),
+        ];
     }
 
     // Update the statistics displayed in the Discord message
@@ -73,6 +76,19 @@ export class Stats {
         this.all.wordCount += count;
         this.periodicStats.daily.wordCount += count;
         this.periodicStats.hourly.wordCount += count;
+    }
+
+    // Method to stop intervals
+    async stopUpdating() {
+        for (let i = 0; i < this.updateIntervals.length; i++) {
+            const interval = this.updateIntervals[i];
+
+            clearInterval(interval);
+        }
+
+        await this.updateStats();
+        await this.sendStats("Saatlik", "hourly");
+        await this.sendStats("Günlük", "daily");
     }
 
     // Generate an embed with all statistics, including games and guilds
