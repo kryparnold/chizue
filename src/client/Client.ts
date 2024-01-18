@@ -10,7 +10,7 @@ import {
     SlashCommandBuilder,
     TextChannel,
 } from "discord.js";
-import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players, ButtonParams, Config, ProcessTracker, Process, ProcessTypes } from "@/globals";
+import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players, ButtonParams, Config, ProcessTracker, TProcess, ProcessTypes } from "@/globals";
 
 // Importing configuration and file system modules
 import { readdirSync } from "fs";
@@ -93,7 +93,7 @@ class BotClient extends Client {
 
         try {
             // Create a Slash Command Process to track the command execution
-            const commandProcess: Process = {
+            const commandProcess: TProcess = {
                 id: randomUUID(),
                 startTime: new Date().getTime(),
                 type: ProcessTypes.SlashCommand,
@@ -153,7 +153,7 @@ class BotClient extends Client {
 
         try {
             // Create a Button Process to track the button execution
-            const buttonProcess: Process = {
+            const buttonProcess: TProcess = {
                 id: randomUUID(),
                 startTime: new Date().getTime(),
                 type: ProcessTypes.Button,
@@ -209,7 +209,7 @@ class BotClient extends Client {
             // Check if the game type is WordGame and the message content is a valid word.
 
             // Create a Word Process to track the word-related operation
-            const wordProcess: Process = {
+            const wordProcess: TProcess = {
                 id: randomUUID(),
                 startTime: new Date().getTime(),
                 type: ProcessTypes.Word,
@@ -231,7 +231,7 @@ class BotClient extends Client {
             // Check if the game type is CountingGame and the message content is a valid number.
 
             // Create a Number Process to track the number-related operation
-            const numberProcess: Process = {
+            const numberProcess: TProcess = {
                 id: randomUUID(),
                 startTime: new Date().getTime(),
                 type: ProcessTypes.Number,
@@ -371,24 +371,58 @@ class BotClient extends Client {
         await this.config.save();
     }
 
-    // Method to make announcement in all game channels
+    // Method to make announcements in all game channels
     async makeAnnouncement(announcement: string) {
+        // Get the IDs of all game channels
         const gameChannelIds = this.games.getIds();
+
+        // Counter to track the number of announcements made
         let announcementCounter = 0;
 
+        // Iterate through each game channel
         for (let i = 0; i < gameChannelIds.length; i++) {
+            // Retrieve the channel ID
             const channelId = gameChannelIds[i];
+
+            // Fetch the TextChannel using the client
             const channel = (await client.channels.fetch(channelId)) as TextChannel;
 
+            // Check if the channel is valid
             if (!channel) {
                 throw "Invalid game channel.";
             }
 
+            // Increment the announcement counter and send the announcement to the channel
             announcementCounter++;
             await channel.send(announcement);
         }
 
+        // Return the total number of announcements made
         return announcementCounter;
+    }
+
+    // Method to quit the bot
+    async quit() {
+        // Set bot status to Quitting
+        this.status = BotStatuses.Quitting;
+
+        // Get the count of active processes
+        const processCount = this.processes.count();
+
+        // Log the number of processes waiting to end
+        this.logger.log(`Waiting ${processCount} processes to end.`);
+
+        // End all processes
+        await this.processes.awaitProcessCompletion();
+
+        // Stop updating statistics
+        await this.stats.stopUpdating();
+
+        // Stop the logger
+        await this.logger.stop();
+
+        // Destroy the bot
+        await this.destroy();
     }
 }
 
