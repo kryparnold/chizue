@@ -131,4 +131,4 @@ interface INumberProcess extends BaseProcess {
     };
 }
 
-export type Process = ISlashCommandProcess | IButtonProcess | IWordProcess | INumberProcess;
+export type TProcess = ISlashCommandProcess | IButtonProcess | IWordProcess | INumberProcess;
