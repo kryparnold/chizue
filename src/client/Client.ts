@@ -35,6 +35,7 @@ class BotClient extends Client {
     processes: ProcessTracker;
     config = new Config();
     status = BotStatuses.Initializing;
+    statusInterval!: NodeJS.Timeout;
     activeWordles: string[] = [];
     private commands = new Collection<
         string,
@@ -67,7 +68,7 @@ class BotClient extends Client {
     // Initialize various components of the bot
     async init() {
         this.updateStatus(this.config.clientStatus);
-        setInterval(() => this.updateStatus(this.config.clientStatus), 600000);
+        this.statusInterval = setInterval(() => this.updateStatus(this.config.clientStatus), 600000);
         await this.initLogger();
         await this.initStats();
         await this.initCommands();
@@ -405,19 +406,24 @@ class BotClient extends Client {
     async quit() {
         // Set bot status to Quitting
         this.status = BotStatuses.Quitting;
-
-        // Get the count of active processes
-        const processCount = this.processes.count();
-
-        // Log the number of processes waiting to end
-        this.logger.log(`Waiting ${processCount} processes to end.`);
+        client.logger.log(`Quit process started.`)
 
         // End all processes
         await this.processes.awaitProcessCompletion();
+        client.logger.log(`All active processes ended, contiuning.`);
 
         // Stop updating statistics
         await this.stats.stopUpdating();
+        client.logger.log(`All active statistic updaters cleared, contiuning.`);
 
+        // Stop updating status
+        clearInterval(this.statusInterval);
+
+        // Disconnect from the database
+        await prisma.$disconnect();
+        client.logger.log(`Disconnected from database, contiuning.`)
+
+        client.logger.log(`Ending logger, cya.`)
         // Stop the logger
         await this.logger.stop();
 
