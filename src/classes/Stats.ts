@@ -1,35 +1,27 @@
-// Import necessary modules and types from Discord.js, local files, and Node.js
 import { IStats } from "@/types";
 import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { Utils, client } from "@/globals";
-import { writeFileSync } from "fs";
+import fs from "fs/promises";
 
-// Define a class called Stats to encapsulate statistics-related functionality
 export class Stats {
-    // Private properties to store Discord TextChannel, Message, Intervals and various statistics
+    // Properties to store Discord TextChannel, Message, Intervals, and various statistics
     private statsChannel!: TextChannel;
     private statsMessage!: Message;
     private all!: IStats;
-    private periodicStats!: {
-        hourly: IStats;
-        daily: IStats;
-    };
+    private periodicStats!: { hourly: IStats; daily: IStats };
     private updateIntervals!: NodeJS.Timeout[];
 
-    // Initialization method, takes a TextChannel and Message as parameters
+    // Initialization method
     async init(statsChannel: TextChannel, statsMessage: Message) {
         // Dynamically import statistics from a specified path
-        const stats = (await import(client.config.statsPath)).default;
-        // Get current time, player count, and wiped data for initialization
+        const stats = await import(client.config.statsPath);
         const startTime = new Date().getTime();
         const playerCount = await client.playerCount();
         const wipedData = await this.getWipedData();
-        // Initialize all statistics and periodic statistics
-        this.all = { ...stats, playerCount, startTime };
-        this.periodicStats = {
-            daily: wipedData,
-            hourly: wipedData,
-        };
+
+        // Initialize statistics and periodic statistics
+        this.all = { ...stats.default, playerCount, startTime };
+        this.periodicStats = { daily: wipedData, hourly: wipedData };
 
         // Assign provided TextChannel and Message to class properties
         this.statsChannel = statsChannel;
@@ -45,30 +37,82 @@ export class Stats {
 
     // Update the statistics displayed in the Discord message
     private async updateStats() {
-        await this.statsMessage.edit({
-            embeds: [await this.getAllStatsEmbed()],
-        });
-        await this.saveStats();
+        // Check if there are changes before updating
+        const embed = await this.getAllStatsEmbed();
+        if (this.statsChanged(this.all, this.periodicStats.hourly)) {
+            await this.statsMessage.edit({ embeds: [embed] });
+            await this.saveStats();
+        }
     }
 
     // Save statistics to a file
-    async saveStats() {
-        writeFileSync(client.config.statsPath, JSON.stringify({ wordCount: this.all.wordCount }, null, 4), { encoding: "utf-8" });
+    private async saveStats() {
+        const { wordCount } = this.all;
+        await fs.writeFile(client.config.statsPath, JSON.stringify({ wordCount }, null, 4), { encoding: "utf-8" });
     }
 
     // Send statistics for a specific period to the Discord channel
-    async sendStats(periodName: string, periodKey: keyof typeof this.periodicStats) {
+    private async sendStats(periodName: string, periodKey: keyof typeof this.periodicStats) {
         // Extract player count, word count, game count, and guild count for the specified period
-        const { playerCount, wordCount, gameCount, guildCount } = Object.assign({}, this.periodicStats[periodKey]);
-        // Update the periodic statistics for the next period
+        const stats = Object.assign({}, this.periodicStats[periodKey]);
         this.periodicStats[periodKey] = await this.getWipedData();
 
-        // Create and send an embed with the periodic statistics
-        const periodicStatsEmbed = (await this.getStatsEmbed({ wordCount, playerCount, gameCount, guildCount })).setTitle(`${periodName} İstatistik Raporu`);
+        // Check if there are changes before sending
+        if (this.statsChanged(stats, this.periodicStats[periodKey])) {
+            const embed = await this.getStatsEmbed(stats);
+            await this.statsChannel.send({ embeds: [embed.setTitle(`${periodName} İstatistik Raporu`)] });
+        }
+    }
 
-        await this.statsChannel.send({
-            embeds: [periodicStatsEmbed],
-        });
+    // Generate an embed with all statistics, including games and guilds
+    private async getAllStatsEmbed() {
+        const guildCount = client.guilds.cache.size;
+        const gameCount = client.games.count();
+        const playerCount = await client.playerCount();
+
+        // Build and return the embed with all statistics
+        return new EmbedBuilder()
+            .setTitle("Veriler & İstatistikler")
+            .setColor(Colors.Blue)
+            .setFields(
+                { name: "Sunucu Sayısı", value: guildCount.toString() },
+                { name: "Oyun Sayısı", value: gameCount.toString() },
+                { name: "Kelime Sayısı", value: this.all.wordCount.toString() },
+                { name: "Oyuncu Sayısı", value: playerCount.toString() }
+            );
+    }
+
+    // Generate an embed with specific statistics, including games and guilds
+    private async getStatsEmbed(stats: { wordCount: number; playerCount: number; gameCount: number; guildCount: number }) {
+        const playerCount = client.players.count();
+        const gameCount = client.games.count();
+        const guildCount = client.guilds.cache.size;
+
+        // Build and return the embed with specific statistics
+        return new EmbedBuilder()
+            .setColor(Colors.Green)
+            .setAuthor({ name: client.user?.username as string, iconURL: client.user?.avatarURL() as string })
+            .setFields(
+                { name: "Yazılan Kelime", value: stats.wordCount.toString() },
+                { name: "Eklenen Oyuncu", value: (playerCount - stats.playerCount).toString() },
+                { name: "Oyun Sayısı", value: (gameCount - stats.gameCount).toString() },
+                { name: "Sunucu Sayısı", value: (guildCount - stats.guildCount).toString() }
+            );
+    }
+
+    // Generate wiped data for periodic statistics
+    private async getWipedData() {
+        const playerCount = await client.playerCount();
+        const gameCount = client.games.count();
+        const guildCount = client.guilds.cache.size;
+
+        // Return wiped data with initial word count, player count, game count, guild count, and start time
+        return { wordCount: 0, playerCount, gameCount, guildCount, startTime: new Date().getHours() };
+    }
+
+    // Check if statistics have changed
+    private statsChanged(statsA: any, statsB: any) {
+        return Object.keys(statsA).some((key) => statsA[key] !== statsB[key]);
     }
 
     // Increase the word count in both all-time and periodic statistics
@@ -80,88 +124,9 @@ export class Stats {
 
     // Method to stop intervals
     async stopUpdating() {
-        for (let i = 0; i < this.updateIntervals.length; i++) {
-            const interval = this.updateIntervals[i];
-
-            clearInterval(interval);
-        }
-
+        this.updateIntervals.forEach((interval) => clearInterval(interval));
         await this.updateStats();
         await this.sendStats("Saatlik", "hourly");
         await this.sendStats("Günlük", "daily");
-    }
-
-    // Generate an embed with all statistics, including games and guilds
-    private async getAllStatsEmbed() {
-        // Get counts for guilds, games, and players
-        const guildCount = client.guilds.cache.size;
-        const gameCount = client.games.count();
-        const playerCount = await client.playerCount();
-
-        // Build and return the embed with all statistics
-        return new EmbedBuilder().setTitle("Veriler & İstatistikler").setColor(Colors.Blue).setFields(
-            {
-                name: "Sunucu Sayısı",
-                value: guildCount.toString(),
-            },
-            {
-                name: "Oyun Sayısı",
-                value: gameCount.toString(),
-            },
-            {
-                name: "Kelime Sayısı",
-                value: this.all.wordCount.toString(),
-            },
-            {
-                name: "Oyuncu Sayısı",
-                value: playerCount.toString(),
-            }
-        );
-    }
-
-    // Generate an embed with specific statistics, including games and guilds
-    private async getStatsEmbed(stats: { wordCount: number; playerCount: number; gameCount: number; guildCount: number }) {
-        // Get the current player count
-        const playerCount = await client.playerCount();
-
-        // Build and return the embed with specific statistics
-        return new EmbedBuilder()
-            .setColor(Colors.Green)
-            .setAuthor({ name: client.user?.username as string, iconURL: client.user?.avatarURL() as string })
-            .setFields(
-                {
-                    name: "Yazılan Kelime",
-                    value: stats.wordCount.toString(),
-                },
-                {
-                    name: "Eklenen Oyuncu",
-                    value: (playerCount - stats.playerCount).toString(),
-                },
-                {
-                    name: "Oyun Sayısı",
-                    value: stats.gameCount.toString(),
-                },
-                {
-                    name: "Sunucu Sayısı",
-                    value: stats.guildCount.toString(),
-                }
-            );
-    }
-
-    // Generate wiped data for periodic statistics
-    private async getWipedData() {
-        // Get the current player count, game count, and guild count
-        const playerCount = await client.playerCount();
-        const gameCount = client.games.count();
-        const guildCount = client.guilds.cache.size;
-
-        // Return wiped data with initial word count, player count, game count, guild count, and start time
-        return {
-            wordCount: 0,
-            playerCount: playerCount,
-            gameCount: gameCount,
-            guildCount: guildCount,
-            startTime: new Date().getHours(),
-        };
     }
 }
