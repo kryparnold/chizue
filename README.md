@@ -1,4 +1,4 @@
-# chizuev2
+# chizue
 
 To install dependencies:
 
