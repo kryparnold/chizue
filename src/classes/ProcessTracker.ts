@@ -25,11 +25,13 @@ export class ProcessTracker {
 
     // Method to wait for process completion
     async awaitProcessCompletion() {
-        const processCount = this.cache.size;
+        const processCount = this.cache.size - 1;
 
         if (processCount) {
-            client.logger.log(`Waiting for ${processCount} processes to end.`);
+            client.logger.log(`Waiting for ${processCount} process to end.`);
             await this.awaitProcessesEnding();
+        } else {
+            client.logger.log(`No active processes, contiuning.`)
         }
     }
 
