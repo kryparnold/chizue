@@ -1,15 +1,15 @@
-// Importing necessary modules and types from external packages
-import { Process } from "@/types";
+// Importing necessary modules and types
+import { TProcess } from "@/types";
 import { Collection } from "discord.js";
 import { UUID } from "crypto";
+import { client } from "@/globals";
 
 // ProcessTracker class definition
 export class ProcessTracker {
-    // Private property to store processes using a Collection with UUID keys and Process values
-    private cache = new Collection<UUID, Process>();
+    private cache = new Collection<UUID, TProcess>();
 
     // Method to add a new process to the tracker
-    add(process: Process) {
+    add(process: TProcess) {
         this.cache.set(process.id, process);
     }
 
@@ -21,5 +21,22 @@ export class ProcessTracker {
     // Method to remove a process from the tracker using its ID
     remove(id: UUID) {
         this.cache.delete(id);
+    }
+
+    // Method to wait for process completion
+    async awaitProcessCompletion() {
+        const processCount = this.cache.size;
+
+        if (processCount) {
+            client.logger.log(`Waiting for ${processCount} processes to end.`);
+            await this.awaitProcessesEnding();
+        }
+    }
+
+    // Private method to await the ending of processes with a polling mechanism
+    private async awaitProcessesEnding() {
+        while (this.cache.size) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
     }
 }
