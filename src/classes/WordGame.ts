@@ -1,26 +1,27 @@
 import { FormattedLocale, GuildPlayers, Player, Players, RawWordGameWithPlayers, Utils, client, prisma } from "@/globals";
 import { GameMode, GameType, Locales } from "@prisma/client";
-import { Message } from "discord.js";
+import { GuildTextBasedChannel, Message } from "discord.js";
 
 export class WordGame {
-    // Class properties
-    public id: string; // Unique identifier for the WordGame instance
-    private recentPlayerId: string; // Current player's ID
-    public guildId: string; // Guild ID where the game is being played
-    public players: GuildPlayers; // Collection of players in the game
-    public letter: string; // Current letter for the game
-    private limit: number; // Word limit for the game
-    private randomWords: string[]; // Array of random words
-    public mode: GameMode; // Game mode (Endless or Normal)
-    public locale: Locales; // Locale of the game
-    private formattedLocale: FormattedLocale; // Formatted locale for better handling
-    readonly type = GameType.WordGame; // Type of the game
-    public words: string[]; // Array to store the entered words during the game
-    private isProcessing = false; // Flag to check if a processing is in progress
+    public id: string;
+    private name: string;
+    private recentPlayerId: string;
+    public guildId: string;
+    public players: GuildPlayers;
+    public letter: string;
+    private limit: number;
+    private randomWords: string[];
+    public mode: GameMode;
+    public locale: Locales;
+    private formattedLocale: FormattedLocale;
+    readonly type = GameType.WordGame;
+    public words: string[];
+    private isProcessing = false;
 
     // Constructor to initialize the WordGame instance
     constructor(game: RawWordGameWithPlayers) {
         this.id = game.id;
+        this.name = game.name;
         this.recentPlayerId = game.recentPlayerId;
         this.guildId = game.guildId;
         this.letter = game.letter;
@@ -103,6 +104,7 @@ export class WordGame {
         } else {
             // Reacting to the message with an emoji and adding the word to the game
             await message.react(client.config.acceptEmote).catch(() => {});
+            this.setName((message.channel as GuildTextBasedChannel).name);
             await this.addWord(word, player);
             // Release the processing flag
             this.isProcessing = false;
@@ -234,6 +236,11 @@ export class WordGame {
         return this;
     }
 
+    // Method to set name
+    setName(name: string) {
+        this.name = name;
+    }
+
     // Method to save the current game state to the database
     private async save() {
         await prisma.wordGame.update({
@@ -241,6 +248,7 @@ export class WordGame {
                 id: this.id,
             },
             data: {
+                name: this.name,
                 letter: this.letter,
                 limit: this.limit,
                 locale: this.locale,

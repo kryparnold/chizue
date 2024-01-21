@@ -165,6 +165,7 @@ export default {
 
                         // Create a counting game and update the reply with relevant information
                         channel = await client.games.createCountingGame({
+                            name: selectedChannel.name!,
                             id: selectedChannel.id,
                             multiplier: selectedMultiplier,
                             guildId: interaction.guildId as string,

@@ -206,6 +206,7 @@ export default {
                         const randomWords = channelPreferences.locale === Locales.English ? Utils.getRandomWords(3) : [];
 
                         channel = await client.games.createWordGame({
+                            name: selectedChannel.name!,
                             id: selectedChannel.id,
                             letter: randomLetter,
                             locale: channelPreferences.locale,
