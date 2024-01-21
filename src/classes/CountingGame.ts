@@ -1,22 +1,22 @@
 // Import necessary modules and dependencies from external sources
 import { Utils, client, prisma } from "@/globals";
-import { CountingGame as CountingGameModel, GameType } from "@prisma/client";
-import { Locale, Message } from "discord.js";
+import { CountingGame as RawCountingGame, GameType } from "@prisma/client";
+import { GuildTextBasedChannel, Locale, Message } from "discord.js";
 
-// Define the CountingGame class
 export class CountingGame {
-    // Properties of the CountingGame class
-    public id: string; // Unique identifier for the CountingGame instance
-    private recentPlayerId: string; // Current player's ID
-    public guildId: string; // Guild ID where the game is being played
-    public multiplier: number; // Multiplier for the counting game
-    public readonly type = GameType.CountingGame; // Type of the game
-    public recentNumber: number; // Most recent number in the game
-    private isProcessing = false; // Flag to check if a processing is in progress
+    public id: string;
+    private name: string;
+    private recentPlayerId: string;
+    public guildId: string;
+    public multiplier: number;
+    public readonly type = GameType.CountingGame;
+    public recentNumber: number;
+    private isProcessing = false;
 
     // Constructor to initialize the CountingGame instance
-    constructor(game: CountingGameModel) {
+    constructor(game: RawCountingGame) {
         this.id = game.id;
+        this.name = game.name;
         this.recentPlayerId = game.recentPlayerId;
         this.guildId = game.guildId;
         this.multiplier = game.multiplier;
@@ -62,6 +62,7 @@ export class CountingGame {
         await message.react(client.config.acceptEmote);
         this.recentNumber = integer;
         this.recentPlayerId = message.author.id;
+        this.setName((message.channel as GuildTextBasedChannel).name);
         await this.save();
         this.isProcessing = false;
     }
@@ -82,6 +83,11 @@ export class CountingGame {
         return this;
     }
 
+    // Method to set the name
+    setName(name: string) {
+        this.name = name;
+    }
+
     // Method to save the current game state to the database
     async save() {
         await prisma.countingGame.update({
@@ -89,6 +95,7 @@ export class CountingGame {
                 id: this.id,
             },
             data: {
+                name: this.name,
                 recentPlayerId: this.recentPlayerId,
                 multiplier: this.multiplier,
                 recentNumber: this.recentNumber,
