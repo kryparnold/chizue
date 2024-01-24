@@ -43,6 +43,12 @@ model Player {
     scores Json   @default("{}")
 }
 
+model Stats {
+    id          Int @id @default(0)
+    wordCount   Int
+    guildCount  Int
+}
+
 enum GameType {
     WordGame
     CountingGame
