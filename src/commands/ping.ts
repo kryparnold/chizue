@@ -4,7 +4,7 @@ import { client } from "@/globals";
 export default {
     data: new SlashCommandBuilder()
         .setName("ping")
-        .setDescription("null")
+        .setDescription("To see bot's response time.")
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction: ChatInputCommandInteraction) {
