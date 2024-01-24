@@ -1,7 +1,6 @@
 import { IStats } from "@/types";
 import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
-import { Utils, client } from "@/globals";
-import fs from "fs/promises";
+import { Utils, client, prisma } from "@/globals";
 
 export class Stats {
     // Properties to store Discord TextChannel, Message, Intervals, and various statistics
@@ -12,15 +11,12 @@ export class Stats {
     private updateIntervals!: NodeJS.Timeout[];
 
     // Initialization method
-    async init(statsChannel: TextChannel, statsMessage: Message) {
-        // Dynamically import statistics from a specified path
-        const stats = await import(client.config.statsPath);
-        const startTime = new Date().getTime();
-        const playerCount = await client.playerCount();
+    async init(statsChannel: TextChannel, statsMessage: Message, initialWordCount: number) {
         const wipedData = await this.getWipedData();
+        const { wordCount, ...wipedAllData } = wipedData; // Deconstructing the wordCount from wipedData to pass it to all data
 
         // Initialize statistics and periodic statistics
-        this.all = { ...stats.default, playerCount, startTime };
+        this.all = { wordCount: initialWordCount, ...wipedAllData };
         this.periodicStats = { daily: wipedData, hourly: wipedData };
 
         // Assign provided TextChannel and Message to class properties
@@ -30,6 +26,7 @@ export class Stats {
         // Set up periodic updates using setInterval
         this.updateIntervals = [
             setInterval(() => this.updateStats(), 60000),
+            setInterval(() => this.saveStats(), 10000),
             setInterval(() => this.sendStats("Saatlik", "hourly"), Utils.hourToMs(3)),
             setInterval(() => this.sendStats("Günlük", "daily"), Utils.hourToMs(24)),
         ];
@@ -47,8 +44,20 @@ export class Stats {
 
     // Save statistics to a file
     private async saveStats() {
-        const { wordCount } = this.all;
-        await fs.writeFile(client.config.statsPath, JSON.stringify({ wordCount }, null, 4), { encoding: "utf-8" });
+        const { wordCount, guildCount } = this.all;
+        await prisma.stats.update({
+            where: {
+                id: 0
+            },
+            data: {
+                guildCount: {
+                    set: guildCount
+                },
+                wordCount: {
+                    set: wordCount
+                }
+            }
+        });
     }
 
     // Send statistics for a specific period to the Discord channel

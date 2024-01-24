@@ -270,12 +270,13 @@ class BotClient extends Client {
     async initStats() {
         const statsChannel = await this.channels.fetch(this.config.statsChannelId);
         const statsMessage = await ((await this.channels.fetch(this.config.statsMessageChannelId)) as TextChannel).messages.fetch(this.config.statsMessageId);
+        const wordCount = (await prisma.stats.findFirst())?.wordCount!;
 
         if (statsChannel?.type !== ChannelType.GuildText) {
             throw "Stats Channel must be a Text Channel.";
         }
 
-        await this.stats.init(statsChannel, statsMessage);
+        await this.stats.init(statsChannel, statsMessage, wordCount);
 
         this.logger.log("Stats initialized.");
     }
