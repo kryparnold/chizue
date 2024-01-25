@@ -57,6 +57,8 @@ class BotClient extends Client {
             intents: [GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds],
         });
 
+        // TODO - Add presence to initial settings
+
         this.logger = new Logger();
         this.words = new Words();
         this.games = new Games();
