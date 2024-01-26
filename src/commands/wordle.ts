@@ -170,24 +170,31 @@ export default {
                 // TODO - Fix the algorithm
 
                 // Processing the user's guess and providing feedback
-                const wordChars = word.split("");
                 const colors = "0".repeat(gameLength).split("");
+                const letterCounts = randomWord.split("").reduce((output: { [key: string]: number }, char: string) => {
+                    output[char] = (output[char] || 0) + 1;
+                    return output;
+                }, {});
 
                 for (let i = 0; i < gameLength; i++) {
-                    if (word[i] === randomWord[i] && wordChars.includes(word[i])) {
+                    const randomChar = randomWord[i];
+                    const char = word[i];
+
+                    if (char === randomChar) {
+                        letterCounts[randomChar] -= 1;
                         colors[i] = "2";
-                        wordChars[i] = "*";
                     }
                 }
 
                 for (let i = 0; i < gameLength; i++) {
-                    if (randomWord.includes(word[i]) && wordChars.includes(word[i]) && colors[i] === "0") {
-                        const charIndex = wordChars.indexOf(word[i]);
+                    const char = word[i];
+
+                    if (randomWord.includes(char) && letterCounts[char] !== 0 && colors[i] === "0") {
+                        letterCounts[char] -= 1;
                         colors[i] = "1";
-                        wordChars[charIndex] = "*";
                     }
                     //@ts-ignore
-                    emoteString += Utils.wordleEmotes[colors[i]][word[i]];
+                    emoteString += Utils.wordleEmotes[colors[i]][char];
                 }
                 emoteString += "\n";
 
