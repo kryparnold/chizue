@@ -228,7 +228,7 @@ export default {
                     });
 
                     await modalInteraction.reply({
-                        content: client.getLocalization(userLocale, "wordleYouLose"),
+                        content: client.getLocalization<true>(userLocale, "wordleYouLose")(randomWord),
                         ephemeral: true,
                     });
 

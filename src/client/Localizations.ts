@@ -39,7 +39,7 @@ export const localizations = {
         wordleYourGuesses: "Senin tahminlerin:",
         worldeYourGuess: (word: string) => `Tahminin: ${word}`,
         wordleYouWin: "Doğru tahmin! Oyun bitti, kazandın.",
-        wordleYouLose: "Oyun bitti, kaybettin.",
+        wordleYouLose: (word: string) => `Oyun bitti, kaybettin.\nDoğru Kelime: **${word}**`,
         wordleHowToPlayTitle: "Wordle Nasıl Oynanır?",
         wordleHowToPlayDescription:
             "Wordle oyunu, gizli bir kelimenin harflerini doğru sırayla tahmin etmeye dayalı bir oyundur. Her tahmininizde, doğru harfin doğru konumda olup olmadığını ve yanlış harflerin doğru konumda olup olmadığını gösteren ipuçları alırsınız. Oyunun amacı, belirlenen kelimeyi en az tahminle bulmaktır. Her seferinde bir harf veya tam bir kelime tahmin edebilirsin. İyi şanslar!",
@@ -113,7 +113,7 @@ export const localizations = {
         wordleYourGuesses: "Your guesses:",
         worldeYourGuess: (word: string) => `Your guess: ${word}`,
         wordleYouWin: "Correct guess, game ended, you win.",
-        wordleYouLose: "Game ended, you lose.",
+        wordleYouLose: (word: string) => `Game ended, you lose.\nSecret Word: **${word}**`,
         wordleHowToPlayTitle: "How to Play Wordle",
         wordleHowToPlayDescription:
             "Wordle is a game based on guessing the letters of a hidden word in the correct order. With each guess, you receive clues indicating whether the correct letter is in the correct position and whether incorrect letters are in the correct position. The goal of the game is to find the specified word with the fewest guesses. You can guess one letter or the entire word each time. Good luck!",
