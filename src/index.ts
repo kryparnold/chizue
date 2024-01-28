@@ -43,5 +43,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
+// TODO - Add channel delete, member delete and guild delete event handlers
+
 // Log in to Discord using the provided bot token
 client.login(process.env.TOKEN);
