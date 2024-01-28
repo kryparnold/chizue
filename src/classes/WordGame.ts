@@ -214,6 +214,17 @@ export class WordGame {
         return player;
     }
 
+    // Method to remove player from the game
+    async removePlayer(id: string) {
+        const player = this.players.get(id);
+
+        if(!player) return;
+
+        await player.removeGame(this.guildId, this.id);
+
+        this.players.remove(id);
+    }
+
     // Method to set game mode
     async setMode(mode: GameMode) {
         this.mode = mode;
