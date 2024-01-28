@@ -23,7 +23,7 @@ export default {
     // Execution function for the command
     async execute(interaction: ChatInputCommandInteraction) {
         // Retrieving guild ID from the interaction
-        const guildId = interaction.guildId as string;
+        const guildId = interaction.guildId!;
 
         // Retrieving all games associated with the guild
         const games = client.games.getGuildGames(guildId);
