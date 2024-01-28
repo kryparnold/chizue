@@ -89,9 +89,7 @@ export class Games {
         const game = this.cache.get(gameId);
 
         // Check if the game instance exists
-        if (!game) {
-            throw "Game not found with id: " + gameId;
-        }
+        if (!game) return;
 
         // Determine the game type and delete it from the database using Prisma
         if (game.type === GameType.WordGame) {
@@ -125,5 +123,10 @@ export class Games {
     // Method to get all the game ids from the cache
     getIds() {
         return this.cache.map((game) => game.id);
+    }
+
+    // Method to get all the game ids from the cache by its guild ID
+    getGuildGameIds(guildId: string) {
+        return this.cache.filter((game) => game.guildId === guildId && game.type).map((game) => game.id);
     }
 }
