@@ -8,6 +8,7 @@
     "statsChannelId": "<STATS_CHANNEL_ID>",
     "wordReportChannelId": "<WORD_REPORT_CHANNEL_ID>",
     "wordLogChannelId": "<WORD_LOG_CHANNEL_ID>",
+    "ticketCategoryId": "<TICKETS_CATEGORY_ID>",
     "commandsPath": "/<COMMANDS_FOLDER_NAME>",
     "buttonsPath": "/<BUTTONS_FOLDER_NAME",
     "statsPath": "/<STATS_JSON_PATH>",

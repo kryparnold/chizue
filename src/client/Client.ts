@@ -6,11 +6,25 @@ import {
     Collection,
     GatewayIntentBits,
     Message,
-    Options,
     SlashCommandBuilder,
     TextChannel,
 } from "discord.js";
-import { Logger, Words, localizations, prisma, Games, Utils, Stats, Players, ButtonParams, Config, ProcessTracker, TProcess, ProcessTypes } from "@/globals";
+import {
+    Logger,
+    Words,
+    localizations,
+    prisma,
+    Games,
+    Utils,
+    Stats,
+    Players,
+    ButtonParams,
+    Config,
+    ProcessTracker,
+    TProcess,
+    ProcessTypes,
+    Tickets,
+} from "@/globals";
 
 // Importing configuration and file system modules
 import { readdirSync } from "fs";
@@ -31,6 +45,7 @@ class BotClient extends Client {
     words: Words;
     games: Games;
     stats: Stats;
+    tickets: Tickets;
     players: Players;
     processes: ProcessTracker;
     config = new Config();
@@ -63,6 +78,7 @@ class BotClient extends Client {
         this.words = new Words();
         this.games = new Games();
         this.stats = new Stats();
+        this.tickets = new Tickets();
         this.players = new Players();
         this.processes = new ProcessTracker();
     }
@@ -73,6 +89,7 @@ class BotClient extends Client {
         this.statusInterval = setInterval(() => this.updateStatus(this.config.clientStatus), 600000);
         await this.initLogger();
         await this.initStats();
+        await this.initTickets();
         await this.initCommands();
         await this.initButtons();
         await this.initPlayers();
@@ -283,6 +300,19 @@ class BotClient extends Client {
         this.logger.log("Stats initialized.");
     }
 
+    // Initialize the Tickets with the specified category
+    async initTickets() {
+        const ticketCategory = await this.channels.fetch(this.config.ticketCategoryId);
+
+        if(ticketCategory?.type !== ChannelType.GuildCategory) {
+            throw "Ticket Category must be a Guild Category.";
+        }
+
+        await this.tickets.init(ticketCategory);
+
+        this.logger.log("Tickets initialized.");
+    }
+
     // Initialize slash commands
     async initCommands() {
         const commandFiles = readdirSync(this.config.commandsPath);
@@ -409,7 +439,7 @@ class BotClient extends Client {
     async quit() {
         // Set bot status to Quitting
         this.status = BotStatuses.Quitting;
-        client.logger.log(`Quit process started.`)
+        client.logger.log(`Quit process started.`);
 
         // End all processes
         await this.processes.awaitProcessCompletion();
@@ -424,9 +454,9 @@ class BotClient extends Client {
 
         // Disconnect from the database
         await prisma.$disconnect();
-        client.logger.log(`Disconnected from database, contiuning.`)
+        client.logger.log(`Disconnected from database, contiuning.`);
 
-        client.logger.log(`Ending logger, cya.`)
+        client.logger.log(`Ending logger, cya.`);
         // Stop the logger
         await this.logger.stop();
 

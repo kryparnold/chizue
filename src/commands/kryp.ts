@@ -96,6 +96,13 @@ export default {
                 .setNameLocalization("tr", "çıkış")
                 .setDescription("To quit the bot safely")
                 .setDescriptionLocalization("tr", "Botu güvenli bir şekilde kapatmak için.")
+        )
+        .addSubcommand((sendTicketMessageCommand) =>
+            sendTicketMessageCommand
+                .setName("send-ticket-message")
+                .setNameLocalization("tr", "ticket-mesajı-gönder")
+                .setDescription("Sends an embed with ticket button.")
+                .setDescriptionLocalization("tr", "Ticket butonuyla bir embed gönderir.")
         ),
     // Guild ID from the configuration
     guildId: client.config.guildId,
@@ -205,10 +212,30 @@ export default {
         } else if (subCommand === "quit") {
             await interaction.reply({
                 content: "Quitting the bot safely.",
-                ephemeral: true
+                ephemeral: true,
             });
 
             client.quit();
+        } else if (subCommand === "send-ticket-message") {
+            const ticketButton = new ButtonBuilder().setCustomId("ticket").setLabel("Ticket Aç").setStyle(ButtonStyle.Success);
+
+            const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(ticketButton);
+
+            const ticketEmbed = new EmbedBuilder()
+                .setTitle("Ticket Sistemi")
+                .setDescription("Ticket açmak için butona basabilirsiniz, halihazırda bir ticket açtıysanız tekrar ticket açamazsınız.")
+                .setColor(Colors.Yellow)
+                .setFooter({ text: "Chizue Ticket Sistemi" });
+
+            await interaction.channel?.send({
+                embeds: [ticketEmbed],
+                components: [buttonRow],
+            });
+
+            await interaction.reply({
+                ephemeral: true,
+                content: "Ticket message sent successfully!",
+            });
         }
     },
 };

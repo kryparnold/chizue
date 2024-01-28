@@ -9,3 +9,4 @@ export * from "./Player";
 export * from "./Stats";
 export * from "./Config";
 export * from "./ProcessTracker";
+export * from "./Tickets";
