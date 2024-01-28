@@ -43,7 +43,45 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
-// TODO - Add channel delete, member delete and guild delete event handlers
+// Event handler for when a guild is deleted
+client.on(Events.GuildDelete, async (guild) => {
+    // Retrieve game IDs associated with the deleted guild
+    const guildGameIds = client.games.getGuildGameIds(guild.id);
+
+    // Iterate through each game ID
+    for (let i = 0; i < guildGameIds.length; i++) {
+        const gameId = guildGameIds[i];
+
+        // Delete the game associated with the current game ID
+        await client.games.delete(gameId);
+    }
+});
+
+// Event handler for when a channel is deleted
+client.on(Events.ChannelDelete, async (channel) => {
+    // Delete the game associated with the deleted channel
+    await client.games.delete(channel.id);
+});
+
+// Event handler for when a member is deleted
+client.on(Events.GuildMemberRemove, async (member) => {
+    // Retrieve the player associated with the deleted member
+    const player = client.players.get(member.id);
+
+    // If the player doesn't exist, return early
+    if (!player) return;
+
+    // Retrieve games associated with the guild of the deleted member
+    const guildGames = client.games.getGuildGames(member.guild.id);
+
+    // Iterate through each game associated with the guild
+    for (let i = 0; i < guildGames.length; i++) {
+        const game = guildGames[i];
+
+        // Remove the player from the current game
+        await game.removePlayer(player.id);
+    }
+});
 
 // Log in to Discord using the provided bot token
 client.login(process.env.TOKEN);
