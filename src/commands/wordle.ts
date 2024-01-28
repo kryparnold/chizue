@@ -167,8 +167,6 @@ export default {
                     continue;
                 }
 
-                // TODO - Fix the algorithm
-
                 // Processing the user's guess and providing feedback
                 const colors = "0".repeat(gameLength).split("");
                 const letterCounts = randomWord.split("").reduce((output: { [key: string]: number }, char: string) => {
