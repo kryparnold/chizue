@@ -35,7 +35,7 @@ export class Player {
     }
 
     // Method to remove a score from the player's total score
-    async removeScore(score: number) {
+    removeScore(score: number) {
         const playerScore = this.score;
         this.score = +(playerScore + score).toFixed(1);
     }
@@ -56,8 +56,12 @@ export class Player {
 
     // Method to remove a game from the player
     async removeGame(guildId: string, gameId: string) {
+
         // Check if the guild entry exists in scores
         if (this.scores[guildId] && this.scores[guildId][gameId]) {
+            // Remove the score from total score
+            this.removeScore(this.scores[guildId][gameId]);
+
             // Remove the game entry
             delete this.scores[guildId][gameId];
 
