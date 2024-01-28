@@ -1,4 +1,4 @@
-import { FormattedLocale, GuildPlayers, Player, Players, RawWordGameWithPlayers, Utils, client, prisma } from "@/globals";
+import { FormattedLocale, GuildPlayers, Player, RawWordGameWithPlayers, Utils, client, prisma } from "@/globals";
 import { GameMode, GameType, Locales } from "@prisma/client";
 import { GuildTextBasedChannel, Message } from "discord.js";
 
@@ -84,14 +84,22 @@ export class WordGame {
             } else {
                 // Deleting the message and providing feedback to the player
                 if (this.mode === GameMode.Endless) {
-                    if (this.locale === Locales.Turkish) {
-                        const randomLetter = Utils.randomLetter("tr");
-                        this.letter = randomLetter;
-                        await message.channel.send(client.getLocalization<true>(this.formattedLocale, "wordGameNewLetter")(randomLetter));
-                        await this.save();
-                        // Release the processing flag
+                    if (this.locale !== Locales.Turkish) {
                         this.isProcessing = false;
+                        return;
                     }
+
+                    const randomLetter = Utils.randomLetter("tr");
+
+                    this.letter = randomLetter;
+
+                    await message.react(client.config.acceptEmote).catch(() => {});
+
+                    await message.channel.send(client.getLocalization<true>(this.formattedLocale, "wordGameNewLetter")(randomLetter));
+
+                    await this.save();
+                    // Release the processing flag
+                    this.isProcessing = false;
                 } else {
                     // Release the processing flag
                     this.isProcessing = false;
