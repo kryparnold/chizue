@@ -242,7 +242,7 @@ export default {
 
                 // Providing feedback to the user about their guess
                 await modalInteraction.reply({
-                    content: client.getLocalization<true>(userLocale, "worldeYourGuess")(word),
+                    content: client.getLocalization<true>(userLocale, "wordleYourGuess")(word),
                     ephemeral: true,
                 });
             } catch (err) {
