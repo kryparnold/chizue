@@ -72,8 +72,6 @@ class BotClient extends Client {
             intents: [GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds],
         });
 
-        // TODO - Add presence to initial settings
-
         this.logger = new Logger();
         this.words = new Words();
         this.games = new Games();
@@ -304,7 +302,7 @@ class BotClient extends Client {
     async initTickets() {
         const ticketCategory = await this.channels.fetch(this.config.ticketCategoryId);
 
-        if(ticketCategory?.type !== ChannelType.GuildCategory) {
+        if (ticketCategory?.type !== ChannelType.GuildCategory) {
             throw "Ticket Category must be a Guild Category.";
         }
 
