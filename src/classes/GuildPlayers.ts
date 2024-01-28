@@ -30,6 +30,10 @@ export class GuildPlayers {
         return this.cache.get(id);
     }
 
+    remove(id: string) {
+        this.cache.delete(id);
+    }
+
     // Method to add player
     add(player: Player) {
         this.cache.set(player.id, player);
