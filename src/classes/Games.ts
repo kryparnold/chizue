@@ -93,12 +93,18 @@ export class Games {
             throw "Game not found with id: " + gameId;
         }
 
-        // TODO - Wipe user scores.
-
         // Determine the game type and delete it from the database using Prisma
-        if (game?.type === GameType.WordGame) {
+        if (game.type === GameType.WordGame) {
+            const players = game.players.getAll();
+
+            for (let i = 0; i < players.length; i++) {
+                const player = players[i];
+
+                await player.removeGame(game.guildId, game.id);
+            }
+
             await prisma.wordGame.delete({ where: { id: gameId } });
-        } else if (game?.type === GameType.CountingGame) {
+        } else if (game.type === GameType.CountingGame) {
             await prisma.countingGame.delete({ where: { id: gameId } });
         }
 
