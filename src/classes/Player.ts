@@ -25,7 +25,7 @@ export class Player {
         this.scores = (player.scores as IScores) ?? {};
     }
 
-    // Asynchronous method to add a score to the player's total and per-game scores
+    // Method to add a score to the player's total and per-game scores
     async addScore(score: number, guildId: string, gameId: string) {
         const playerScore = this.score;
         const playerGameScore = this.scores[guildId][gameId];
@@ -34,7 +34,13 @@ export class Player {
         await this.save();
     }
 
-    // Asynchronous method to initialize a new game entry for the player
+    // Method to remove a score from the player's total score
+    async removeScore(score: number) {
+        const playerScore = this.score;
+        this.score = +(playerScore + score).toFixed(1);
+    }
+
+    // Method to initialize a new game entry for the player
     async addGame(guildId: string, gameId: string) {
         // Checking if the guild entry exists in scores, if not, creating it
         if (!this.scores[guildId]) {
@@ -48,7 +54,25 @@ export class Player {
         await this.save();
     }
 
-    // Asynchronous method to save the current player data to the database
+    // Method to remove a game from the player
+    async removeGame(guildId: string, gameId: string) {
+        // Check if the guild entry exists in scores
+        if (this.scores[guildId] && this.scores[guildId][gameId]) {
+            // Remove the game entry
+            delete this.scores[guildId][gameId];
+
+            // Check if there are no more games in the guild scores
+            if (Object.keys(this.scores[guildId]).length === 0) {
+                // If there are no more games, remove the guild entry
+                delete this.scores[guildId];
+            }
+
+            // Save the updated data to the database
+            await this.save();
+        }
+    }
+
+    // Method to save the current player data to the database
     async save() {
         await prisma.player.update({
             where: {
