@@ -93,6 +93,8 @@ export class Games {
             throw "Game not found with id: " + gameId;
         }
 
+        // TODO - Wipe user scores.
+
         // Determine the game type and delete it from the database using Prisma
         if (game?.type === GameType.WordGame) {
             await prisma.wordGame.delete({ where: { id: gameId } });
@@ -111,7 +113,7 @@ export class Games {
 
     // Method to get all the game instances from the cache by its guild ID
     getGuildGames(guildId: string) {
-        return this.cache.filter((game) => game.guildId === guildId).map((game) => game) as WordGame[];
+        return this.cache.filter((game) => game.guildId === guildId && game.type === GameType.WordGame).map((game) => game) as WordGame[];
     }
 
     // Method to get all the game ids from the cache
