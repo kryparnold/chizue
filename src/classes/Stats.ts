@@ -47,16 +47,16 @@ export class Stats {
         const { wordCount, guildCount } = this.all;
         await prisma.stats.update({
             where: {
-                id: 0
+                id: 0,
             },
             data: {
                 guildCount: {
-                    set: guildCount
+                    set: guildCount,
                 },
                 wordCount: {
-                    set: wordCount
-                }
-            }
+                    set: wordCount,
+                },
+            },
         });
     }
 
@@ -80,15 +80,14 @@ export class Stats {
         const playerCount = await client.playerCount();
 
         // Build and return the embed with all statistics
-        return new EmbedBuilder()
-            .setTitle("Veriler & İstatistikler")
-            .setColor(Colors.Blue)
-            .setFields(
-                { name: "Sunucu Sayısı", value: guildCount.toString() },
-                { name: "Oyun Sayısı", value: gameCount.toString() },
-                { name: "Kelime Sayısı", value: this.all.wordCount.toString() },
-                { name: "Oyuncu Sayısı", value: playerCount.toString() }
-            );
+        const statFields = [
+            { name: "Sunucu Sayısı", value: guildCount.toString() },
+            { name: "Oyun Sayısı", value: gameCount.toString() },
+            { name: "Kelime Sayısı", value: this.all.wordCount.toString() },
+            { name: "Oyuncu Sayısı", value: playerCount.toString() },
+        ].filter((field) => parseInt(field.value) !== 0); // Filter out fields with value 0
+
+        return new EmbedBuilder().setTitle("Veriler & İstatistikler").setColor(Colors.Blue).addFields(statFields);
     }
 
     // Generate an embed with specific statistics, including games and guilds
@@ -98,15 +97,17 @@ export class Stats {
         const guildCount = client.guilds.cache.size;
 
         // Build and return the embed with specific statistics
+        const statFields = [
+            { name: "Yazılan Kelime", value: stats.wordCount.toString() },
+            { name: "Eklenen Oyuncu", value: (playerCount - stats.playerCount).toString() },
+            { name: "Oyun Sayısı", value: (gameCount - stats.gameCount).toString() },
+            { name: "Sunucu Sayısı", value: (guildCount - stats.guildCount).toString() },
+        ].filter((field) => parseInt(field.value) !== 0); // Filter out fields with value 0
+
         return new EmbedBuilder()
             .setColor(Colors.Green)
             .setAuthor({ name: client.user?.username as string, iconURL: client.user?.avatarURL() as string })
-            .setFields(
-                { name: "Yazılan Kelime", value: stats.wordCount.toString() },
-                { name: "Eklenen Oyuncu", value: (playerCount - stats.playerCount).toString() },
-                { name: "Oyun Sayısı", value: (gameCount - stats.gameCount).toString() },
-                { name: "Sunucu Sayısı", value: (guildCount - stats.guildCount).toString() }
-            );
+            .addFields(statFields);
     }
 
     // Generate wiped data for periodic statistics
