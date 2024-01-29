@@ -78,9 +78,17 @@ export class WordGame {
             if (this.words.length >= this.limit && this.mode !== GameMode.Endless) {
                 // Reacting to the message with an emoji and restarting the game
                 await message.react(client.config.acceptEmote).catch(() => {});
-                await this.restartGame(word, player);
+                const { gameReward, randomLetter } = await this.restartGame(word, player);
+
                 // Release the processing flag
                 this.isProcessing = false;
+
+                // Sending the finish and restart message
+                await message.channel.send(
+                    client.getLocalization<true>(this.formattedLocale, "wordGameFinished")(gameReward.toString()) +
+                        "\n" +
+                        client.getLocalization<true>(this.formattedLocale, "wordGameRestarted")(randomLetter)
+                );
             } else {
                 // Deleting the message and providing feedback to the player
                 if (this.mode === GameMode.Endless) {
@@ -105,7 +113,7 @@ export class WordGame {
                     this.isProcessing = false;
                     await message.delete().catch(() => {});
                     await message.channel
-                        .send(client.getLocalization<true>(this.formattedLocale, "wordGameNotYet")(this.words.length.toString()))
+                        .send(client.getLocalization<true>(this.formattedLocale, "wordGameNotYet")((this.limit - this.words.length).toString()))
                         .then((reply) => setTimeout(() => reply.delete(), 5000));
                 }
             }
@@ -158,7 +166,7 @@ export class WordGame {
         } else if (!client.words[this.formattedLocale][firstLetter].includes(word)) {
             // Invalid word
             return client.getLocalization(this.formattedLocale, "wordGameInvalidWord");
-        } else if (this.words.includes(word)) {
+        } else if (this.words.includes(word) && this.mode === GameMode.Normal) {
             // Word already used in the game
             return client.getLocalization(this.formattedLocale, "wordGameSameWord");
         } else if (this.mode === GameMode.Endless && last40Words.includes(word)) {
@@ -197,6 +205,8 @@ export class WordGame {
 
         // Saving the updated game state
         await this.save();
+
+        return { gameReward, randomLetter };
     }
 
     // Method to add a new player to the game
@@ -218,7 +228,7 @@ export class WordGame {
     async removePlayer(id: string) {
         const player = this.players.get(id);
 
-        if(!player) return;
+        if (!player) return;
 
         await player.removeGame(this.guildId, this.id);
 
