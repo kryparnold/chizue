@@ -8,7 +8,7 @@ export class Players {
     // Private property to store player instances using a Collection
     private cache = new Collection<string, Player>();
 
-    // Asynchronous method to initialize the Players instance with an array of raw player data
+    // Method to initialize the Players instance with an array of raw player data
     async init(players: RawPlayer[]) {
         // Iterating through the array of raw player data and creating Player instances, then adding them to the cache
         players.forEach((player) => this.cache.set(player.id, new Player(player)));
@@ -24,12 +24,23 @@ export class Players {
         return this.cache.get(id);
     }
 
+    // Method to remove an existing player from the database
+    async remove(id: string) {
+        this.cache.delete(id);
+
+        await prisma.player.delete({
+            where: {
+                id,
+            },
+        });
+    }
+
     // Method to retrieve player count by cache size
     count() {
         return this.cache.size;
     }
 
-    // Asynchronous method to create a new player, initializing their entry in the database and adding the player to the cache
+    // Method to create a new player, initializing their entry in the database and adding the player to the cache
     async create(playerId: string, guildId: string, gameId: string) {
         // Creating a new raw player entry in the database
         const newRawPlayer = await prisma.player.create({
