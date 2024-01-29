@@ -56,7 +56,7 @@ export default {
         const scoreEmbed = initialEmbed
             .addFields({
                 name: client.getLocalization(userLocale, "commandScoreTotalScore"),
-                value: playerScore.toString(),
+                value: playerScore.toFixed(1),
             })
             .setAuthor({
                 name: selectedMember.displayName,
@@ -65,7 +65,7 @@ export default {
 
         // Adding guild total score to the embed if available
         if (memberScore) {
-            scoreEmbed.data.fields?.push({ name: client.getLocalization(userLocale, "commandScoreGuildScore"), value: memberScore.toString() });
+            scoreEmbed.data.fields?.push({ name: client.getLocalization(userLocale, "commandScoreGuildScore"), value: memberScore.toFixed(1) });
         }
 
         // Responding to the interaction with the score embed as an ephemeral message
