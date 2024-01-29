@@ -50,7 +50,7 @@ export class Players {
         this.cache.set(playerId, player);
 
         // Initializing the player's game entry in the database and cache
-        player.addGame(guildId, gameId);
+        await player.addGame(guildId, gameId);
 
         // Returning the created player instance
         return player;
