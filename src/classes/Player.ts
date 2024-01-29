@@ -56,9 +56,8 @@ export class Player {
 
     // Method to remove a game from the player
     async removeGame(guildId: string, gameId: string) {
-
         // Check if the guild entry exists in scores
-        if (this.scores[guildId] && this.scores[guildId][gameId]) {
+        if (this.scores[guildId] && this.scores[guildId].hasOwnProperty(gameId)) {
             // Remove the score from total score
             this.removeScore(this.scores[guildId][gameId]);
 
@@ -69,6 +68,11 @@ export class Player {
             if (Object.keys(this.scores[guildId]).length === 0) {
                 // If there are no more games, remove the guild entry
                 delete this.scores[guildId];
+
+                // Check if the player is associated with any other guilds
+                const hasOtherGuilds = Object.keys(this.scores).length > 0;
+
+                return !hasOtherGuilds && this.score === 0;
             }
 
             // Save the updated data to the database
