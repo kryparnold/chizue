@@ -96,7 +96,7 @@ export default {
 
         // Creating a collector to handle button interactions
         const collector = initialReply.createMessageComponentCollector({
-            idle: 300000, // 5-minute timeout for the game
+            time: 840000, // 14-minute timeout for the game
         });
 
         // Handling button interactions
@@ -151,7 +151,7 @@ export default {
         while (submitCounter < 6) {
             try {
                 // Waiting for user to submit their guess through a modal
-                const modalInteraction = await interaction.awaitModalSubmit({ time: 300000 }); // 5-minute timeout for each guess
+                const modalInteraction = await interaction.awaitModalSubmit({ time: 150000 }); // 2-minute timeout for each guess
 
                 // Retrieving user's guess from the modal
                 const word = modalInteraction.fields.getTextInputValue("word");
@@ -245,6 +245,9 @@ export default {
                     ephemeral: true,
                 });
             } catch (err) {
+                // Finishing the game by setting submitCounter to 6
+                submitCounter = 6;
+
                 // Handling errors and notifying the user about the timeout
                 await interaction.followUp({
                     content: client.getLocalization(userLocale, "wordleGuessTimedOut"),
