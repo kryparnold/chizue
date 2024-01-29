@@ -43,14 +43,16 @@ export default {
         ),
     // Execution function for the Wordle command
     async execute(interaction: ChatInputCommandInteraction) {
+        // Defer the reply as soon as possible
+        await interaction.deferReply({ ephemeral: true });
+
         // Extracting user locale using utility function
         const userLocale = Utils.formatLocale(interaction.locale);
 
         // Checking if the user is already playing a Wordle game
         if (client.activeWordles.includes(interaction.user.id)) {
             // Sending a private message to the user if they are already playing
-            await interaction.reply({
-                ephemeral: true,
+            await interaction.editReply({
                 content: client.getLocalization(userLocale, "wordleGameExists"),
             });
             return;
@@ -87,10 +89,9 @@ export default {
         const wordleEmbed = new EmbedBuilder().setColor(Colors.Blue).setTitle("Wordle").setFooter(userFooter);
 
         // Sending the initial reply with the game embed and buttons
-        const initialReply = await interaction.reply({
+        const initialReply = await interaction.editReply({
             embeds: [wordleEmbed.setDescription(client.getLocalization(userLocale, "wordleStarted"))],
             components: [buttonRow],
-            ephemeral: true,
         });
 
         // Creating a collector to handle button interactions
