@@ -1,9 +1,10 @@
 // Importing necessary modules and components from external files
 import { Events } from "discord.js";
-import { BotStatuses, client } from "@/globals";
+import { BotStatuses, Utils, client } from "@/globals";
 
 // Importing and configuring environment variables using dotenv
 import { config as envConfig } from "dotenv";
+import { GameType } from "@prisma/client";
 envConfig();
 
 // Event handler for when the Discord client is ready
@@ -81,6 +82,27 @@ client.on(Events.GuildMemberRemove, async (member) => {
         // Remove the player from the current game
         await game.removePlayer(player.id);
     }
+});
+
+// Event handler for when a message is deleted
+client.on(Events.MessageDelete, async (message) => {
+    // Get the game associated with the channel where the message was deleted
+    const game = client.games.get(message.channelId);
+
+    // Check if there is no game, or the game is not a counting game, or the deleted message is not the recent one in the game
+    if (!game || game.type !== GameType.CountingGame || game.recentMessageId !== message.id) return;
+
+    // Format the guild's preferred locale for localization
+    const guildLocale = Utils.formatLocale(message.guild?.preferredLocale!);
+
+    // Send a message to the channel indicating that a counting game message was deleted
+    await message.channel.send(
+        // Use localization to mention the author of the deleted message
+        client.getLocalization<true>(guildLocale, "countingGameMessageDeleted")(`<@${message.author?.id}>`) +
+            "\n" +
+            // Use localization to mention the deleted number in the counting game
+            client.getLocalization<true>(guildLocale, "countingGameDeletedNumber")(game.recentNumber.toString())
+    );
 });
 
 // Log in to Discord using the provided bot token
