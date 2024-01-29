@@ -17,6 +17,8 @@ export class Config {
     public wordReportChannelId: string;
     public wordLogChannelId: string;
     public ticketCategoryId: string;
+    public announcementRoleId: string;
+    public maintenanceRoleId: string;
     public commandsPath: string;
     public buttonsPath: string;
     public statsPath: string;
@@ -46,6 +48,8 @@ export class Config {
         this.wordReportChannelId = configData.wordReportChannelId;
         this.wordLogChannelId = configData.wordLogChannelId;
         this.ticketCategoryId = configData.ticketCategoryId;
+        this.announcementRoleId = configData.announcementRoleId;
+        this.maintenanceRoleId = configData.maintenanceRoleId;
         this.commandsPath = srcPath + configData.commandsPath;
         this.buttonsPath = srcPath + configData.buttonsPath;
         this.statsPath = jsonPath + configData.statsPath;
