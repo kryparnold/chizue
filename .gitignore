@@ -22,4 +22,6 @@ src/commands/test.ts
 elebele.ts
 src/client/stats.json
 src/config.json
+src/scripts/*.json
 todo.md
+*.local.*
