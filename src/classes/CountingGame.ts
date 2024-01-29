@@ -7,7 +7,7 @@ export class CountingGame {
     public id: string;
     private name: string;
     private recentPlayerId: string;
-    private recentMessageId: string;
+    public recentMessageId: string;
     public guildId: string;
     public multiplier: number;
     readonly type = GameType.CountingGame;
