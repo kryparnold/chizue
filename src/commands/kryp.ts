@@ -103,6 +103,13 @@ export default {
                 .setNameLocalization("tr", "ticket-mesajı-gönder")
                 .setDescription("Sends an embed with ticket button.")
                 .setDescriptionLocalization("tr", "Ticket butonuyla bir embed gönderir.")
+        )
+        .addSubcommand((sendRoleMessageCommand) =>
+            sendRoleMessageCommand
+                .setName("send-role-message")
+                .setNameLocalization("tr", "rol-mesajı-gönder")
+                .setDescription("To send the button-role embed with buttons for the support server.")
+                .setDescriptionLocalization("tr", "Destek sunucusunda kullanılan buton-rol sistemi için butonlarla embed gönderir.")
         ),
     // Guild ID from the configuration
     guildId: client.config.guildId,
@@ -235,6 +242,34 @@ export default {
             await interaction.reply({
                 ephemeral: true,
                 content: "Ticket message sent successfully!",
+            });
+        } else if (subCommand === "send-role-message") {
+            const announcementRoleButton = new ButtonBuilder()
+                .setCustomId(`toggle-role_${client.config.announcementRoleId}`)
+                .setStyle(ButtonStyle.Primary)
+                .setLabel("Güncelleme & Duyuru");
+
+            const maintenanceRoleButton = new ButtonBuilder()
+                .setCustomId(`toggle-role_${client.config.maintenanceRoleId}`)
+                .setStyle(ButtonStyle.Primary)
+                .setLabel("Kesinti & Bakım");
+
+            const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(announcementRoleButton, maintenanceRoleButton);
+
+            const buttonRoleEmbed = new EmbedBuilder()
+                .setTitle("Buton-Rol Sistemi")
+                .setDescription("Almak istediğiniz rolün ismine tıklayarak alabilirsin, eğer rolü bırakmak istersen tekrar tıklaman yeterli.")
+                .setColor(Colors.Yellow)
+                .setFooter({ text: "Chizue Buton-Rol Sistemi" });
+
+            await interaction.channel?.send({
+                embeds: [buttonRoleEmbed],
+                components: [buttonRow],
+            });
+
+            await interaction.reply({
+                ephemeral: true,
+                content: "Button Role message sent successfully!",
             });
         }
     },
