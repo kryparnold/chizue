@@ -27,14 +27,15 @@ model WordGame {
 }
 
 model CountingGame {
-    id             String   @id
-    name           String
-    recentPlayerId String   @default("")
-    guildId        String
-    multiplier     Int      @default(1)
-    createdAt      DateTime @default(now())
-    recentNumber   Int      @default(1)
-    type           GameType @default(CountingGame)
+    id              String   @id
+    name            String
+    recentPlayerId  String   @default("")
+    guildId         String
+    multiplier      Int      @default(1)
+    createdAt       DateTime @default(now())
+    recentNumber    Int      @default(1)
+    recentMessageId String   @default("")
+    type            GameType @default(CountingGame)
 }
 
 model Player {
@@ -44,9 +45,9 @@ model Player {
 }
 
 model Stats {
-    id          Int @id @default(0)
-    wordCount   Int
-    guildCount  Int
+    id         Int @id @default(0)
+    wordCount  Int
+    guildCount Int
 }
 
 enum GameType {

@@ -7,9 +7,10 @@ export class CountingGame {
     public id: string;
     private name: string;
     private recentPlayerId: string;
+    private recentMessageId: string;
     public guildId: string;
     public multiplier: number;
-    public readonly type = GameType.CountingGame;
+    readonly type = GameType.CountingGame;
     public recentNumber: number;
     private isProcessing = false;
 
@@ -18,6 +19,7 @@ export class CountingGame {
         this.id = game.id;
         this.name = game.name;
         this.recentPlayerId = game.recentPlayerId;
+        this.recentMessageId = game.recentMessageId;
         this.guildId = game.guildId;
         this.multiplier = game.multiplier;
         this.recentNumber = game.recentNumber;
@@ -62,6 +64,7 @@ export class CountingGame {
         await message.react(client.config.acceptEmote);
         this.recentNumber = integer;
         this.recentPlayerId = message.author.id;
+        this.recentMessageId = message.id;
         this.setName((message.channel as GuildTextBasedChannel).name);
         await this.save();
         this.isProcessing = false;
@@ -97,6 +100,7 @@ export class CountingGame {
             data: {
                 name: this.name,
                 recentPlayerId: this.recentPlayerId,
+                recentMessageId: this.recentMessageId,
                 multiplier: this.multiplier,
                 recentNumber: this.recentNumber,
             },
