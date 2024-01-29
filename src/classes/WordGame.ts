@@ -230,9 +230,13 @@ export class WordGame {
 
         if (!player) return;
 
-        await player.removeGame(this.guildId, this.id);
+        const hasNoScores = await player.removeGame(this.guildId, this.id);
 
         this.players.remove(id);
+
+        if(hasNoScores) {
+            await client.players.remove(id);
+        }
     }
 
     // Method to set game mode

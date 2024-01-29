@@ -98,7 +98,11 @@ export class Games {
             for (let i = 0; i < players.length; i++) {
                 const player = players[i];
 
-                await player.removeGame(game.guildId, game.id);
+                const hasNoScores = await player.removeGame(game.guildId, game.id);
+
+                if (hasNoScores) {
+                    await client.players.remove(player.id);
+                }
             }
 
             await prisma.wordGame.delete({ where: { id: gameId } });
