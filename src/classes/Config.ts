@@ -1,5 +1,5 @@
 // Importing the configuration data from the "config.json" file using the alias '@'
-import * as config from "@/config.json";
+import * as config from "@/config.local.json";
 
 // Importing the 'fs' module for file system operations
 import fs from "fs";

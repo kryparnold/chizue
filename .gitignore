@@ -16,10 +16,6 @@ prisma/migrations/*
 
 .env
 
-# Misc
+# Local files
 
-src/commands/test.ts
-elebele.ts
-src/client/stats.json
-src/config.json
-todo.md
+*.local.*
