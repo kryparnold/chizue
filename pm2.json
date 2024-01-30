@@ -1,0 +1,5 @@
+{
+    "script": "bun",
+    "args": ["run", "start", "./src/index.ts"],
+    "name": "Chizue"
+}
