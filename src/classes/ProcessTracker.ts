@@ -20,6 +20,12 @@ export class ProcessTracker {
 
     // Method to remove a process from the tracker using its ID
     remove(id: UUID) {
+        const process = this.cache.get(id);
+
+        if (!process) return;
+
+        client.logger.logProcess(process, new Date());
+
         this.cache.delete(id);
     }
 
