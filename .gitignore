@@ -19,3 +19,7 @@ prisma/migrations/*
 # Local files
 
 *.local.*
+
+# logs
+
+logs
