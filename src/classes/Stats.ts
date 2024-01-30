@@ -45,19 +45,29 @@ export class Stats {
     // Save statistics to a file
     private async saveStats() {
         const { wordCount, guildCount } = this.all;
-        await prisma.stats.update({
-            where: {
-                id: 0,
-            },
-            data: {
-                guildCount: {
-                    set: guildCount,
+        await prisma.stats
+            .update({
+                where: {
+                    id: 0,
                 },
-                wordCount: {
-                    set: wordCount,
+                data: {
+                    guildCount: {
+                        set: guildCount,
+                    },
+                    wordCount: {
+                        set: wordCount,
+                    },
                 },
-            },
-        });
+            })
+            .catch(async (error) => {
+                await prisma.stats.create({
+                    data: {
+                        id: 0,
+                        wordCount: wordCount ?? 0,
+                        guildCount: guildCount ?? 0,
+                    },
+                });
+            });
     }
 
     // Send statistics for a specific period to the Discord channel
