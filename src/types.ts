@@ -85,10 +85,10 @@ export type RawWordGameWithPlayers = RawWordGame & { players: GuildPlayers };
 export type ButtonParams = { [x: string]: string };
 
 export enum ProcessTypes {
-    SlashCommand,
-    Word,
-    Number,
-    Button,
+    SlashCommand = "SlashCommand",
+    Word = "Word",
+    Number = "Number",
+    Button = "Button",
 }
 
 interface BaseProcess {
