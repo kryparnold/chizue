@@ -36,8 +36,6 @@ export class ProcessTracker {
         if (processCount) {
             client.logger.log(`Waiting for ${processCount} process to end.`);
             await this.awaitProcessesEnding();
-        } else {
-            client.logger.log(`No active processes, contiuning.`);
         }
     }
 
