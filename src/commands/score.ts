@@ -1,5 +1,5 @@
 // Importing necessary types and modules from the project's global scope and Discord.js library
-import { Utils, client } from "@/globals";
+import { Utils, WordGame, client } from "@/globals";
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 // Exporting a default command object
@@ -35,8 +35,11 @@ export default {
         // Retrieving the player's score and calculating the guild total score if available
         const playerScore = player?.score;
         const memberScore = player
-            ? Object.values(player?.scores[interaction.guildId as string]).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+            ? Object.values(player.scores[interaction.guildId!]).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
             : undefined;
+        const channelScores = [];
+
+        for await (const [channelId, score] of Object.entries(player?.scores[interaction.guildId!] ?? [])) channelScores.push(`<#${channelId}> - ${score}`);
 
         // Handling cases where player or player score is unavailable
         if (!player || !playerScore) {
@@ -66,6 +69,10 @@ export default {
         // Adding guild total score to the embed if available
         if (memberScore) {
             scoreEmbed.data.fields?.push({ name: client.getLocalization(userLocale, "commandScoreGuildScore"), value: memberScore.toFixed(1) });
+        }
+
+        if (channelScores.length) {
+            scoreEmbed.data.fields?.push({ name: client.getLocalization(userLocale, "commandScoreChannelScores"), value: channelScores.join("\n") });
         }
 
         // Responding to the interaction with the score embed as an ephemeral message
