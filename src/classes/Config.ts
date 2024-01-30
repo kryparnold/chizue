@@ -1,27 +1,25 @@
-// Importing the configuration data from the "config.json" file using the alias '@'
-import * as config from "@/config.local.json";
-
-// Importing the 'fs' module for file system operations
+import * as configData from "@/config.local.json";
 import fs from "fs";
+import path from "path";
 
 // Config class definition
 export class Config {
-    // Properties to store various configuration values
     public guildId: string;
     public logChannelId: string;
+    public wordLogChannelId: string;
+    public processLogChannelId: string;
     public clientId: string;
     public clientStatus: string;
     public statsMessageId: string;
     public statsMessageChannelId: string;
     public statsChannelId: string;
     public wordReportChannelId: string;
-    public wordLogChannelId: string;
     public ticketCategoryId: string;
     public announcementRoleId: string;
     public maintenanceRoleId: string;
+    public logsPath: string;
     public commandsPath: string;
     public buttonsPath: string;
-    public statsPath: string;
     public englishWordsPath: string;
     public turkishWordsPath: string;
     public wordleWordsPath: string;
@@ -31,63 +29,41 @@ export class Config {
     // Constructor to initialize properties with values from the config file
     constructor() {
         // Setting up paths for source and JSON directories
-        const srcPath = process.cwd() + "/src";
-        const jsonPath = srcPath + "/database/json";
-
-        // Extracting configuration data from the imported 'config' module
-        const configData = config;
+        const basePath = process.cwd();
+        const srcPath = path.join(basePath + "/src");
+        const jsonPath = path.join(srcPath + "/database/json");
 
         // Assigning values to class properties from the configuration data
         this.guildId = configData.guildId;
         this.logChannelId = configData.logChannelId;
+        this.wordLogChannelId = configData.wordLogChannelId;
+        this.processLogChannelId = configData.processLogChannelId;
         this.clientId = configData.clientId;
         this.clientStatus = configData.clientStatus;
         this.statsMessageId = configData.statsMessageId;
         this.statsMessageChannelId = configData.statsMessageChannelId;
         this.statsChannelId = configData.statsChannelId;
         this.wordReportChannelId = configData.wordReportChannelId;
-        this.wordLogChannelId = configData.wordLogChannelId;
         this.ticketCategoryId = configData.ticketCategoryId;
         this.announcementRoleId = configData.announcementRoleId;
         this.maintenanceRoleId = configData.maintenanceRoleId;
-        this.commandsPath = srcPath + configData.commandsPath;
-        this.buttonsPath = srcPath + configData.buttonsPath;
-        this.statsPath = jsonPath + configData.statsPath;
-        this.englishWordsPath = jsonPath + configData.englishWordsPath;
-        this.turkishWordsPath = jsonPath + configData.turkishWordsPath;
-        this.wordleWordsPath = jsonPath + configData.wordleWordsPath;
+        this.logsPath = path.join(basePath + configData.logsPath);
+        this.commandsPath = path.join(srcPath + configData.commandsPath);
+        this.buttonsPath = path.join(srcPath + configData.buttonsPath);
+        this.englishWordsPath = path.join(jsonPath + configData.englishWordsPath);
+        this.turkishWordsPath = path.join(jsonPath + configData.turkishWordsPath);
+        this.wordleWordsPath = path.join(jsonPath + configData.wordleWordsPath);
         this.acceptEmote = configData.acceptEmote;
         this.denyEmote = configData.denyEmote;
     }
 
     // Async method to save the current configuration to a file
     async save() {
-        // Writing the configuration data to the "config.json" file
+        // Writing the configuration data to the "config.local.json" file
         await fs.promises.writeFile(
-            "./src/config.json",
-            JSON.stringify(
-                {
-                    guildId: this.guildId,
-                    logChannelId: this.logChannelId,
-                    clientId: this.clientId,
-                    clientStatus: this.clientStatus,
-                    statsMessageId: this.statsMessageId,
-                    statsMessageChannelId: this.statsMessageChannelId,
-                    statsChannelId: this.statsChannelId,
-                    wordReportChannelId: this.wordReportChannelId,
-                    wordLogChannelId: this.wordLogChannelId,
-                    commandsPath: "/" + this.commandsPath.split("/").at(-1),
-                    buttonsPath: "/" + this.buttonsPath.split("/").at(-1),
-                    statsPath: "/" + this.statsPath.split("/").at(-1),
-                    englishWordsPath: "/" + this.englishWordsPath.split("/").at(-1),
-                    turkishWordsPath: "/" + this.turkishWordsPath.split("/").at(-1),
-                    wordleWordsPath: "/" + this.wordleWordsPath.split("/").at(-1),
-                    acceptEmote: this.acceptEmote,
-                    denyEmote: this.denyEmote,
-                },
-                null,
-                4
-            )
+            "./src/config.local.json",
+            //@ts-ignore
+            JSON.stringify({ ...configData.default, clientStatus: this.clientStatus, acceptEmote: this.acceptEmote }, null, 4)
         );
     }
 }
