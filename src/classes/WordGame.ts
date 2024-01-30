@@ -13,7 +13,7 @@ export class WordGame {
     private randomWords: string[];
     public mode: GameMode;
     public locale: Locales;
-    private formattedLocale: FormattedLocale;
+    public formattedLocale: FormattedLocale;
     readonly type = GameType.WordGame;
     public words: string[];
     private isProcessing = false;
