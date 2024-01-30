@@ -1,5 +1,6 @@
 // Importing necessary types and modules from the project's global scope and Discord.js library
 import { CountingGame, FormattedLocale, Utils, WordGame, client } from "@/globals";
+import * as config from "../config.local.json";
 import { GameType } from "@prisma/client";
 import {
     ActionRowBuilder,
@@ -132,7 +133,7 @@ export default {
                 .setDescriptionLocalization("tr", "Destek sunucusunda kullanılan buton-rol sistemi için butonlarla embed gönderir.")
         ),
     // Guild ID from the configuration
-    guildId: client.config.guildId,
+    guildId: config.guildId,
 
     // Execution function for the command
     async execute(interaction: ChatInputCommandInteraction) {
