@@ -117,6 +117,7 @@ export class Logger {
 
         logString += ` Took ${process.startTime - endDate.getTime()}`;
 
+        this.processLogPool.push(logString);
         this.processLogSavePool.push(logString);
     }
 
