@@ -1,3 +1,4 @@
+process.on("uncaughtException", console.error).on("unhandledRejection", console.error);
 // Importing necessary modules and components from external files
 import { Events } from "discord.js";
 import { BotStatuses, Utils, client } from "@/globals";
