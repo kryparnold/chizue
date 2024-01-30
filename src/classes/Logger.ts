@@ -1,13 +1,14 @@
 // Importing the TextChannel class from the "discord.js" library
 import { TProcess, Utils, client } from "@/globals";
-import { TextChannel } from "discord.js";
+import { Guild, TextChannel } from "discord.js";
 import fs from "fs";
 import path from "path";
 
 // Logger class definition
 export class Logger {
-    public logChannel!: TextChannel;
-    public processLogChannel!: TextChannel;
+    private logChannel!: TextChannel;
+    private processLogChannel!: TextChannel;
+    private guildLogChannel!: TextChannel;
     private defaultPrefix = "[Chizue]";
 
     private logPool: string[] = [];
@@ -16,10 +17,10 @@ export class Logger {
     private intervals: NodeJS.Timeout[] = [];
 
     // Initialization method for the Logger class
-    async init(logChannel: TextChannel, processLogChannel: TextChannel) {
-        // Assigning the provided log channel to the logChannel property
+    async init(logChannel: TextChannel, processLogChannel: TextChannel, guildLogChannel: TextChannel) {
         this.logChannel = logChannel;
         this.processLogChannel = processLogChannel;
+        this.guildLogChannel = guildLogChannel;
 
         this.intervals = [
             setInterval(async () => await this.sendLogs(), 1500),
@@ -128,5 +129,10 @@ export class Logger {
 
         this.processLogPool.push(logString);
         this.processLogSavePool.push(logString);
+    }
+
+    // Method for logging guilds
+    async logGuild(guild: Guild, join: boolean) {
+        await this.guildLogChannel.send(`${join ? client.config.acceptEmote : client.config.denyEmote} ${guild.name}`);
     }
 }
