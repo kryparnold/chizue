@@ -97,6 +97,15 @@ export class Logger {
         await this.saveProcessLogs();
     }
 
+    // Method for logging messages
+    log(logMessage: string) {
+        // Log the message to the console with the default prefix and without bold formatting
+        console.log(`${this.defaultPrefix} ${logMessage.replaceAll("**", "")}`);
+
+        // Pushing the modified log message to the log pool
+        this.logPool.push(`${this.defaultPrefix} ${logMessage}`);
+    }
+
     // Method for logging processes
     logProcess(process: TProcess, endDate: Date) {
         const startDate = new Date(process.startTime);
@@ -119,14 +128,5 @@ export class Logger {
 
         this.processLogPool.push(logString);
         this.processLogSavePool.push(logString);
-    }
-
-    // Method for logging messages
-    log(logMessage: string) {
-        // Log the message to the console with the default prefix and without bold formatting
-        console.log(`${this.defaultPrefix} ${logMessage.replaceAll("**", "")}`);
-
-        // Pushing the modified log message to the log pool
-        this.logPool.push(`${this.defaultPrefix} ${logMessage}`);
     }
 }
