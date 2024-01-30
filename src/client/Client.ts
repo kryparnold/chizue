@@ -116,7 +116,7 @@ class BotClient extends Client {
                 startTime: new Date().getTime(),
                 type: ProcessTypes.SlashCommand,
                 props: {
-                    name: interaction.commandName,
+                    command: interaction.commandName,
                     authorId: interaction.user.id,
                     authorName: interaction.user.username,
                 },

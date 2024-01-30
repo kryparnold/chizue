@@ -101,7 +101,7 @@ interface ISlashCommandProcess extends BaseProcess {
     props: {
         authorId: string;
         authorName: string;
-        name: string;
+        command: string;
         subCommand?: string;
     };
 }
