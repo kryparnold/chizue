@@ -1,6 +1,6 @@
 // Importing necessary types and modules from the project's global scope and Discord.js library
 import { Utils, client } from "@/globals";
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder, User } from "discord.js";
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 // Defining an interface to represent player scores
 interface IPlayerScores {

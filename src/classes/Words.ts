@@ -1,5 +1,5 @@
 // Importing necessary types and modules from the project's global scope and Discord.js library
-import { FormattedLocale, IEnglishWords, ITurkishWords, IWordleWords, Utils, WordleLengths, client } from "@/globals";
+import { FormattedLocale, IEnglishWords, ITurkishWords, IWordleWords, WordleLengths, client } from "@/globals";
 import { Colors, EmbedBuilder, TextChannel, User } from "discord.js";
 import fs from "fs";
 

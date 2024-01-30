@@ -1,5 +1,4 @@
-import { client } from "@/globals";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CategoryChannel, ChannelType, Colors, EmbedBuilder, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CategoryChannel, ChannelType, Colors, EmbedBuilder } from "discord.js";
 
 export class Tickets {
     private ticketCategory!: CategoryChannel;

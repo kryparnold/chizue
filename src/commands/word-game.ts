@@ -8,7 +8,6 @@ import {
     Colors,
     ComponentType,
     EmbedBuilder,
-    EmbedFooterOptions,
     PermissionFlagsBits,
     SlashCommandBuilder,
     StringSelectMenuBuilder,

@@ -1,5 +1,5 @@
 // Import necessary modules and types from Prisma, Discord.js, and local files
-import { WordGame as RawWordGame, CountingGame as RawCountingGame, Player as RawPlayer, GameType, Prisma } from "@prisma/client";
+import { WordGame as RawWordGame, CountingGame as RawCountingGame, GameType, Prisma } from "@prisma/client";
 import { Collection, TextChannel } from "discord.js";
 import { CountingGame, GuildPlayers, Player, Utils, WordGame, client, prisma } from "@/globals";
 
