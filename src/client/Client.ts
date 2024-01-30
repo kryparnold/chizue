@@ -275,12 +275,17 @@ class BotClient extends Client {
     async initLogger() {
         const logChannel = await this.channels.fetch(this.config.logChannelId);
         const processLogChannel = await this.channels.fetch(this.config.processLogChannelId);
+        const guildLogChannel = await this.channels.fetch(this.config.guildLogChannelId);
 
-        if (logChannel?.type !== ChannelType.GuildText || processLogChannel?.type !== ChannelType.GuildText) {
+        if (
+            logChannel?.type !== ChannelType.GuildText ||
+            processLogChannel?.type !== ChannelType.GuildText ||
+            guildLogChannel?.type !== ChannelType.GuildText
+        ) {
             throw "Log Channels must be a Text Channels.";
         }
 
-        this.logger.init(logChannel, processLogChannel);
+        this.logger.init(logChannel, processLogChannel, guildLogChannel);
 
         this.logger.log(`${this.user?.username} is initializing...`);
     }
