@@ -8,6 +8,7 @@ export class Config {
     public logChannelId: string;
     public wordLogChannelId: string;
     public processLogChannelId: string;
+    public guildLogChannelId: string;
     public clientId: string;
     public clientStatus: string;
     public statsMessageId: string;
@@ -38,6 +39,7 @@ export class Config {
         this.logChannelId = configData.logChannelId;
         this.wordLogChannelId = configData.wordLogChannelId;
         this.processLogChannelId = configData.processLogChannelId;
+        this.guildLogChannelId = configData.guildLogChannelId;
         this.clientId = configData.clientId;
         this.clientStatus = configData.clientStatus;
         this.statsMessageId = configData.statsMessageId;

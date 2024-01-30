@@ -3,6 +3,7 @@
     "logChannelId": "<LOG_CHANNEL_ID>",
     "wordLogChannelId": "<WORD_LOG_CHANNEL_ID>",
     "processLogChannelId": "<PROCESS_LOG_CHANNEL_ID>",
+    "guildLogChannelId": "<GUILD_LOG_CHANNEL_ID>",
     "clientId": "<CLIENT_ID>",
     "clientStatus": "<CLIENT_STATUS>",
     "statsMessageId": "<STATS_MESSAGE_ID>",
