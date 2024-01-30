@@ -101,7 +101,7 @@ export class Logger {
     logProcess(process: TProcess, endDate: Date) {
         const startDate = new Date(process.startTime);
         const processDay = Utils.formatDate(startDate.getDate().toString());
-        const processMonth = Utils.formatDate((startDate.getMonth() - 1).toString());
+        const processMonth = Utils.formatDate((startDate.getMonth() + 1).toString());
         const processHour = Utils.formatDate(startDate.getHours().toString());
         const processMinute = Utils.formatDate(startDate.getMinutes().toString());
         const processSecond = Utils.formatDate(startDate.getSeconds().toString());
@@ -109,13 +109,13 @@ export class Logger {
 
         let logString = `[${processDay}-${processMonth}-${startDate.getFullYear()}]`;
         logString += ` [${processHour}:${processMinute}:${processSecond}.${processMilisecond}]`;
-        logString += ` [${process.type}] [${process.id}]`;
+        logString += ` [${process.id}] [${process.type}]`;
 
         for (const [key, value] of Object.entries(process.props)) {
-            logString += ` ${Utils.capitalize(key)}: ${value.toString()}`;
+            logString += ` [${Utils.capitalize(key)}: ${value.toString()}]`;
         }
 
-        logString += ` Took ${process.startTime - endDate.getTime()}`;
+        logString += ` [${endDate.getTime() - process.startTime}ms]`;
 
         this.processLogPool.push(logString);
         this.processLogSavePool.push(logString);
