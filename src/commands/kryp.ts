@@ -1,5 +1,6 @@
 // Importing necessary types and modules from the project's global scope and Discord.js library
-import { FormattedLocale, Utils, client } from "@/globals";
+import { CountingGame, FormattedLocale, Utils, WordGame, client } from "@/globals";
+import { GameType } from "@prisma/client";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -9,6 +10,7 @@ import {
     EmbedBuilder,
     PermissionFlagsBits,
     SlashCommandBuilder,
+    TextChannel,
 } from "discord.js";
 
 // Exporting a default command object
@@ -89,6 +91,24 @@ export default {
                         .setDescriptionLocalization("tr", "Botun kabul emojisi")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand((announcementCommand) =>
+            announcementCommand
+                .setName("announcement")
+                .setNameLocalization("tr", "duyuru")
+                .setDescription("To make an announcement in all game channels")
+                .setDescriptionLocalization("tr", "Bütün oyun kanallarında duyuru yapmak için.")
+                .addStringOption((announcementOption) =>
+                    announcementOption
+                        .setName("announcement")
+                        .setNameLocalization("tr", "duyuru")
+                        .setDescription("The announcement you want to make")
+                        .setDescriptionLocalization("tr", "Yapmak istediğiniz duyuru")
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand((comebackAnnouncementCommand) =>
+            comebackAnnouncementCommand.setName("comeback-announcement").setDescription("To make an announcement for comeback")
         )
         .addSubcommand((quitCommand) =>
             quitCommand
@@ -271,6 +291,37 @@ export default {
                 ephemeral: true,
                 content: "Button Role message sent successfully!",
             });
+        } else if (subCommand === "comeback-announcement") {
+            const games = client.games.getAll();
+
+            const wordGames = games.filter((game) => game.type === GameType.WordGame) as WordGame[];
+            const countingGames = games.filter((game) => game.type === GameType.CountingGame) as CountingGame[];
+
+            const getWordGameMessage = (locale: FormattedLocale, letter: string) =>
+                locale === "tr"
+                    ? `Chizue geri döndü ve artık Açık Kaynak! Son güncellemeye göz atmak için destek sunucusuna gelebilirsin.\nOyununuza kaldığınız yerden devam edebilirsiniz, harfiniz **${letter}**.\n`
+                    : `Chizue is now back and it is Open Source! You can join the support server if you want to check latest update.\nYou can continue playing wherever you left, your letter is **${letter}**`;
+            const getCountingGameMessage = (locale: FormattedLocale, multiplier: number) =>
+                locale === "tr"
+                    ? `Chizue geri döndü ve artık Açık Kaynak! Son güncellemeye göz atmak için destek sunucusuna gelebilirsin.\nOyununuza kaldığınız yerden devam edebilirsiniz, sayınız **${multiplier.toString()}**`
+                    : `Chizue is now back and it is Open Source! You can join the support server if you want to check latest update.\nYou can continue playing wherever you left, your number is **${multiplier.toString()}**`;
+
+            for (let i = 0; i < wordGames.length; i++) {
+                const wordGame = wordGames[i];
+
+                const gameChannel = (await client.channels.fetch(wordGame.id)) as TextChannel;
+
+                await gameChannel.send(getWordGameMessage(wordGame.formattedLocale, wordGame.letter));
+            }
+
+            for (let i = 0; i < countingGames.length; i++) {
+                const countingGame = countingGames[i];
+
+                const gameChannel = (await client.channels.fetch(countingGame.id)) as TextChannel;
+                const guildLocale = Utils.formatLocale(gameChannel.guild.preferredLocale);
+
+                await gameChannel.send(getCountingGameMessage(guildLocale, countingGame.multiplier));
+            }
         }
     },
 };
