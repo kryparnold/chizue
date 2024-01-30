@@ -46,6 +46,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 // Event handler for when a guild is deleted
 client.on(Events.GuildDelete, async (guild) => {
+    // Log the deleted guild
+    await client.logger.logGuild(guild, false);
+
     // Retrieve game IDs associated with the deleted guild
     const guildGameIds = client.games.getGuildGameIds(guild.id);
 
@@ -103,6 +106,12 @@ client.on(Events.MessageDelete, async (message) => {
             // Use localization to mention the deleted number in the counting game
             client.getLocalization<true>(guildLocale, "countingGameDeletedNumber")(game.recentNumber.toString())
     );
+});
+
+// Event handler for when a guild is added
+client.on(Events.GuildCreate, async (guild) => {
+    // Log the added guild
+    await client.logger.logGuild(guild, true);
 });
 
 // Log in to Discord using the provided bot token
