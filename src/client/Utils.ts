@@ -27,6 +27,12 @@ export class Utils {
 
         return randomWords;
     }
+    static capitalize(text: string) {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+    static formatDate(date: string, threshold = 1) {
+        return date.length > threshold ? date : "0" + date;
+    }
     static invalidCharacters = /[^a-zA-ZğüşıöçĞÜŞİÖÇ]/;
     static formatLocale(locale: Locales | Locale): FormattedLocale {
         if (["Turkish", Locale.Turkish].includes(locale)) {
