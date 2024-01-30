@@ -117,11 +117,12 @@ class BotClient extends Client {
                 type: ProcessTypes.SlashCommand,
                 props: {
                     name: interaction.commandName,
-                    subCommand,
                     authorId: interaction.user.id,
                     authorName: interaction.user.username,
                 },
             };
+
+            if (subCommand) commandProcess.props.subCommand = subCommand;
 
             // Add the Slash Command Process to the tracker
             this.processes.add(commandProcess);
