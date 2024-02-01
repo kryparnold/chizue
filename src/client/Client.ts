@@ -86,12 +86,12 @@ class BotClient extends Client {
         this.updateStatus(this.config.clientStatus);
         this.statusInterval = setInterval(() => this.updateStatus(this.config.clientStatus), 600000);
         await this.initLogger();
-        await this.initStats();
         await this.initTickets();
         await this.initCommands();
         await this.initButtons();
         await this.initPlayers();
         await this.initGames();
+        await this.initStats();
         await this.initWords();
     }
 
