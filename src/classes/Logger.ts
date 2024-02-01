@@ -74,7 +74,7 @@ export class Logger {
         const filename = path.join(client.config.logsPath, `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}.log`);
 
         // Concatenate process logs into a single string separated by newlines
-        const logContent = this.processLogSavePool.join("\n");
+        const logContent = this.processLogSavePool.join("\n") + "\n";
 
         // Clearing the process log pool
         this.processLogSavePool.length = 0;
