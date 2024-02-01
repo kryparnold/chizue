@@ -11,7 +11,8 @@ export class Games {
     // Initialization method, takes arrays of raw WordGame, Player, and CountingGame data
     async init(wordGames: RawWordGame[], players: Player[], countingGames: RawCountingGame[]) {
         // Initialize WordGame instances
-        wordGames.forEach(async (game) => {
+        for (let i = 0; i < wordGames.length; i++) {
+            const game = wordGames[i];
             // Create Players instance and initialize it with filtered player data
             const guildPlayers = new GuildPlayers();
             await guildPlayers.init(
@@ -23,15 +24,16 @@ export class Games {
             const newGame = new WordGame({ ...game, players: guildPlayers });
 
             this.cache.set(game.id, newGame);
-        });
+        }
 
         // Initialize CountingGame instances
-        countingGames.forEach(async (game) => {
+        for (let i = 0; i < countingGames.length; i++) {
+            const game = countingGames[i];
             // Create new CountingGame instance and add it to the cache
             const newGame = new CountingGame(game);
 
             this.cache.set(game.id, newGame);
-        });
+        }
     }
 
     // Method to create a new WordGame and add it to the cache
