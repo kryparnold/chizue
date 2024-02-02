@@ -113,7 +113,10 @@ export class WordGame {
                     this.isProcessing = false;
                     await message.delete().catch(() => {});
                     await message.channel
-                        .send(client.getLocalization<true>(this.formattedLocale, "wordGameNotYet")((this.limit - this.words.length).toString()))
+                        .send(
+                            `<@${player.id}>, ` +
+                                client.getLocalization<true>(this.formattedLocale, "wordGameNotYet")((this.limit - this.words.length).toString())
+                        )
                         .then((reply) => setTimeout(() => reply.delete(), 5000));
                 }
             }
@@ -234,7 +237,7 @@ export class WordGame {
 
         this.players.remove(id);
 
-        if(hasNoScores) {
+        if (hasNoScores) {
             await client.players.remove(id);
         }
     }
