@@ -50,6 +50,11 @@ model Stats {
     guildCount Int
 }
 
+model AutoRole {
+    id     String @id
+    roleId String
+}
+
 enum GameType {
     WordGame
     CountingGame
