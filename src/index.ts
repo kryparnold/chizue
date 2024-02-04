@@ -1,7 +1,7 @@
 process.on("uncaughtException", console.error).on("unhandledRejection", console.error);
 // Importing necessary modules and components from external files
 import { Events } from "discord.js";
-import { BotStatuses, Utils, client } from "@/globals";
+import { BotStatuses, Utils, client, prisma } from "@/globals";
 
 // Importing and configuring environment variables using dotenv
 import { config as envConfig } from "dotenv";
@@ -113,6 +113,18 @@ client.on(Events.MessageDelete, async (message) => {
 client.on(Events.GuildCreate, async (guild) => {
     // Log the added guild
     await client.logger.logGuild(guild, true);
+});
+
+// Event handler for when a member is added
+client.on(Events.GuildMemberAdd, async (member) => {
+    // Get auto-role by member's guild id
+    const autoRole = await prisma.autoRole.findFirst({ where: { id: member.guild.id } });
+
+    // Return if there is no autoRole for the guild
+    if (!autoRole) return;
+
+    // Add the role to the member
+    await member.roles.add(autoRole.roleId);
 });
 
 // Log in to Discord using the provided bot token
