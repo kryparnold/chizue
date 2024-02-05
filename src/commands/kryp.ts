@@ -133,7 +133,7 @@ export default {
                 .setDescriptionLocalization("tr", "Destek sunucusunda kullanılan buton-rol sistemi için butonlarla embed gönderir.")
         ),
     // Guild ID from the configuration
-    guildId: config.guildId,
+    guildIds: [config.guildId],
 
     // Execution function for the command
     async execute(interaction: ChatInputCommandInteraction) {
