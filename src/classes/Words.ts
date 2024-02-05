@@ -11,6 +11,7 @@ export class Words {
     wordleWords!: IWordleWords;
     wordReportChannel!: TextChannel;
     wordLogChannel!: TextChannel;
+    tdkBaseUrl = "https://sozluk.gov.tr/gts?ara=";
 
     // Initialization method for the Words class
     async init(wordReportChannel: TextChannel, wordLogChannel: TextChannel) {
@@ -38,8 +39,51 @@ export class Words {
         return { tr: trSum, en: enSum };
     }
 
+    // Method to find a word from the specified language's word list
+    async find(word: string, language: FormattedLocale) {
+        if (language === "en") {
+            //@ts-ignore
+            return this.en[word.at(0)].includes(word);
+        }
+        //@ts-ignore
+        let wordExists = this.tr[word.at(0)].includes(word);
+
+        if (wordExists) return wordExists;
+
+        const isWordValid = await this.checkApi(word);
+
+        if (isWordValid) {
+            await this.addWord(word, language);
+            return true;
+        }
+
+        return false;
+    }
+
+    // Method to get a word from the TDK api
+    async checkApi(word: string) {
+        // Getting the fetch url with combining word and base url
+        const url = this.tdkBaseUrl + word;
+
+        // Fetching the response using Google API user agent
+        const response = await fetch(url, {
+            headers: {
+                "User-Agent": "APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)",
+            },
+        });
+
+        // Getting the json data from the response
+        const data: any = await response.json();
+
+        // Returning if data has error or response status is not 200 (OK)
+        if (data.error || response.status !== 200) return false;
+
+        // Returning true means the word exists in api
+        return true;
+    }
+
     // Method to add a word to the specified language's word list
-    async addWord(word: string, language: FormattedLocale, user: User) {
+    async addWord(word: string, language: FormattedLocale, user?: User) {
         // Adding the word to the appropriate starting letter category in the language's word list
         //@ts-ignore
         this[language][word.at(0)].push(word);
@@ -60,8 +104,8 @@ export class Words {
                     .setDescription(`Added **${word}** to ${client.getLocalization("en", language)} Words`)
                     .setColor(Colors.Green)
                     .setAuthor({
-                        name: user.username,
-                        iconURL: user.avatarURL() as string,
+                        name: (user ?? client.user)?.username!,
+                        iconURL: (user ?? client.user)?.avatarURL()!,
                     }),
             ],
         });
