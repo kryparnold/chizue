@@ -40,18 +40,23 @@ export class Words {
     }
 
     // Method to find a word from the specified language's word list
-    async find(word: string, language: FormattedLocale) {
+    async find(word: string, language: FormattedLocale, length?: number) {
         if (language === "en") {
             //@ts-ignore
-            return this.en[word.at(0)].includes(word);
+            // Check the word and return
+            return (length ? this.wordleWords.en[length] : this.en[word.at(0)]).includes(word);
         }
         //@ts-ignore
-        let wordExists = this.tr[word.at(0)].includes(word);
+        // Check if the word exists in data
+        let wordExists = (length ? this.wordleWords.tr[length] : this.tr[word.at(0)]).includes(word);
 
+        // Return if word already exists
         if (wordExists) return wordExists;
 
+        // If word doesn't exists in data check api
         const isWordValid = await this.checkApi(word);
 
+        // If word is in the api add the word to the data and return true
         if (isWordValid) {
             await this.addWord(word, language);
             return true;
