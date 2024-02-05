@@ -165,8 +165,7 @@ export class WordGame {
         } else if (!Utils.Letters[this.formattedLocale].includes(firstLetter) || firstLetter !== this.letter) {
             // Invalid starting letter
             return client.getLocalization<true>(this.formattedLocale, "wordGameInvalidLetter")(this.letter);
-            //@ts-ignore
-        } else if (!client.words[this.formattedLocale][firstLetter].includes(word)) {
+        } else if (!client.words.find(word, this.formattedLocale)) {
             // Invalid word
             return client.getLocalization(this.formattedLocale, "wordGameInvalidWord");
         } else if (this.words.includes(word) && this.mode === GameMode.Normal) {
