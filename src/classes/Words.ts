@@ -44,11 +44,11 @@ export class Words {
         if (language === "en") {
             //@ts-ignore
             // Check the word and return
-            return (length ? this.wordleWords.en[length] : this.en[word.at(0)]).includes(word);
+            return (length ? this.wordleWords.en[length] : this.en[word.at(0)]).includes(word) as boolean;
         }
         //@ts-ignore
         // Check if the word exists in data
-        let wordExists = (length ? this.wordleWords.tr[length] : this.tr[word.at(0)]).includes(word);
+        let wordExists: boolean = (length ? this.wordleWords.tr[length] : this.tr[word.at(0)]).includes(word);
 
         // Return if word already exists
         if (wordExists) return wordExists;
