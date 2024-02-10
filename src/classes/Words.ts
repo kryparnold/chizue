@@ -11,7 +11,10 @@ export class Words {
     wordleWords!: IWordleWords;
     wordReportChannel!: TextChannel;
     wordLogChannel!: TextChannel;
-    tdkBaseUrl = "https://sozluk.gov.tr/gts?ara=";
+    apiUrls = {
+        tr: "https://sozluk.gov.tr/gts?ara=",
+        en: "https://api.dictionaryapi.dev/api/v2/entries/en/",
+    };
 
     // Initialization method for the Words class
     async init(wordReportChannel: TextChannel, wordLogChannel: TextChannel) {
@@ -39,51 +42,64 @@ export class Words {
         return { tr: trSum, en: enSum };
     }
 
-    // Method to find a word from the specified language's word list
+    // Method to find a word from the specified language's word list or check its existence via an API
     async find(word: string, language: FormattedLocale, length?: number) {
-        if (language === "en") {
-            //@ts-ignore
-            // Check the word and return
-            return (length ? this.wordleWords.en[length] : this.en[word.at(0)]).includes(word) as boolean;
-        }
         //@ts-ignore
-        // Check if the word exists in data
-        let wordExists: boolean = (length ? this.wordleWords.tr[length] : this.tr[word.at(0)]).includes(word);
+        // Retrieve the word list based on the language and optional length parameter
+        const wordList: string[] = length ? this.wordleWords[language][length as WordleLengths] : this[language][word.charAt(0)!];
 
-        // Return if word already exists
-        if (wordExists) return wordExists;
+        // Check if the word exists in the retrieved word list
+        const wordExists = wordList.includes(word);
 
-        // If word doesn't exists in data check api
-        const isWordValid = await this.checkApi(word);
+        // If the word exists in the word list, return true
+        if (wordExists) return true;
 
-        // If word is in the api add the word to the data and return true
-        if (isWordValid) {
-            await this.addWord(word, language);
-            return true;
-        }
+        // If the word is not found in the word list, check its existence via an API
+        // Determine which API to use based on the specified language
+        const wordExistsInAPI = language === "en" ? await this.checkEnglishAPI(word) : await this.checkTurkishAPI(word);
 
-        return false;
+        // Return the result of API check (true if the word exists, false otherwise)
+        return wordExistsInAPI;
     }
 
-    // Method to get a word from the TDK api
-    async checkApi(word: string) {
-        // Getting the fetch url with combining word and base url
-        const url = this.tdkBaseUrl + word;
+    // Method to check the availability of a word in the Turkish Language Association (TDK) API
+    async checkTurkishAPI(word: string) {
+        // Construct the URL for the TDK API using the provided word
+        const url = this.apiUrls.tr + word;
 
-        // Fetching the response using Google API user agent
+        // Send a request to the TDK API endpoint
         const response = await fetch(url, {
+            // Provide a user-agent header to identify the request source
             headers: {
                 "User-Agent": "APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)",
             },
         });
 
-        // Getting the json data from the response
+        // Parse the response as JSON
         const data: any = await response.json();
 
-        // Returning if data has error or response status is not 200 (OK)
+        // Check if there's an error in the response or if the status code is not 200 (OK)
         if (data.error || response.status !== 200) return false;
 
-        // Returning true means the word exists in api
+        // If no errors and status is OK, return true indicating the word is available
+        return true;
+    }
+
+    // Method to check the availability of a word in the English API
+    async checkEnglishAPI(word: string) {
+        // Construct the URL for the English API using the provided word
+        const url = this.apiUrls.en + word;
+
+        // Send a request to the English API endpoint
+        const response = await fetch(url);
+
+        // Parse the response as JSON
+        const data: any = await response.json();
+
+        // Check if the response contains a title (indicating the word doesn't exists) or if the status code is not 200 (OK)
+        if (data.title || response.status !== 200) return false;
+
+        // If no title found and status is OK, return true indicating the word is available
         return true;
     }
 
