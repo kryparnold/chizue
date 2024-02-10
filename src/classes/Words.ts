@@ -58,6 +58,9 @@ export class Words {
         // Determine which API to use based on the specified language
         const wordExistsInAPI = language === "en" ? await this.checkEnglishAPI(word) : await this.checkTurkishAPI(word);
 
+        // Adding word to word list
+        if (wordExistsInAPI) this.addWord(word, language);
+
         // Return the result of API check (true if the word exists, false otherwise)
         return wordExistsInAPI;
     }
