@@ -8,7 +8,7 @@ export class Stats {
     private statsMessage!: Message;
     private all!: IStats;
     private periodicStats!: { hourly: IStats; daily: IStats };
-    private updateIntervals!: NodeJS.Timeout[];
+    private updateIntervals!: Timer[];
 
     // Initialization method
     async init(statsChannel: TextChannel, statsMessage: Message, initialWordCount: number) {

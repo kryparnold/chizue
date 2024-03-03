@@ -50,7 +50,7 @@ class BotClient extends Client {
     processes: ProcessTracker;
     config = new Config();
     status = BotStatuses.Initializing;
-    statusInterval!: NodeJS.Timeout;
+    statusInterval!: Timer;
     activeWordles: string[] = [];
     private commands = new Collection<
         string,

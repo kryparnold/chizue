@@ -14,7 +14,7 @@ export class Logger {
     private logPool: string[] = [];
     private processLogPool: string[] = [];
     private processLogSavePool: string[] = [];
-    private intervals: NodeJS.Timeout[] = [];
+    private intervals: Timer[] = [];
 
     // Initialization method for the Logger class
     async init(logChannel: TextChannel, processLogChannel: TextChannel, guildLogChannel: TextChannel) {
