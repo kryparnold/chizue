@@ -283,7 +283,7 @@ export default {
             return client.getLocalization(gameLocale, "wordleInvalidWord");
         } else if (word.length !== gameLength) {
             return client.getLocalization(gameLocale, "wordleInvalidLength");
-        } else if (await client.words.find(word, gameLocale, gameLength)) {
+        } else if (!await client.words.find(word, gameLocale, gameLength)) {
             return client.getLocalization(gameLocale, "wordGameInvalidWord");
         }
     },
