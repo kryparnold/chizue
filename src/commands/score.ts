@@ -1,5 +1,5 @@
 // Importing necessary types and modules from the project's global scope and Discord.js library
-import { Utils, WordGame, client } from "@/globals";
+import { Utils, client } from "@/globals";
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 // Exporting a default command object
@@ -17,6 +17,7 @@ export default {
 
     // Execution function for the command
     async execute(interaction: ChatInputCommandInteraction) {
+        await interaction.deferReply({ ephemeral: true });
         // Retrieving the selected member from the interaction options, defaulting to the interaction user
         const selectedMember = interaction.options.getUser("member") ?? interaction.user;
 
@@ -47,9 +48,8 @@ export default {
             const userEmbed = initialEmbed.setDescription(client.getLocalization(userLocale, "commandScoreNoScore")).setColor(Colors.Red);
 
             // Responding to the interaction with the no-score embed as an ephemeral message
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [userEmbed],
-                ephemeral: true,
             });
 
             return;
@@ -76,9 +76,8 @@ export default {
         }
 
         // Responding to the interaction with the score embed as an ephemeral message
-        await interaction.reply({
+        await interaction.editReply({
             embeds: [scoreEmbed],
-            ephemeral: true,
         });
     },
 };
