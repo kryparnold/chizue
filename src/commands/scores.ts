@@ -22,6 +22,7 @@ export default {
 
     // Execution function for the command
     async execute(interaction: ChatInputCommandInteraction) {
+        await interaction.deferReply({ephemeral: true});
         // Retrieving guild ID from the interaction
         const guildId = interaction.guildId!;
 
@@ -78,9 +79,8 @@ export default {
             const noGameEmbed = initialEmbed.setColor(Colors.Red).setDescription(client.getLocalization(userLocale, "commandScoresNoGames"));
 
             // Responding to the interaction with the no-games embed as an ephemeral message
-            await interaction.reply({
-                embeds: [noGameEmbed],
-                ephemeral: true,
+            await interaction.editReply({
+                embeds: [noGameEmbed]
             });
 
             return;
@@ -93,9 +93,8 @@ export default {
         const leaderboardEmbed = initialEmbed.setDescription(leaderboardString);
 
         // Responding to the interaction with the leaderboard embed as an ephemeral message
-        await interaction.reply({
-            embeds: [leaderboardEmbed],
-            ephemeral: true,
+        await interaction.editReply({
+            embeds: [leaderboardEmbed]
         });
     },
 };
