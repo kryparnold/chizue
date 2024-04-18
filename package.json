@@ -19,11 +19,8 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@prisma/client": "5.12.1",
-=======
     "@prisma/client": "^5.12.1",
->>>>>>> 6cc1be3abe9737870fa91055cd5f5dbdcbd09b2c
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
     "prisma": "^5.9.0"
