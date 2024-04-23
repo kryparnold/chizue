@@ -1,6 +1,6 @@
 {
     "script": "bun",
-    "args": ["run", "start", "./src/index.ts"],
+    "args": ["run", "start"],
     "name": "Chizue",
     "autorestart": false
 }
