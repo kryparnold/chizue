@@ -47,7 +47,9 @@ export class CountingGame {
             this.isProcessing = false;
             // Delete the current message and send a reply indicating the same player error
             await message.delete().catch(() => {});
-            await message.channel.send(client.getLocalization(locale, "gameSamePlayer")).then((reply) => setTimeout(() => reply.delete(), 5000));
+            await message.channel
+                .send(client.getLocalization(locale, "gameSamePlayer"))
+                .then((reply) => setTimeout(() => reply.delete().catch(() => {}), 5000));
             return;
         } else if (integer != this.recentNumber + this.multiplier) {
             // If the input number is incorrect, react with a deny emoji, send the correct number, and reset the game state
