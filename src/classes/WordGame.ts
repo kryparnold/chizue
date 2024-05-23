@@ -66,7 +66,7 @@ export class WordGame {
             await message.delete().catch(() => {});
             await message.channel.send(`<@${player.id}>, ${reason}`).then(async (reply) =>
                 setTimeout(async () => {
-                    await reply.delete();
+                    await reply.delete().catch(() => {});
                 }, 5000)
             );
 
@@ -117,7 +117,7 @@ export class WordGame {
                             `<@${player.id}>, ` +
                                 client.getLocalization<true>(this.formattedLocale, "wordGameNotYet")((this.limit - this.words.length).toString())
                         )
-                        .then((reply) => setTimeout(() => reply.delete(), 5000));
+                        .then((reply) => setTimeout(() => reply.delete().catch(() => {}), 5000));
                 }
             }
         } else {
@@ -165,7 +165,7 @@ export class WordGame {
         } else if (!Utils.Letters[this.formattedLocale].includes(firstLetter) || firstLetter !== this.letter) {
             // Invalid starting letter
             return client.getLocalization<true>(this.formattedLocale, "wordGameInvalidLetter")(this.letter);
-        } else if (!await client.words.find(word, this.formattedLocale)) {
+        } else if (!(await client.words.find(word, this.formattedLocale))) {
             // Invalid word
             return client.getLocalization(this.formattedLocale, "wordGameInvalidWord");
         } else if (this.words.includes(word) && this.mode === GameMode.Normal) {
