@@ -56,7 +56,6 @@ export class CountingGame {
             await message.react(client.config.denyEmote).catch(() => {});
             await message.channel.send(this.multiplier.toString()).then(async (message) => await message.react(client.config.acceptEmote).catch(() => {}));
             this.recentNumber = this.multiplier;
-            this.recentPlayerId = "";
             await this.save();
             this.isProcessing = false;
             return;
