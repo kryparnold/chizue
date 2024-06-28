@@ -16,12 +16,12 @@
     "bun-types": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "@prisma/client": "5.12.1",
-    "discord.js": "^14.14.1",
-    "dotenv": "^16.3.1",
-    "prisma": "^5.9.0"
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "prisma": "^5.16.1"
   }
 }
